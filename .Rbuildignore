@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.Rhistory$
+^\.git$
+^\.gitignore$
+LICENSE.md
+README.md
+backup
+dev
