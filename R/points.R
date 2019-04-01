@@ -307,3 +307,12 @@ sgs_points_xy.sgs_points <-function(x) {
   r
 
 }
+
+# TODO print!
+print.sgs_points <- function(o) {
+  cat(o$epsg, "\n")
+  cat(o$datum, "\n")
+}
+
+# sgs_equal.sgs_points
+# BETTER DO THIS WITH SF (AND MOSTLY EVERY OTHER GEO FUNCTION)!!!
