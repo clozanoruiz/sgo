@@ -5,7 +5,7 @@ r:
   - release
 #  - devel
  
- cache:
+cache:
   - packages
   - ccache
 
