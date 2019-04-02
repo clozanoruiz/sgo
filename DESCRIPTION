@@ -1,5 +1,5 @@
 Package: sgs
-Title: SEPA's GIS In Spotfire (Spatial Analysis)
+Title: Simple GIS In Spotfire (Spatial Analysis)
 Version: 0.2.0
 Authors@R: person("Carlos", "Lozano Ruiz", email = "carlos.ruiz@sepa.org.uk", role = c("aut", "cre"))
 Description: Set of functions to perform spatial or geographic analysis (using TERR and Spotfire).

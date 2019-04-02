@@ -1,4 +1,4 @@
-#' sgs: SEPA's GIS In Spotfire (Spatial Analysis).
+#' sgs: Simple GIS In Spotfire (Spatial Analysis).
 #'
 #' The sgs package provides a set of functions to perform spatial or geographic
 #' analysis using TERR and Spotfire.
