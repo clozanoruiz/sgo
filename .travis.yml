@@ -1,9 +1,9 @@
 language: r
 
 r:
-#  - oldrel
+  - oldrel
   - release
-#  - devel
+  - devel
  
 cache:
   - packages
@@ -22,7 +22,7 @@ addons:
 
 r_packages:
   - sf
-#  - covr
+  - covr
 
-#after_success:
-#  - Rscript -e 'library(covr); codecov()'
+after_success:
+  - Rscript -e 'library(covr); codecov()'
