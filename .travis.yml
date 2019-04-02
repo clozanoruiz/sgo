@@ -18,7 +18,8 @@ addons:
     packages:
       - libudunits2-dev
 
-#r_packages:
+r_packages:
+  - sf
 #  - covr
 
 #after_success:
