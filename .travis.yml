@@ -1,14 +1,25 @@
 language: r
 
 r:
-  - oldrel
+#  - oldrel
   - release
-  - devel
-  
+#  - devel
+ 
+ cache:
+  - packages
+  - ccache
+
+latex: false
+
 pandoc: false
 
-r_packages:
-  - covr
+addons:
+  apt:
+    packages:
+      - libudunits2-dev
 
-after_success:
-  - Rscript -e 'library(covr); codecov()'
+#r_packages:
+#  - covr
+
+#after_success:
+#  - Rscript -e 'library(covr); codecov()'
