@@ -3,7 +3,10 @@
 ^\.Rhistory$
 ^\.git$
 ^\.gitignore$
+^\.travis\.yml$
+codecov\.yml$
 LICENSE.md
 README.md
+data-raw
 backup
 dev

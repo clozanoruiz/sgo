@@ -5,7 +5,7 @@
 \name{sgs}
 \alias{sgs}
 \alias{sgs-package}
-\title{sgs: SEPA's GIS In Spotfire (Spatial Analysis).}
+\title{sgs: Simple GIS In Spotfire (Spatial Analysis).}
 \description{
 The sgs package provides a set of functions to perform spatial or geographic
 analysis using TERR and Spotfire.
