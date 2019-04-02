@@ -17,6 +17,8 @@ addons:
   apt:
     packages:
       - libudunits2-dev
+      - libgeos-dev
+      - libgdal-dev
 
 r_packages:
   - sf
