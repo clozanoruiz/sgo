@@ -4,7 +4,7 @@ r:
   - oldrel
   - release
   - devel
- 
+
 cache:
   - packages
   - ccache
@@ -15,6 +15,8 @@ pandoc: false
 
 addons:
   apt:
+    sources:
+      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
     packages:
       - libudunits2-dev
       - libgeos-dev
