@@ -19,4 +19,4 @@ BuildType: Package
 PackageInstallArgs: --with-keep.source --byte-compile
 PackageBuildBinaryArgs: --byte-compile
 PackageCheckArgs: --multiarch
-PackageRoxygenize: rd,namespace
+PackageRoxygenize: rd,collate,namespace

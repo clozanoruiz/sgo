@@ -1,10 +1,3 @@
-#################################################################################
-#                                                                               #
-# Version:  1.0                                                                 #
-# Revision: 0 - 26/02/2018. Published version                                   #
-#                                                                               #
-#################################################################################
-
 #' @encoding UTF-8
 #' @title Object containing 2D point coordinates
 #'
@@ -180,29 +173,6 @@ sgs_points.sfc <- function (x, coords=NULL, epsg=NULL) {
 
 }
 
-sf_checks <-function (x, epsg) {
-
-  # Check if input data is a simple feature object (sf, sfc).
-  # We need sf to get the coordinates of the object
-  if (!requireNamespace("sf", quietly = TRUE)) {
-    stop("Package \"sf\" needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-
-  if (all(!sf::st_is(x, c("POINT", "MULTIPOINT")))) stop("Only POINT and MULTIPOINT geometries are accepted")
-
-  if (is.null(epsg)) {
-    crs.epsg <- sf::st_crs(x)$epsg
-    if(!crs.epsg %in% epsgs[, "epsg"]) {
-      stop("The parameter epsg must be entered, or an appropiate crs defined for the sf object")
-    } else {
-      epsg <- crs.epsg
-    }
-  }
-
-  epsg
-
-}
 
 #' @encoding UTF-8
 #' @title Convert sgs_points objects to sf objects

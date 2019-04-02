@@ -10,3 +10,14 @@ ByteCompile: yes
 LazyData: true
 RoxygenNote: 6.1.0
 Suggests: sf, testthat
+Collate: 
+    'common.R'
+    'sgs.R'
+    'sgs_bng.R'
+    'sgs_ngr.R'
+    'sgs_points.R'
+    'sgs_polygons.R'
+    'sgs_set_gcs.R'
+    'sgs_sf.R'
+    'sgs_wgs84.R'
+    'sgs_transform.R'

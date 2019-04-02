@@ -1,10 +1,3 @@
-#################################################################################
-#                                                                               #
-# Version:  1.0                                                                 #
-# Revision: 0 - 23/03/2018. Published version                                   #
-#                                                                               #
-#################################################################################
-
 #' @encoding UTF-8
 #' @title Create sf object from list of coordinates or wkb
 #'
@@ -126,18 +119,4 @@ sgs_polygons.data.frame <- function (x, epsg=NULL, wkb=NULL, coords=NULL,
 
   }
 
-}
-
-# Helper function to apply a buffer to any feature.
-# d can be a scalar or a vector with the buffers to apply to each element of x
-apply_buffer <- function(x, d) {
-
-  if (length(d) == 1) {
-    x <- sf::st_buffer(x, d)
-  } else {
-    sf::st_geometry(x) <- sf::st_sfc(mapply(sf::st_buffer, x=x$geometry,
-                                            dist=d, SIMPLIFY = FALSE))
-  }
-
-  x
 }
