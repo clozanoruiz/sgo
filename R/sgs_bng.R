@@ -68,7 +68,12 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
   if (OSTN) {
 
   # Convert datum from WGS84 to ETRS89
-  if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
+  # Currently we consider both EPSG practically equal, so let's save the transformation
+  #if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
+  if (x$epsg == 4326) {
+    x$epsg <- 4258
+    x$datum <- epsgs[epsgs[, "epsg"] == 4258, "datum"]
+  }
 
   projected <- project.onto.grid(x$latitude, x$longitude, x$datum)
   e <- projected[, 1]
@@ -234,10 +239,7 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       unprojected[shifts$out, ] <- cbind(lat=os.ll.points$latitude, lon=os.ll.points$longitude)
     }
 
-    ##unprojected <- sgs_points(list(x=unprojected[, 1], y=unprojected[, 2]), epsg=to)
-
   }
-  ##
   unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
   if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
   unprojected <- sgs_points(unprojected, coords=c("x", "y"), epsg=to)
@@ -245,8 +247,7 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
   } else {  # single Helmert transformation
 
     os.ll <- unproject.onto.ellipsoid(x$easting, x$northing, x$datum)
-    ##unprojected <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]), epsg=4277),
-    ##                           to=to)
+
     unprojected <- list(x=os.ll[, 1], y=os.ll[, 2])
     if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
     unprojected <- sgs_set_gcs(sgs_points(unprojected, coords=c("x", "y"), epsg=4277), to=to)
@@ -255,9 +256,9 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
   # In truth, we should have done the transformation to 4258 and then set_gcs to 4326,
   # but we consider them practically equal
+  #if (to == 4326) { unprojected <- sgs_set_gcs(unprojected, to=4326) }
 
   # Return
-  ##if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
   unprojected
 
 }
