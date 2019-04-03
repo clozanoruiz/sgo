@@ -34,11 +34,9 @@ test_that("sgs_points constructors", {
 #TODO
 # 1) Test multiple functions (sgs_bng_laton, sgs_set_gcs_etc) with those different types of sgs_points (dataframes, lists, single, etc.)
 # 2) Confirm all of those keep the 'sgs_points' class and the names in the class are always (and only): lat/x, lon/y, epsg and datum
-# 3) Test all the extended operators '[', '==', and 'c()'. Check they do what is required from them and they keep all attributes/class of sgs
+# 3) Test all the extended operators '['. Check they do what is required from them and they keep all attributes/class of sgs
 
 #additional
-#extend equality operator '==' if the points to be combined have both epsg and datum equal
-# and also for sgs_polygons?
 # sgs_polygons should accept sgs_points. Conversely, sgs_pints should accept sgs_polygons
 
 #test all the options that use sf (like converting from sgs to sf!!, and polygons)

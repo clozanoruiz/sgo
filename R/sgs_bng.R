@@ -65,8 +65,6 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  if (OSTN) {
-
   # Convert datum from WGS84 to ETRS89
   # Currently we consider both EPSG practically equal, so let's save the transformation
   #if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
@@ -75,43 +73,45 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
     x$datum <- epsgs[epsgs[, "epsg"] == 4258, "datum"]
   }
 
-  projected <- project.onto.grid(x$latitude, x$longitude, x$datum)
-  e <- projected[, 1]
-  n <- projected[, 2]
+  if (OSTN) {
 
-  # If datum is OSGB36, no need to do anything else
-  if (x$epsg == 4277) {
+    projected <- project.onto.grid(x$latitude, x$longitude, x$datum)
+    e <- projected[, 1]
+    n <- projected[, 2]
 
-    # Round to mm precision
-    e <- round(e, 3)
-    n <- round(n, 3)
+    # If datum is OSGB36, no need to do anything else
+    if (x$epsg == 4277) {
 
-  }
+      # Round to mm precision
+      e <- round(e, 3)
+      n <- round(n, 3)
 
-  # If datum is WGS84/ETRS89, we need to adjust with OSTN15
-  if (x$epsg == 4258) {
-
-    shifts <- find.OSTN.shifts.at(e, n)
-    # Round to mm precision
-    e <- round(e + shifts$dx, 3)
-    n <- round(n + shifts$dy, 3)
-
-    # Helmert shift into OSGB36 and then reproject all those coordinates out of bounds of OSTN15.
-    if (any(shifts$out) == TRUE) {
-      helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
-      helmert.projected <- project.onto.grid(helmert.x$latitude, helmert.x$longitude, helmert.x$datum)
-      e[shifts$out] <- round(helmert.projected[, 1], 0) # Round to metres
-      n[shifts$out] <- round(helmert.projected[, 2], 0)
     }
 
-  }
+    # If datum is WGS84/ETRS89, we need to adjust with OSTN15
+    if (x$epsg == 4258) {
+
+      shifts <- find.OSTN.shifts.at(e, n)
+      # Round to mm precision
+      e <- round(e + shifts$dx, 3)
+      n <- round(n + shifts$dy, 3)
+
+      # Helmert shift into OSGB36 and then reproject all those coordinates out of bounds of OSTN15.
+      if (any(shifts$out) == TRUE) {
+        helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
+        helmert.projected <- project.onto.grid(helmert.x$latitude, helmert.x$longitude, helmert.x$datum)
+        e[shifts$out] <- round(helmert.projected[, 1], 0) # Round to metres
+        n[shifts$out] <- round(helmert.projected[, 2], 0)
+      }
+
+    }
 
   } else {  # single Helmert transformation
 
-  helmert.x <- sgs_set_gcs(x, to = 4277)
-  helmert.projected <- project.onto.grid(helmert.x$latitude, helmert.x$longitude, helmert.x$datum)
-  e <- round(helmert.projected[, 1], 0) # Round to metres
-  n <- round(helmert.projected[, 2], 0)
+    helmert.x <- sgs_set_gcs(x, to = 4277)
+    helmert.projected <- project.onto.grid(helmert.x$latitude, helmert.x$longitude, helmert.x$datum)
+    e <- round(helmert.projected[, 1], 0) # Round to metres
+    n <- round(helmert.projected[, 2], 0)
 
   } # end if (OSTN)
 
@@ -189,60 +189,57 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
   if (OSTN) {
 
-  if (to == 4277) {
-    unprojected <- unproject.onto.ellipsoid(x$easting, x$northing, x$datum)
-    ##unprojected <- sgs_points(list(x=unprojected[, 1], y=unprojected[, 2]),
-    ##                          epsg=to)
-  }
+    if (to == 4277) {
+      unprojected <- unproject.onto.ellipsoid(x$easting, x$northing, x$datum)
+    }
 
-  if (to == 4258 || to == 4326) {
+    if (to == 4258 || to == 4326) {
 
-    shifts <- find.OSTN.shifts.at(x$easting, x$northing)
-    e <- x$easting - shifts$dx
-    n <- x$northing - shifts$dy
-    last.shifts <- shifts
-
-    for (i in c(1:20)) {
-
-      shifts <- find.OSTN.shifts.at(e, n)
-      if (all(shifts$out) == TRUE) {
-        # all coordinates have been shifted off the edge
-        break
-      }
-
+      shifts <- find.OSTN.shifts.at(x$easting, x$northing)
       e <- x$easting - shifts$dx
       n <- x$northing - shifts$dy
-      if (max(abs(shifts$dx - last.shifts$dx)) < 0.0001 &&
-          max(abs(shifts$dy - last.shifts$dy)) < 0.0001) { break }
       last.shifts <- shifts
 
+      for (i in c(1:20)) {
+
+        shifts <- find.OSTN.shifts.at(e, n)
+        if (all(shifts$out) == TRUE) {
+          # all coordinates have been shifted off the edge
+          break
+        }
+
+        e <- x$easting - shifts$dx
+        n <- x$northing - shifts$dy
+        if (max(abs(shifts$dx - last.shifts$dx)) < 0.0001 &&
+            max(abs(shifts$dy - last.shifts$dy)) < 0.0001) { break }
+        last.shifts <- shifts
+
+      }
+
+      #initialise 'unprojected' matrix of coordinates
+      items <- rep(NA, length(x$easting))
+      unprojected <- cbind(items, items, deparse.level = 0)
+
+      # unproject any shifted coordinates
+      if (any(shifts$out) == FALSE) {
+        e <- x$easting[!shifts$out] - shifts$dx[!shifts$out]
+        n <- x$northing[!shifts$out] - shifts$dy[!shifts$out]
+        unprojected[!shifts$out, ] <- unproject.onto.ellipsoid(e, n,
+                                        epsgs[epsgs$epsg==to, "datum"])
+      }
+
+      # unproject the rest of coordinates (the ones that couldn't be shifted)
+      if (any(shifts$out) == TRUE) {
+        os.ll <- unproject.onto.ellipsoid(x$easting[shifts$out], x$northing[shifts$out], x$datum)
+        os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]), epsg=4277),
+                                    to=to)
+        unprojected[shifts$out, ] <- cbind(lat=os.ll.points$latitude, lon=os.ll.points$longitude)
+      }
+
     }
-
-
-    #initialise 'unprojected' matrix of coordinates
-    items <- rep(NA, length(x$easting))
-    unprojected <- cbind(items, items, deparse.level = 0)
-
-    # unproject any shifted coordinates
-    if (any(shifts$out) == FALSE) {
-      e <- x$easting[!shifts$out] - shifts$dx[!shifts$out]
-      n <- x$northing[!shifts$out] - shifts$dy[!shifts$out]
-      unprojected[!shifts$out, ] <- unproject.onto.ellipsoid(e, n,
-                                      epsgs[epsgs$epsg==to, "datum"])
-    }
-
-    # unproject the rest of coordinates (the ones that couldn't be shifted)
-    if (any(shifts$out) == TRUE) {
-      os.ll <- unproject.onto.ellipsoid(x$easting[shifts$out], x$northing[shifts$out], x$datum)
-      os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]), epsg=4277),
-                                  to=to)
-      unprojected[shifts$out, ] <- cbind(lat=os.ll.points$latitude, lon=os.ll.points$longitude)
-    }
-
-  }
-  unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
-  if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
-  unprojected <- sgs_points(unprojected, coords=c("x", "y"), epsg=to)
+    unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
+    if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
+    unprojected <- sgs_points(unprojected, coords=c("x", "y"), epsg=to)
 
   } else {  # single Helmert transformation
 
@@ -256,7 +253,6 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
   # In truth, we should have done the transformation to 4258 and then set_gcs to 4326,
   # but we consider them practically equal
-  #if (to == 4326) { unprojected <- sgs_set_gcs(unprojected, to=4326) }
 
   # Return
   unprojected
