@@ -28,7 +28,7 @@ dist: xenial
 addons:
   apt:
     sources:
-      - ppa:ubuntugis/ubuntugis-unstable
+      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
     packages:
       - libudunits2-dev
       - libgeos-dev

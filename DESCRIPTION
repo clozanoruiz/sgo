@@ -9,7 +9,7 @@ Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
 RoxygenNote: 6.1.1
-Suggests: sf, testthat
+Suggests: covr, sf, testthat
 Collate: 
     'common.R'
     'sgs.R'
