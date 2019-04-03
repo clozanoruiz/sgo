@@ -7,7 +7,8 @@
 # The table of data supplied by the Ordnance Survey contains 876951 rows with entries
 # for each km intersection between (0,0) and (700000, 1250000).
 
-file <- "C:/Users/carlos.ruiz/Desktop/OSTN15_OSGM15_DataFile.txt"
+# Make sure this file exists in the folder (currently compressed in ./dev folder)
+file <- "./data-raw/OSTN15_OSGM15_DataFile.txt"
 OSTN15 <- read.csv(file)
 
 # Encode shift data as integers representing the shift in m
