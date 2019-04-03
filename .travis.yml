@@ -5,6 +5,17 @@ r:
   - release
   - devel
 
+# blocklist
+branches:
+  except:
+    - develop
+
+# safelist
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/ # matches versioning... including tags
+
 cache:
   - packages
   - ccache
@@ -13,10 +24,11 @@ latex: false
 
 pandoc: false
 
+dist: xenial
 addons:
   apt:
     sources:
-      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
+      - ppa:ubuntugis/ubuntugis-unstable
     packages:
       - libudunits2-dev
       - libgeos-dev
