@@ -1,9 +1,9 @@
-#################################################################################
-#                                                                               #
-# Adapted from 'geodesy', a JS routine by Chris Veness:                         #
-# https://github.com/chrisveness/geodesy                                        #
-#                                                                               #
-#################################################################################
+################################################################################
+#                                                                              #
+# Adapted from 'geodesy', a JS routine by Chris Veness:                        #
+# https://github.com/chrisveness/geodesy                                       #
+#                                                                              #
+################################################################################
 
 
 #' @encoding UTF-8
@@ -23,8 +23,8 @@
 #' All entered standard grid references can range from two-digit references up
 #' to 10-digit references (1m × 1m square).
 #' If \code{x} is a list with 2 or more vector elements, \code{col} can be used
-#' to inform the function which of the elements contains the NGR strings. The rest
-#' of the elements will be appended to the resulting object. See examples.
+#' to inform the function which of the elements contains the NGR strings. The
+#' rest of the elements will be appended to the resulting object. See examples.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
 #' Easting/Northing.
@@ -63,17 +63,19 @@ sgs_ngr_bng <- function(x, col=NULL) {
   # Validate format
   # Parse only alphanumeric data
   x <- gsub("[^a-zA-Z0-9]", "", x)
-  match <- grepl("^[a-zA-Z]{2}(\\d{2}|\\d{4}|\\d{6}|\\d{8}|\\d{10})$", x, ignore.case=TRUE, perl=TRUE)
+  match <- grepl("^[a-zA-Z]{2}(\\d{2}|\\d{4}|\\d{6}|\\d{8}|\\d{10})$", x,
+                 ignore.case=TRUE, perl=TRUE)
   invalid.indices <- match==FALSE
   if (any(invalid.indices)) {
     if ( all( is_nothing(x[which(invalid.indices)]) ) ) {
-      #from here we will only work only with those that do not have invalid values
+      #from here we will only work with those that do not have invalid values
       #x.holder <- rep(NA, length(x))
       #x <- x[!invalid.indices]
-      stop( paste(err.msg , ": ",  "There are empty or null coordinates",sep=" "))
+      stop( paste(err.msg , ": ",
+                  "There are empty or null coordinates",sep=" "))
     } else {
       invalid.values <- x[which(invalid.indices)]
-      first.invalid.value <- invalid.values[which(!is_nothing(invalid.values))][1]
+      first.invalid.value <- invalid.values[which(!is_nothing(invalid.values))][1] # nolint
       stop( paste(err.msg , ": ",  first.invalid.value,sep=" "))
     }
   }
@@ -81,17 +83,19 @@ sgs_ngr_bng <- function(x, col=NULL) {
 
   # Get numeric values of letter references, mapping A->0, B->1, C->2, etc:
   a.code <- strtoi(charToRaw("A"), 16L)
-  l1 <- strtoi(vapply(substr(toupper(x), 1, 1), charToRaw, as.raw(0)), 16L) - a.code
-  l2 <- strtoi(vapply(substr(toupper(x), 2, 2), charToRaw, as.raw(0)), 16L) - a.code
+  l1 <- strtoi(vapply(substr(toupper(x), 1, 1), charToRaw, as.raw(0)), 16L) - a.code # nolint
+  l2 <- strtoi(vapply(substr(toupper(x), 2, 2), charToRaw, as.raw(0)), 16L) - a.code # nolint
   # Shuffle down letters after 'I' since 'I' is not used in grid:
   l1 <- ifelse (l1 > 7, l1-1, l1)
   l2 <- ifelse (l2 > 7, l2-1, l2)
 
-  # Convert grid letters into 100km-square indexes from false origin (grid square SV):
+  # Convert grid letters into 100km-square indexes from false origin
+  # (grid square SV):
   e100km <- ((l1-2)%%5)*5 + (l2%%5)
   n100km <- (19-trunc(l1/5)*5) - trunc(l2/5)
 
-  # Skip grid letters to get numeric (easting/northing) part of ref (splitting numbers half way)
+  # Skip grid letters to get numeric (easting/northing) part of the
+  # reference (splitting numbers half way)
   en <- substring(x, 3)
   n.char <- nchar(en)
   e <- substr(en, 1, n.char/2)
@@ -112,7 +116,7 @@ sgs_ngr_bng <- function(x, col=NULL) {
   if(is.null(col)) {
     lst <-  list(x=as.numeric(e), y=as.numeric(n))
   } else {
-    lst <- c(old.x[!names(old.x) %in% col], list(x=as.numeric(e), y=as.numeric(n)))
+    lst <- c(old.x[!names(old.x) %in% col], list(x=as.numeric(e), y=as.numeric(n))) # nolint
   }
   sgs_points(lst, epsg=27700)
 
@@ -126,12 +130,15 @@ sgs_ngr_bng <- function(x, col=NULL) {
 #'
 #' @name sgs_bng_ngr
 #' @usage sgs_bng_ngr(x, digits = 10)
-#' @param x A \code{sgs_points} object with coordinates defined as \code{epsg=27700}.
-#' @param digits Numeric. It defines the precision of the resulting grid references.
+#' @param x A \code{sgs_points} object with coordinates defined as
+#' \code{epsg=27700}.
+#' @param digits Numeric. It defines the precision of the resulting grid
+#' references.
 #' @details
-#' All resulting grid references will have 10 digits (1m × 1m square) by default.
-#' In order to reduce the ouput precision change the digits paramater accordingly.
-#' When \code{digits=0}, it returns the numeric format of the grid references.
+#' All resulting grid references will have 10 digits (1m × 1m square) by
+#' default. In order to reduce the ouput precision change the digits paramater
+#' accordingly. When \code{digits=0}, it returns the numeric format of the grid
+#' references.
 #'
 #' Note that rather than being rounded, national grid references are truncated
 #' when converting to less precise references (as the OS system demands). By
@@ -153,27 +160,33 @@ sgs_bng_ngr <- function(x, digits=10) UseMethod("sgs_bng_ngr")
 #' @export
 sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
-  if (x$epsg != 27700) stop("This routine only supports BNG Easting and Northing entries")
+  if (x$epsg != 27700)
+    stop("This routine only supports BNG Easting and Northing entries")
 
-  if (digits%%2!=0 || digits>16) stop(paste0("Invalid precision 'digits=", digits, "'"))
+  if (digits%%2!=0 || digits>16)
+    stop(paste0("Invalid precision 'digits=", digits, "'"))
 
   core.cols <- sgs_points.core
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
+ #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
   e <- x$easting
   n <- x$northing
 
-  # Use digits = 0 to return numeric format (in metres, allowing for decimals & for northing > 1e6)
+  # Use digits = 0 to return numeric format
+  # (in metres, allowing for decimals & for northing > 1e6)
   if (digits == 0) {
 
     e.int <- trunc(e); e.dec <- e - e.int
     n.int <- trunc(n); n.dec <- n - n.int
     e.pad <- paste0(substr.r(paste0('000000', e.int), 6),
-                    ifelse(e.dec>0, substring(as.character(round(e.dec, 3)), 2), ""))
-    n.pad <- paste0(ifelse(n.int<1e6, substr.r(paste0('000000', n.int), 6), n.int),
-                    ifelse(n.dec>0, substring(as.character(round(n.dec, 3)), 2), ""))
+                    ifelse(e.dec>0,
+                           substring(as.character(round(e.dec, 3)), 2), ""))
+    n.pad <- paste0(ifelse(n.int<1e6,
+                           substr.r(paste0('000000', n.int), 6), n.int),
+                    ifelse(n.dec>0,
+                           substring(as.character(round(n.dec, 3)), 2), ""))
 
     #return
     ngr <- list(ngr=paste0(e.pad, ",",  n.pad))
@@ -197,20 +210,22 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
   # Compensate for skipped 'I' and build grid letter-pairs
   l1 <- ifelse(l1 > 7, l1+1, l1)
   l2 <- ifelse(l2 > 7, l2+1, l2)
-  a.code <- strtoi(charToRaw("A"), 16L) #A is the (charcode) origin to which l1 and l2 codes will be added
+  # A is the (charcode) origin to which l1 and l2 codes will be added:
+  a.code <- strtoi(charToRaw("A"), 16L)
   let.pair <- paste0( vapply(as.raw(l1 + a.code), rawToChar,""),
                       vapply(as.raw(l2 + a.code), rawToChar,""))
 
   # Strip 100km-grid indices from easting & northing, and reduce precision
   # Note that rather than being rounded, the easting and northing are truncated
-  # to hectometres (as the OS system demands), so the grid reference refers to the
-  # lower left corner of the relevant square, to ensure the more precise
+  # to hectometres (as the OS system demands), so the grid reference refers to
+  # the lower left corner of the relevant square, to ensure the more precise
   # polygon will remain within the boundaries of the less precise polygon
   e <- trunc( (e%%100000) / (10 ^ (5-digits/2)) )
   n <- trunc( (n%%100000) / (10 ^ (5-digits/2)) )
 
 
-  # Pad eastings & northings with leading zeros (just in case, allow up to 16-digit (mm) refs)
+  # Pad eastings & northings with leading zeros (just in case,
+  # allow up to 16-digit (mm) refs)
   e <- substr.r(paste0("00000000", e), (digits/2))
   n <- substr.r(paste0("00000000", n), (digits/2))
 

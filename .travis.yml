@@ -22,8 +22,6 @@ cache:
 
 latex: false
 
-pandoc: false
-
 dist: xenial
 addons:
   apt:

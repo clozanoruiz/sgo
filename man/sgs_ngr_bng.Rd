@@ -26,8 +26,8 @@ Converts OS National Grid References to Easting/Northing coordinates
 All entered standard grid references can range from two-digit references up
 to 10-digit references (1m × 1m square).
 If \code{x} is a list with 2 or more vector elements, \code{col} can be used
-to inform the function which of the elements contains the NGR strings. The rest
-of the elements will be appended to the resulting object. See examples.
+to inform the function which of the elements contains the NGR strings. The
+rest of the elements will be appended to the resulting object. See examples.
 }
 \examples{
 vec <- c("NN 166 712", "HU 3863 7653")

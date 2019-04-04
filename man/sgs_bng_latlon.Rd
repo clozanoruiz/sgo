@@ -3,7 +3,8 @@
 \encoding{UTF-8}
 \name{sgs_bng_latlon}
 \alias{sgs_bng_latlon}
-\title{British National Grid (BNG) Easting/Northing to Geodetic Coordinate System (GCS)}
+\title{British National Grid (BNG) Easting/Northing to Geodetic Coordinate
+System (GCS)}
 \usage{
 sgs_bng_latlon(x, to = 4258, OSTN = TRUE)
 }
@@ -14,8 +15,9 @@ coordinate system BNG (epsg=27700)}
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
 Coordinate System. 4258 (ETRS89) by default.}
 
-\item{OSTN}{Logical variable indicating whether use OSTN15 transformation when TRUE or
-a less accurate but slightly faster single Helmert transformation when FALSE.}
+\item{OSTN}{Logical variable indicating whether use OSTN15 transformation
+when TRUE or a less accurate but slightly faster single Helmert
+transformation when FALSE.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
@@ -28,26 +30,28 @@ latitude/longitude (SW corner of grid square).
 \details{
 The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
-ETRS89 for latitude/longitude coordinates. Thus, when converting to latitude/longitude
-the OSGB36 datum should be always converted to ETRS89 (or WGS84).
+ETRS89 for latitude/longitude coordinates. Thus, when converting to
+latitude/longitude the OSGB36 datum should be always converted to ETRS89
+(or WGS84).
 
-According to the Transformations and OSGM15 User Guide, p. 8: \emph{"...ETRS89 is a precise
-version of the better known WGS84 reference system optimised for use in Europe;
-however, for most purposes it can be considered equivalent to WGS84."} and \emph{"For
-all navigation, mapping, GIS, and engineering applications within the tectonically
-stable parts of Europe (including UK and Ireland), the term ETRS89 should
-be taken as synonymous with WGS84."}
-This means that EPSG:4258(ETRS89) and EPSG:4326(WGS84) will be considered equivalent
-by this routine.
+According to the Transformations and OSGM15 User Guide, p. 8:
+\emph{"...ETRS89 is a precise version of the better known WGS84 reference
+system optimised for use in Europe; however, for most purposes it can be
+considered equivalent to WGS84."} and \emph{"For all navigation, mapping,
+GIS, and engineering applications within the tectonically stable parts of
+Europe (including UK and Ireland), the term ETRS89 should be taken as
+synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
+EPSG:4326(WGS84) will be considered equivalent by this routine.
 
-If, for historical reasons, latitude/longitude coordinates must have the old OSGB36
-datum, then the parameter \code{to} must be set to 4277.
+If, for historical reasons, latitude/longitude coordinates must have the old
+OSGB36 datum, then the parameter \code{to} must be set to 4277.
 
-\strong{Note}: All those coordinates outside the rectangle covered by OSTN15, will be automatically
-computed using the small Helmert transformation. Such coordinates will be accurate
-up to about +/-5 metres.
-Converting from BNG to lat/lon coordinates is slower than the other way around, due to
-the iterative nature of the algorithm that is built into OSTN15.
+\strong{Note}: All those coordinates outside the rectangle covered by OSTN15,
+will be automatically computed using the small Helmert transformation. Such
+coordinates will be accurate up to about +/-5 metres.
+Converting from BNG to lat/lon coordinates is slower than the other way
+around, due to the iterative nature of the algorithm that is built into
+OSTN15.
 }
 \examples{
 p <- sgs_points(list(651409.903, 313177.270), epsg=27700)

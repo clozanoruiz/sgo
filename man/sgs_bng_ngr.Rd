@@ -8,9 +8,11 @@
 sgs_bng_ngr(x, digits = 10)
 }
 \arguments{
-\item{x}{A \code{sgs_points} object with coordinates defined as \code{epsg=27700}.}
+\item{x}{A \code{sgs_points} object with coordinates defined as
+\code{epsg=27700}.}
 
-\item{digits}{Numeric. It defines the precision of the resulting grid references.}
+\item{digits}{Numeric. It defines the precision of the resulting grid
+references.}
 }
 \value{
 A list with at least one element named 'ngr'.
@@ -19,9 +21,10 @@ A list with at least one element named 'ngr'.
 Converts BNG Easting/Northing coordinates to National Grid References
 }
 \details{
-All resulting grid references will have 10 digits (1m × 1m square) by default.
-In order to reduce the ouput precision change the digits paramater accordingly.
-When \code{digits=0}, it returns the numeric format of the grid references.
+All resulting grid references will have 10 digits (1m × 1m square) by
+default. In order to reduce the ouput precision change the digits paramater
+accordingly. When \code{digits=0}, it returns the numeric format of the grid
+references.
 
 Note that rather than being rounded, national grid references are truncated
 when converting to less precise references (as the OS system demands). By
