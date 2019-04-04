@@ -6,14 +6,16 @@
 #'
 #' @name sgs_wgs84_en
 #' @usage sgs_wgs84_en(x, to = 3857)
-#' @param x A \code{sgs_points} object describing a set of points in the geodetic
-#' coordinate system EPSG=4326.
+#' @param x A \code{sgs_points} object describing a set of points in the
+#' geodetic coordinate system EPSG=4326.
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
-#' Coordinate System. 3857 (WGS84) by default. And currently doesn't support any other.
+#' Coordinate System. 3857 (WGS84) by default. And currently doesn't support any
+#' other.
 #' @details
-#' This routine also accepts source data expressed in ETRS89 coordinates (EPSG=4258)
-#' as it is considered the difference between those two GCS is far less than the accuracy
-#' available when working with Pseudo-Mercator coordinates.
+#' This routine also accepts source data expressed in ETRS89 coordinates
+#' (EPSG=4258) as it is considered the difference between those two GCS is far
+#' less than the accuracy available when working with Pseudo-Mercator
+#' coordinates.
 #'
 #' The results can be used in maps where Pseudo-Mercator coordinates are needed.
 #' Usually, those include Google, Bing, OpenStreetMap and several other webmap
@@ -21,8 +23,8 @@
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
 #' Easting/Northing.
-#' @references OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part 2
-#' (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+#' @references OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
+#' 2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_en_wgs84}}.
 #' @examples
 #' p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
@@ -36,7 +38,8 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   if (!x$epsg %in% c(4326, 4258))
     stop("This routine only supports EPSG:4326 WGS84 (or EPSG:4258) entries.")
 
-  if(to != 3857) stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
+  if(to != 3857)
+    stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
 
   core.cols <- sgs_points.core
   #coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
@@ -77,17 +80,18 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 #'
 #' @name sgs_en_wgs84
 #' @usage sgs_en_wgs84(x, to = 4326)
-#' @param x A \code{sgs_points} object describing a set of points in the geodetic
-#' coordinate system EPSG=3857.
+#' @param x A \code{sgs_points} object describing a set of points in the
+#' geodetic coordinate system EPSG=3857.
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
-#' Coordinate System. 4326 (WGS84) by default. And currently doesn't support any other.
+#' Coordinate System. 4326 (WGS84) by default. And currently doesn't support any
+#' other.
 #' @details
 #' Currently converts ONLY from EPSG 3857 to 4326 (Latitude/Longitude).
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
 #' Latitude/Longitude.
-#' @references OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part 2
-#' (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+#' @references OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
+#' 2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_wgs84_en}}.
 #' @examples
 #' p <- sgs_points(list(-11169055.58, 2810000.00), epsg=3857)
@@ -100,11 +104,11 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
 
   if (x$epsg != 3857) stop("This routine only supports EPSG:3857 WGS84 entries")
 
-  if(to != 4326) stop("This routine only supports converting to EPSG:4326 latitude/longitude")
+  if(to != 4326)
+    stop("This routine only supports converting to EPSG:4326 lat/lon.")
 
   core.cols <- sgs_points.core
-  #coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
+ #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -123,8 +127,9 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   lambda <- ((E - FE)/a) + lambda0
 
   # Round and Return
-  new.x <- sgs_points(list(x=round(phi * 57.29577951308232087679815481410517, 8),
-                           y=round(lambda * 57.29577951308232087679815481410517, 8)), epsg=to)
+  new.x <- sgs_points(
+    list(x=round(phi * 57.29577951308232087679815481410517, 8),
+         y=round(lambda * 57.29577951308232087679815481410517, 8)), epsg=to)
   if (num.elements > 0) new.x <- c(x[additional.elements], new.x)
   new.x
 

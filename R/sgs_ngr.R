@@ -75,16 +75,18 @@ sgs_ngr_bng <- function(x, col=NULL) {
                   "There are empty or null coordinates",sep=" "))
     } else {
       invalid.values <- x[which(invalid.indices)]
-      first.invalid.value <- invalid.values[which(!is_nothing(invalid.values))][1] # nolint
-      stop( paste(err.msg , ": ",  first.invalid.value,sep=" "))
+      one.invalid.value <- invalid.values[which(!is_nothing(invalid.values))][1]
+      stop( paste(err.msg , ": ",  one.invalid.value, sep=" "))
     }
   }
 
 
   # Get numeric values of letter references, mapping A->0, B->1, C->2, etc:
   a.code <- strtoi(charToRaw("A"), 16L)
-  l1 <- strtoi(vapply(substr(toupper(x), 1, 1), charToRaw, as.raw(0)), 16L) - a.code # nolint
-  l2 <- strtoi(vapply(substr(toupper(x), 2, 2), charToRaw, as.raw(0)), 16L) - a.code # nolint
+  l1 <- strtoi(vapply(substr(toupper(x), 1, 1),
+                      charToRaw, as.raw(0)), 16L) - a.code
+  l2 <- strtoi(vapply(substr(toupper(x), 2, 2),
+                      charToRaw, as.raw(0)), 16L) - a.code
   # Shuffle down letters after 'I' since 'I' is not used in grid:
   l1 <- ifelse (l1 > 7, l1-1, l1)
   l2 <- ifelse (l2 > 7, l2-1, l2)
@@ -116,7 +118,8 @@ sgs_ngr_bng <- function(x, col=NULL) {
   if(is.null(col)) {
     lst <-  list(x=as.numeric(e), y=as.numeric(n))
   } else {
-    lst <- c(old.x[!names(old.x) %in% col], list(x=as.numeric(e), y=as.numeric(n))) # nolint
+    lst <- c(old.x[!names(old.x) %in% col],
+             list(x=as.numeric(e), y=as.numeric(n)))
   }
   sgs_points(lst, epsg=27700)
 

@@ -5,7 +5,8 @@ NULL
 #' @title Coordinates transformation of a set of points
 #'
 #' @description
-#' Transforms the coordinate system of a set of points to any supported coordinate system.
+#' Transforms the coordinate system of a set of points to any supported
+#' coordinate system.
 #'
 #' @name sgs_transform
 #' @usage sgs_transform(x, to = NULL)
@@ -14,9 +15,11 @@ NULL
 #' can take any of the following values: \code{4326}, \code{3857}, \code{4277},
 #' \code{27700} or \code{4258}.
 #' @details
-#' This function is a wrapper of specific transformation functions (\code{\link{sgs_bng_latlon}},
-#' \code{\link{sgs_en_wgs84}}, \code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}})
-#' that transforms the coordinate system of a set of points to any of the supported coordinate systems.
+#' This function is a wrapper of specific transformation functions
+#' (\code{\link{sgs_bng_latlon}}, \code{\link{sgs_en_wgs84}},
+#' \code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
+#' coordinate system of a set of points to any of the supported coordinate
+#' systems.
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_points_xy}},
@@ -41,7 +44,7 @@ sgs_transform.sgs_points <- function(x, to=NULL) {
   if (is.null(to)) stop("Paramater 'to' must be specified")
   if (x$epsg==to) return(x)
 
-  # Get the list of functions and their arguments that need to be run for this transformation
+  # Get list of functions and their arguments needed to run this transformation
   FUN_list <- FUNCS[which(FUNCS$FROM==x$epsg), as.character(to)][[1]]
   ARGS_list <- ARGS[which(ARGS$FROM==x$epsg), as.character(to)][[1]]
 
@@ -61,6 +64,7 @@ sgs_transform.sgs_points <- function(x, to=NULL) {
 #from: 27700 to: 4326, 3857, 4277,     -, 4258
 #from: 4258  to: 4326, 3857, 4277, 27700,    -
 
+# nolint start
 FROM <-          list(4326,                                 3857,                                               4277,                                               27700,                              4258)
 
 FUN_TO_4326 <-   list(NULL,                                 list(sgs_en_wgs84),                                 list(sgs_latlon_bng, sgs_bng_latlon),               list(sgs_bng_latlon),               list(sgs_set_gcs))
@@ -74,6 +78,7 @@ ARGS_TO_3857 <-  list(list(3857),                           NULL,               
 ARGS_TO_4277 <-  list(list(list(TRUE),list(4277, TRUE)),    list(list(4326), list(TRUE), list(4277, TRUE)),     NULL,                                               list(4277, TRUE),                   list(list(TRUE), list(4277, TRUE)))
 ARGS_TO_27700 <- list(list(TRUE),                           list(list(4326), list(TRUE)),                       list(TRUE),                                         NULL,                               list(TRUE))
 ARGS_TO_4258 <-  list(list(4258),                           list(list(4326), list(4258)),                       list(list(TRUE), list(4258, TRUE)),                 list(4258, TRUE),                   NULL)
+# nolint end
 
 # Two dataframes containing those funtions and arguments respectively
 FUNCS <- as.data.frame(cbind("FROM"=FROM,

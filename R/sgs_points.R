@@ -6,42 +6,46 @@
 #'
 #' @name sgs_points
 #' @usage sgs_points(x, coords=NULL, epsg = NULL)
-#' @param x A list or dataframe with at least 2 columns of either easting/northing
-#' or latitude/longitude coordinates per row - depending on \code{epsg}. \strong{Please
-#' note} that the order is important: lon/lat or northing/easting will produce
-#' wrong results.
+#' @param x A list or dataframe with at least 2 columns of either
+#' easting/northing or latitude/longitude coordinates per row - depending on
+#' \code{epsg}. \strong{Please note} that the order is important: lon/lat or
+#' northing/easting will produce wrong results.
 #'
 #' It also accepts objects of class \code{sf POINT/MULTIPOINT} or
 #' \code{sfc POINT/MULTIPOINT}.
-#' @param coords A vector with the names of the columns containing the easting/northing
-#' (or latitude/longitude) coordinates.
+#' @param coords A vector with the names of the columns containing the
+#' easting/northing (or latitude/longitude) coordinates.
 #' @param epsg Specifies the EPSG code of coordinates to store. It can take any
-#' of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700} or \code{4258}.
+#' of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
+#' or \code{4258}.
 #' @details
-#' This object stores 2D point coordinates and any other column-list of attributes
-#' related to each point. Currently it only supports 5 \code{epsg}s
+#' This object stores 2D point coordinates and any other column-list of
+#' attributes related to each point. Currently it only supports 5 \code{epsg}s
 #' for coordinates:
 #' \itemize{
-#' \item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in \code{x} be defined
-#' as Latitude and Longitude values respectively. The defined datum for this set of
-#' coordinates is WGS84 (https://epsg.io/4326)
+#' \item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in
+#' \code{x} be defined as Latitude and Longitude values respectively. The
+#' defined datum for this set of coordinates is WGS84 (https://epsg.io/4326)
 #'
-#' \item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The 2 columns
-#' in \code{x} must be defined as Easting and Northing values respectively. The defined
-#' datum for this set of coordinates is WGS84 (https://epsg.io/3857)
+#' \item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
+#' 2 columns in \code{x} must be defined as Easting and Northing values
+#' respectively. The defined datum for this set of coordinates is WGS84
+#' (https://epsg.io/3857)
 #'
-#' \item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in \code{x}
-#' must be defined as Latitude and Longitude values respectively. The defined datum for this
-#' set of coordinates is OSGB 1936 (https://epsg.io/4277). \emph{Coordinates defined
-#' like this should only be used for historical reasons.}
+#' \item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in
+#' \code{x} must be defined as Latitude and Longitude values respectively. The
+#' defined datum for this set of coordinates is OSGB 1936
+#' (https://epsg.io/4277). \emph{Coordinates defined like this should only be
+#' used for historical reasons.}
 #'
-#' \item\code{27700}: British National Grid, projected coordinate system. The 2 columns
-#' in \code{x} must be defined as Easting and Northing values respectively. The defined
-#' datum for this set of coordinates is OSGB 1936 (https://epsg.io/27700).
+#' \item\code{27700}: British National Grid, projected coordinate system. The 2
+#' columns in \code{x} must be defined as Easting and Northing values
+#' respectively. The defined datum for this set of coordinates is OSGB 1936
+#' (https://epsg.io/27700).
 #'
-#' \item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in \code{x}
-#' must be defined as Latitude and Longitude values respectively. The defined
-#' datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
+#' \item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in
+#' \code{x} must be defined as Latitude and Longitude values respectively. The
+#' defined datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
 #' }
 #' @return
 #' An object of class \code{sgs_points}.
@@ -78,7 +82,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if (len < 2) stop("This method accepts lists with at least 2 columns")
 
   if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
-    stop("The epsg parameter must be entered as 4326, 3857, 4277, 27700 or 4258")
+    stop("'epsg' must be entered as 4326, 3857, 4277, 27700 or 4258")
   }
 
   if (len == 2 && is.null(names(x)) ) {
@@ -91,7 +95,9 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     known.coords <- t(apply(coordinates.names, 1, function(n) n %in% lnames))
     if (any(known.coords)) {
       coords <- names(x)[lnames %in% coordinates.names[known.coords]]
-    } else { stop("Must specify the name of columns containing coordinates using the 'coords' paramater") }
+    } else {
+      stop("Must specify the coordinates columns using the 'coords' paramater")
+    }
   }
 
   if(!is.numeric(x[[coords[1]]]) | !is.numeric(x[[coords[2]]]))
@@ -101,23 +107,28 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if (length(other.columns)==0) other.columns <- NULL
   points <- switch(as.character(epsg),
                    "4326" = structure(c(other.columns,
-                                        list(latitude = x[[coords[1]]], longitude = x[[coords[2]]],
+                                        list(latitude = x[[coords[1]]],
+                                             longitude = x[[coords[2]]],
                                              epsg=epsg, datum="WGS84")),
                                       class="sgs_points"),
                    "3857" = structure(c(other.columns,
-                                         list(easting = x[[coords[1]]], northing = x[[coords[2]]],
+                                         list(easting = x[[coords[1]]],
+                                              northing = x[[coords[2]]],
                                               epsg=epsg, datum="WGS84")),
                                        class="sgs_points"),
                    "4277" = structure(c(other.columns,
-                                        list(latitude = x[[coords[1]]], longitude = x[[coords[2]]],
+                                        list(latitude = x[[coords[1]]],
+                                             longitude = x[[coords[2]]],
                                              epsg=epsg, datum="OSGB36")),
                                       class="sgs_points"),
                    "27700" = structure(c(other.columns,
-                                        list(easting = x[[coords[1]]], northing = x[[coords[2]]],
+                                        list(easting = x[[coords[1]]],
+                                             northing = x[[coords[2]]],
                                              epsg=epsg, datum="OSGB36")),
                                       class="sgs_points"),
                    "4258" = structure(c(other.columns,
-                                         list(latitude = x[[coords[1]]], longitude = x[[coords[2]]],
+                                         list(latitude = x[[coords[1]]],
+                                              longitude = x[[coords[2]]],
                                               epsg=epsg, datum="ETRS89")),
                                        class="sgs_points")
   )
@@ -132,12 +143,14 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
   if (cols < 2) stop("This method accepts dataframes with at least 2 columns")
 
   if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
-    stop("The epsg parameter must be entered as 4326, 3857, 4277, 27700 or 4258")
+    stop("'epsg' must be entered as 4326, 3857, 4277, 27700 or 4258")
   }
 
+  # the names we apply don't matter for the rest of the function
+  # when there are only 2 columns
   if (cols == 2) {
     coords <- coordinates.names[1, ] #just because
-    names(x) <- coords #when there are only 2 cols, which names we apply shouldn't matter
+    names(x) <- coords
   }
 
   sgs_points(as.list(x), coords=coords, epsg=epsg)
@@ -266,9 +279,11 @@ sgs_points_xy.sgs_points <-function(x) {
 `[.sgs_points` <- function(x, i, ...) {
 
   if (epsgs[epsgs[, "epsg"]==x$epsg, "type"] == "GCS") {
-    core.cols <- sgs_points.core[!sgs_points.core %in% c("easting", "northing")]
+    core.cols <- sgs_points.core[!sgs_points.core %in%
+                                   c("easting", "northing")]
   } else {
-    core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
+    core.cols <- sgs_points.core[!sgs_points.core %in%
+                                   c("latitude", "longitude")]
   }
 
   r <- NextMethod("[")
@@ -283,6 +298,3 @@ print.sgs_points <- function(o) {
   cat(o$epsg, "\n")
   cat(o$datum, "\n")
 }
-
-# sgs_equal.sgs_points
-# BETTER DO THIS WITH SF (AND MOSTLY EVERY OTHER GEO FUNCTION)!!!

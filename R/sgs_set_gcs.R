@@ -1,37 +1,40 @@
-#################################################################################
-#                                                                               #
-# Adapted from 'Geo-Coordinates-OSGB-2.20', a Perl routine by Toby Thurston:    #
-# https://metacpan.org/release/Geo-Coordinates-OSGB                             #
-#                                                                               #
-#################################################################################
+################################################################################
+#                                                                              #
+# Adapted from 'Geo-Coordinates-OSGB-2.20', a Perl routine by Toby Thurston:   #
+# https://metacpan.org/release/Geo-Coordinates-OSGB                            #
+#                                                                              #
+################################################################################
 
 
 #' @encoding UTF-8
 #' @title Set GCS of a set of points
 #'
 #' @description
-#' Changes the geodetic coordinate system of a set of points using a single Helmert
-#' transformation.
+#' Changes the geodetic coordinate system of a set of points using a single
+#' Helmert transformation.
 #'
 #' @name sgs_set_gcs
 #' @usage sgs_set_gcs(x, to = NULL)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param to Specifies the EPSG code to convert the coordinates to. Currently it
-#' can take any of the following values: \code{4258}, \code{4326} or \code{4277}.
+#' can take any of the following values: \code{4258}, \code{4326} or
+#' \code{4277}.
 #' @details
-#' Changes the geodetic coordinate system of a set of points. Note that precision
-#' of various datums will vary, and (original)WGS-84 is not defined to be
-#' accurate to better than ±1 metre. Most transformations shouldn't be assumed to be
-#' accurate to better than a meter; between OSGB36 and WGS84 somewhat less - the
-#' lost of accuracy can be up to ±5m when using single Helmert transformations).
+#' Changes the geodetic coordinate system of a set of points. Note that the
+#' precision of various datums will vary, and (original) WGS-84 is not defined
+#' to be accurate to better than ±1 metre. Most transformations shouldn't be
+#' assumed to be accurate to better than a meter; between OSGB36 and WGS84
+#' somewhat less - the lost of accuracy can be up to ±5m when using single
+#' Helmert transformations).
 #'
-#' Input points with a projected coordinate system (eg 27700 or 3857) are not allowed.
+#' Input points with a projected coordinate system (eg 27700 or 3857) are not
+#' allowed.
 #'
 #' \strong{Warning}
 #' This function is mainly for internal use of the program. Since it relies on a
-#' single Helmert transformation it is not recommended to call it directly. Use any
-#' other of the transformation functions available (\link{sgs}).
+#' single Helmert transformation it is not recommended to call it directly. Use
+#' any other of the transformation functions available (\link{sgs}).
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_transform}}.
@@ -39,9 +42,10 @@
 #' lat <- c(55.86424, 55.95325)
 #' lon <- c(-4.25181,-3.18827)
 #' p <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
-#' p2 <- sgs_set_gcs(p, to=4277) #warning: a single Helmert transformation was used
-#' # if higher precision is required to transform between OSGB36 latlon and ETRS89/WGS84 latlon
-#' # then use the OSTN15 transformation (will be slower):
+#' # warning: a single Helmert transformation is used in the next transformation
+#' p2 <- sgs_set_gcs(p, to=4277)
+#' # if higher precision is required to transform between OSGB36 latlon and
+#' # ETRS89/WGS84 latlon then use the OSTN15 transformation (will be slower):
 #' # Transform from WGS84 latlon coordinates to EPSG:4277 using OSTN15
 #' p2 <- sgs_transform(p, to=4277)
 #' @export
@@ -54,10 +58,11 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   # Check x is a GCS (not projected)
   coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
-  if (coord.system != "GCS") stop("This routine only only accepts Geodetic Coordinate Systems")
+  if (coord.system != "GCS")
+    stop("This routine only only accepts Geodetic Coordinate Systems")
 
   core.cols <- sgs_points.core
-  #  core.cols <- sgs_points.core[!sgs_points.core %in% c("easting", "northing")]
+  #core.cols <- sgs_points.core[!sgs_points.core %in% c("easting", "northing")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -79,9 +84,9 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     transform <- latlon.datum[latlon.datum$datum==to.datum, 3:9]
   }
 
-  old.cartesian <- latlon_to_cartesian(x)                     # convert polar to cartesian...
-  new.cartesian <- apply_transform(old.cartesian, transform)  # ...apply transform...
-  new.latlon <- cartesian_to_latlon(new.cartesian, to)        # ...and convert cartesian to polar
+  old.cartesian <- latlon_to_cartesian(x)
+  new.cartesian <- apply_transform(old.cartesian, transform)
+  new.latlon <- cartesian_to_latlon(new.cartesian, to)
 
   # return sgs_points object
   if (num.elements > 0) new.latlon <- c(x[additional.elements], new.latlon)
@@ -108,7 +113,7 @@ latlon_to_cartesian <- function(points) {
   sin.lambda <- sin(lambda)
   cos.lambda <- cos(lambda)
 
-  nu <- a / sqrt(1L - e2 * sin.phi * sin.phi)   # radius of curvature in prime vertical
+  nu <- a / sqrt(1L - e2 * sin.phi * sin.phi) #r of curvature in prime vertical
 
   x <- (nu + h) * cos.phi * cos.lambda
   y <- (nu + h) * cos.phi * sin.lambda
@@ -130,9 +135,10 @@ apply_transform <- function(points, t)   {
   ty <- t$ty                  # y-shift
   tz <- t$tz                  # z-shift
   s1 <- t$s + 1L              # scale: normalise parts-per-million to (s+1)
-  rx <- (t$rx/3600L) / 57.29577951308232087679815481410517  # x-rotation: normalise arcseconds to radians
-  ry <- (t$ry/3600L) / 57.29577951308232087679815481410517  # y-rotation: normalise arcseconds to radians
-  rz <- (t$rz/3600L) / 57.29577951308232087679815481410517  # z-rotation: normalise arcseconds to radians
+  # x, y, z rotations: normalise arcseconds to radians
+  rx <- (t$rx/3600L) / 57.29577951308232087679815481410517
+  ry <- (t$ry/3600L) / 57.29577951308232087679815481410517
+  rz <- (t$rz/3600L) / 57.29577951308232087679815481410517
 
   # apply transform
   x2 <- tx + x1*s1 - y1*rz + z1*ry

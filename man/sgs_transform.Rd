@@ -18,12 +18,15 @@ can take any of the following values: \code{4326}, \code{3857}, \code{4277},
 An object of class 'sgs_points'.
 }
 \description{
-Transforms the coordinate system of a set of points to any supported coordinate system.
+Transforms the coordinate system of a set of points to any supported
+coordinate system.
 }
 \details{
-This function is a wrapper of specific transformation functions (\code{\link{sgs_bng_latlon}},
-\code{\link{sgs_en_wgs84}}, \code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}})
-that transforms the coordinate system of a set of points to any of the supported coordinate systems.
+This function is a wrapper of specific transformation functions
+(\code{\link{sgs_bng_latlon}}, \code{\link{sgs_en_wgs84}},
+\code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
+coordinate system of a set of points to any of the supported coordinate
+systems.
 }
 \examples{
 lt <- c(57.47777, 57.14965)

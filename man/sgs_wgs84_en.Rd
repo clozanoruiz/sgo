@@ -8,11 +8,12 @@
 sgs_wgs84_en(x, to = 3857)
 }
 \arguments{
-\item{x}{A \code{sgs_points} object describing a set of points in the geodetic
-coordinate system EPSG=4326.}
+\item{x}{A \code{sgs_points} object describing a set of points in the
+geodetic coordinate system EPSG=4326.}
 
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
-Coordinate System. 3857 (WGS84) by default. And currently doesn't support any other.}
+Coordinate System. 3857 (WGS84) by default. And currently doesn't support any
+other.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
@@ -22,9 +23,10 @@ Easting/Northing.
 Converts WGS84 coordinates to Easting/Northing (Pseudo-Mercator)
 }
 \details{
-This routine also accepts source data expressed in ETRS89 coordinates (EPSG=4258)
-as it is considered the difference between those two GCS is far less than the accuracy
-available when working with Pseudo-Mercator coordinates.
+This routine also accepts source data expressed in ETRS89 coordinates
+(EPSG=4258) as it is considered the difference between those two GCS is far
+less than the accuracy available when working with Pseudo-Mercator
+coordinates.
 
 The results can be used in maps where Pseudo-Mercator coordinates are needed.
 Usually, those include Google, Bing, OpenStreetMap and several other webmap
@@ -35,8 +37,8 @@ p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
 res <- sgs_wgs84_en(p)
 }
 \references{
-OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part 2
-(September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
+2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_en_wgs84}}.

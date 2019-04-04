@@ -8,19 +8,20 @@
 sgs_points(x, coords=NULL, epsg = NULL)
 }
 \arguments{
-\item{x}{A list or dataframe with at least 2 columns of either easting/northing
-or latitude/longitude coordinates per row - depending on \code{epsg}. \strong{Please
-note} that the order is important: lon/lat or northing/easting will produce
-wrong results.
+\item{x}{A list or dataframe with at least 2 columns of either
+easting/northing or latitude/longitude coordinates per row - depending on
+\code{epsg}. \strong{Please note} that the order is important: lon/lat or
+northing/easting will produce wrong results.
 
 It also accepts objects of class \code{sf POINT/MULTIPOINT} or
 \code{sfc POINT/MULTIPOINT}.}
 
-\item{coords}{A vector with the names of the columns containing the easting/northing
-(or latitude/longitude) coordinates.}
+\item{coords}{A vector with the names of the columns containing the
+easting/northing (or latitude/longitude) coordinates.}
 
 \item{epsg}{Specifies the EPSG code of coordinates to store. It can take any
-of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700} or \code{4258}.}
+of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
+or \code{4258}.}
 }
 \value{
 An object of class \code{sgs_points}.
@@ -29,30 +30,33 @@ An object of class \code{sgs_points}.
 2D coordinates (and other atributes) of a point or collection of points
 }
 \details{
-This object stores 2D point coordinates and any other column-list of attributes
-related to each point. Currently it only supports 5 \code{epsg}s
+This object stores 2D point coordinates and any other column-list of
+attributes related to each point. Currently it only supports 5 \code{epsg}s
 for coordinates:
 \itemize{
-\item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in \code{x} be defined
-as Latitude and Longitude values respectively. The defined datum for this set of
-coordinates is WGS84 (https://epsg.io/4326)
+\item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in
+\code{x} be defined as Latitude and Longitude values respectively. The
+defined datum for this set of coordinates is WGS84 (https://epsg.io/4326)
 
-\item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The 2 columns
-in \code{x} must be defined as Easting and Northing values respectively. The defined
-datum for this set of coordinates is WGS84 (https://epsg.io/3857)
+\item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
+2 columns in \code{x} must be defined as Easting and Northing values
+respectively. The defined datum for this set of coordinates is WGS84
+(https://epsg.io/3857)
 
-\item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in \code{x}
-must be defined as Latitude and Longitude values respectively. The defined datum for this
-set of coordinates is OSGB 1936 (https://epsg.io/4277). \emph{Coordinates defined
-like this should only be used for historical reasons.}
+\item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in
+\code{x} must be defined as Latitude and Longitude values respectively. The
+defined datum for this set of coordinates is OSGB 1936
+(https://epsg.io/4277). \emph{Coordinates defined like this should only be
+used for historical reasons.}
 
-\item\code{27700}: British National Grid, projected coordinate system. The 2 columns
-in \code{x} must be defined as Easting and Northing values respectively. The defined
-datum for this set of coordinates is OSGB 1936 (https://epsg.io/27700).
+\item\code{27700}: British National Grid, projected coordinate system. The 2
+columns in \code{x} must be defined as Easting and Northing values
+respectively. The defined datum for this set of coordinates is OSGB 1936
+(https://epsg.io/27700).
 
-\item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in \code{x}
-must be defined as Latitude and Longitude values respectively. The defined
-datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
+\item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in
+\code{x} must be defined as Latitude and Longitude values respectively. The
+defined datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
 }
 }
 \examples{

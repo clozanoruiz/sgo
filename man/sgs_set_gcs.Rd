@@ -12,36 +12,40 @@ sgs_set_gcs(x, to = NULL)
 coordinate system.}
 
 \item{to}{Specifies the EPSG code to convert the coordinates to. Currently it
-can take any of the following values: \code{4258}, \code{4326} or \code{4277}.}
+can take any of the following values: \code{4258}, \code{4326} or
+\code{4277}.}
 }
 \value{
 An object of class 'sgs_points'.
 }
 \description{
-Changes the geodetic coordinate system of a set of points using a single Helmert
-transformation.
+Changes the geodetic coordinate system of a set of points using a single
+Helmert transformation.
 }
 \details{
-Changes the geodetic coordinate system of a set of points. Note that precision
-of various datums will vary, and (original)WGS-84 is not defined to be
-accurate to better than ±1 metre. Most transformations shouldn't be assumed to be
-accurate to better than a meter; between OSGB36 and WGS84 somewhat less - the
-lost of accuracy can be up to ±5m when using single Helmert transformations).
+Changes the geodetic coordinate system of a set of points. Note that the
+precision of various datums will vary, and (original) WGS-84 is not defined
+to be accurate to better than ±1 metre. Most transformations shouldn't be
+assumed to be accurate to better than a meter; between OSGB36 and WGS84
+somewhat less - the lost of accuracy can be up to ±5m when using single
+Helmert transformations).
 
-Input points with a projected coordinate system (eg 27700 or 3857) are not allowed.
+Input points with a projected coordinate system (eg 27700 or 3857) are not
+allowed.
 
 \strong{Warning}
 This function is mainly for internal use of the program. Since it relies on a
-single Helmert transformation it is not recommended to call it directly. Use any
-other of the transformation functions available (\link{sgs}).
+single Helmert transformation it is not recommended to call it directly. Use
+any other of the transformation functions available (\link{sgs}).
 }
 \examples{
 lat <- c(55.86424, 55.95325)
 lon <- c(-4.25181,-3.18827)
 p <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
-p2 <- sgs_set_gcs(p, to=4277) #warning: a single Helmert transformation was used
-# if higher precision is required to transform between OSGB36 latlon and ETRS89/WGS84 latlon
-# then use the OSTN15 transformation (will be slower):
+# warning: a single Helmert transformation is used in the next transformation
+p2 <- sgs_set_gcs(p, to=4277)
+# if higher precision is required to transform between OSGB36 latlon and
+# ETRS89/WGS84 latlon then use the OSTN15 transformation (will be slower):
 # Transform from WGS84 latlon coordinates to EPSG:4277 using OSTN15
 p2 <- sgs_transform(p, to=4277)
 }

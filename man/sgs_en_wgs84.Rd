@@ -8,11 +8,12 @@
 sgs_en_wgs84(x, to = 4326)
 }
 \arguments{
-\item{x}{A \code{sgs_points} object describing a set of points in the geodetic
-coordinate system EPSG=3857.}
+\item{x}{A \code{sgs_points} object describing a set of points in the
+geodetic coordinate system EPSG=3857.}
 
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
-Coordinate System. 4326 (WGS84) by default. And currently doesn't support any other.}
+Coordinate System. 4326 (WGS84) by default. And currently doesn't support any
+other.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
@@ -29,8 +30,8 @@ p <- sgs_points(list(-11169055.58, 2810000.00), epsg=3857)
 res <- sgs_en_wgs84(p)
 }
 \references{
-OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part 2
-(September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
+2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_wgs84_en}}.
