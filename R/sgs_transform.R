@@ -46,7 +46,7 @@ sgs_transform.sgs_points <- function(x, to=NULL) {
   ARGS_list <- ARGS[which(ARGS$FROM==x$epsg), as.character(to)][[1]]
 
   # Run functions sequentially over the input
-  for (i in 1:length(FUN_list)) {
+  for (i in seq_along(FUN_list)) {
     x <- do.call(FUN_list[[i]], c(list(x), ARGS_list[[i]]))
   }
 

@@ -99,7 +99,7 @@ latlon_to_cartesian <- function(points) {
 
   phi <- points$latitude / 57.29577951308232087679815481410517
   lambda <- points$longitude / 57.29577951308232087679815481410517
-  h = 0L # height above ellipsoid - not currently used
+  h <- 0L # height above ellipsoid - not currently used
   a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]
   e2 <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "e2"]
 

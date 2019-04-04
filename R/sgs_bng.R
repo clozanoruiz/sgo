@@ -270,7 +270,7 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
   b <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor semi-axis
   e2 <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "e2"] # eccentricity squared
 
-  f0 = 0.9996012717                                     # Converge factor
+  f0 <- 0.9996012717                                    # Converge factor
   af <- a * f0
   n <- (a-b) / (a+b)
   N0 <- (-100000L); E0 <- (400000L)                     # northing & easting of true origin, metres
