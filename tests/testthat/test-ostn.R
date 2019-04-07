@@ -1,13 +1,16 @@
 context("Conversion from/to OS coordinates")
 library(sgs)
 
-# Earth semi-major axis at equator is a=6,378,137 meters. 2πa/360degrees ≈ 111 (or 110)km in a degree.
-# Degrees of latitude get very slightly longer as you go further north but not by much.
+# Earth semi-major axis at equator is a=6,378,137 meters.
+# 2πa/360degrees ≈ 111 (or 110)km in a degree.
+# Degrees of latitude get very slightly longer as you go further north but
+# not by much.
 # 0.1 d = 11 km; 0.01 d = 1.1km; 0.0000001 = 1cm
 # 1/1100000000. Correctness threshold defined as a hundreth of  a milimeter.
 
 # Degrees of longitude get significantly smaller in northern latitudes.
-# In southern England one degree of longitude represents about 70 km, in northern Scotland it's less than 60 km.
+# In southern England one degree of longitude represents about 70 km, in
+# northern Scotland it's less than 60 km.
 # 0.1 d = 6-7 km; 0.01 d = 600-700m; 0.000001 = 6-7cm
 # 1/650000000. Correctness threshold defined as a hundreth of  a milimeter.
 
@@ -17,15 +20,21 @@ test_that("OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
 
   file.in <- file.path(getwd(), "OSTN15_OSGM15_TestInput_ETRStoOSGB.txt")
   ostn.in <- read.csv(file.in, stringsAsFactors = FALSE)
-  points.in <- sgs_points(ostn.in, coords=c("ETRS89.Latitude", "ETRS.Longitude"), epsg=4258)
+  points.in <- sgs_points(ostn.in,
+                          coords=c("ETRS89.Latitude", "ETRS.Longitude"),
+                          epsg=4258)
 
-  points.out <- as.data.frame(unclass(sgs_latlon_bng(points.in, OSTN=TRUE)[c("PointID", "easting", "northing")]),
-                              stringsAsFactors = FALSE)
-  pointsT.out <- as.data.frame(unclass(sgs_transform(points.in, to=27700)[c("PointID", "easting", "northing")]),
-                              stringsAsFactors = FALSE)
+  points.out <- as.data.frame(unclass(
+    sgs_latlon_bng(points.in, OSTN=TRUE)[c("PointID", "easting", "northing")]),
+    stringsAsFactors = FALSE)
+  pointsT.out <- as.data.frame(unclass(
+    sgs_transform(points.in, to=27700)[c("PointID", "easting", "northing")]),
+    stringsAsFactors = FALSE)
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_ETRStoOSGB.txt")
-  ostn.out <- read.csv(file.out, stringsAsFactors = FALSE)[c("PointID", "OSGBEast", "OSGBNorth")]
+  ostn.out <- read.csv(file.out,
+                       stringsAsFactors = FALSE)[
+                         c("PointID", "OSGBEast", "OSGBNorth")]
 
   expect_true(all(points.out == ostn.out))
   expect_true(all(pointsT.out == ostn.out))
@@ -36,16 +45,22 @@ test_that("OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
 
   file.in <- file.path(getwd(), "OSTN15_OSGM15_TestInput_OSGBtoETRS.txt")
   ostn.in <- read.csv(file.in, stringsAsFactors = FALSE)
-  points.in <- sgs_points(ostn.in, coords=c("OSGB36.Eastings", "OSGB36.Northing"), epsg=27700)
+  points.in <- sgs_points(ostn.in,
+                          coords=c("OSGB36.Eastings", "OSGB36.Northing"),
+                          epsg=27700)
 
-  points.out <- as.data.frame(unclass(sgs_bng_latlon(points.in, to=4258, OSTN=TRUE)[c("PointID", "latitude", "longitude")]),
-                              stringsAsFactors = FALSE)
-  pointsT.out <- as.data.frame(unclass(sgs_transform(points.in, to=4258)[c("PointID", "latitude", "longitude")]),
-                              stringsAsFactors = FALSE)
+  points.out <- as.data.frame(unclass(
+    sgs_bng_latlon(points.in, to=4258, OSTN=TRUE)[
+      c("PointID", "latitude", "longitude")]),
+    stringsAsFactors = FALSE)
+  pointsT.out <- as.data.frame(unclass(
+    sgs_transform(points.in, to=4258)[c("PointID", "latitude", "longitude")]),
+    stringsAsFactors = FALSE)
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_OSGBtoETRS.txt")
   ostn.out <- read.csv(file.out, stringsAsFactors = FALSE)
-  ostn.out <- ostn.out[ostn.out$Iteration.No..RESULT == "RESULT", c("PointID", "ETRSEast.Lat", "ETRSNorth.Long")]
+  ostn.out <- ostn.out[ostn.out$Iteration.No..RESULT == "RESULT",
+                       c("PointID", "ETRSEast.Lat", "ETRSNorth.Long")]
 
   expect_true(all(abs(points.out[, 2:3] - ostn.out[, 2:3]) < threshold))
   expect_true(all(abs(pointsT.out[, 2:3] - ostn.out[, 2:3]) < threshold))
@@ -62,29 +77,31 @@ e <- c(170370.718, 250359.811, 449816.371, 438710.920, 292184.870, 639821.835,
         71713.131, 151968.652, 299721.891, 330398.323, 261596.778, 180862.461,
        421300.525, 440725.073, 395999.668)
 
-out.e <- c(170370.718, 250359.811, 449816.371, 438710.920, 292184.870, 639821.835,
-           362269.991, 530624.974, 241124.584, 599445.590, 389544.190, 474335.969,
-           562180.547, 454002.834, 357455.843, 247958.971, 247959.241, 331534.564,
-           422242.186, 227778.330, 525745.670, 244780.636, 339921.145, 424639.355,
-           256340.925, 319188.434, 167634.202, 397160.491, 267056.768,   9587.909,
-            71713.132, 151968.652, 299721.891, 330398.323, 261596.778, 180862.461,
-            421300.525, 440725.073, 395999.668)
+out.e <- c(
+  170370.718, 250359.811, 449816.371, 438710.920, 292184.870, 639821.835,
+  362269.991, 530624.974, 241124.584, 599445.590, 389544.190, 474335.969,
+  562180.547, 454002.834, 357455.843, 247958.971, 247959.241, 331534.564,
+  422242.186, 227778.330, 525745.670, 244780.636, 339921.145, 424639.355,
+  256340.925, 319188.434, 167634.202, 397160.491, 267056.768,   9587.909,
+   71713.132, 151968.652, 299721.891, 330398.323, 261596.778, 180862.461,
+  421300.525, 440725.073, 395999.668)
 
-n <- c(  11572.405,  62016.569,  75335.861, 114792.250, 168003.465, 169565.858,
-        169978.690, 178388.464, 220332.641, 225722.826, 261912.153, 262047.755,
-        319784.995, 340834.943, 383290.436, 393492.909, 393495.583, 431920.794,
-        433818.701, 468847.388, 470703.214, 495254.887, 556034.761, 565012.703,
-        664697.269, 670947.534, 797067.144, 805349.736, 846176.972, 899449.000,
-        938516.405, 966483.780, 967202.992,1017347.016,1025447.602,1029604.114,
-       1072147.239,1107878.448,1138728.951)
+n <- c(11572.405,  62016.569,  75335.861, 114792.250, 168003.465, 169565.858,
+      169978.690, 178388.464, 220332.641, 225722.826, 261912.153, 262047.755,
+      319784.995, 340834.943, 383290.436, 393492.909, 393495.583, 431920.794,
+      433818.701, 468847.388, 470703.214, 495254.887, 556034.761, 565012.703,
+      664697.269, 670947.534, 797067.144, 805349.736, 846176.972, 899449.000,
+      938516.405, 966483.780, 967202.992, 1017347.016, 1025447.602, 1029604.114,
+      1072147.239, 1107878.448, 1138728.951)
 
-out.n <- c( 11572.405,  62016.569,  75335.861, 114792.250, 168003.465, 169565.858,
-           169978.690, 178388.464, 220332.641, 225722.826, 261912.153, 262047.755,
-           319784.995, 340834.943, 383290.436, 393492.909, 393495.583, 431920.794,
-           433818.701, 468847.388, 470703.214, 495254.887, 556034.761, 565012.703,
-           664697.269, 670947.534, 797067.144, 805349.736, 846176.972, 899448.996,
-           938516.404, 966483.780, 967202.992,1017347.016,1025447.602,1029604.114,
-           1072147.239,1107878.448,1138728.951)
+out.n <- c(
+  11572.405,  62016.569,  75335.861, 114792.250, 168003.465, 169565.858,
+  169978.690, 178388.464, 220332.641, 225722.826, 261912.153, 262047.755,
+  319784.995, 340834.943, 383290.436, 393492.909, 393495.583, 431920.794,
+  433818.701, 468847.388, 470703.214, 495254.887, 556034.761, 565012.703,
+  664697.269, 670947.534, 797067.144, 805349.736, 846176.972, 899448.996,
+  938516.404, 966483.780, 967202.992,1017347.016,1025447.602,1029604.114,
+  1072147.239,1107878.448,1138728.951)
 
 lat <- c(49.96006137820, 50.43885825610, 50.57563665000 ,50.93127937910,
          51.40078220140, 51.37447025550, 51.42754743020, 51.48936564950,
@@ -110,11 +127,14 @@ lon <- c(-5.20304609998, -4.10864563561, -1.29782277240, -1.45051433700,
 
 test_that("OS E/N to Lat/Lon", {
 
-  expect_true(all(abs(sgs_points_xy(sgs_bng_latlon(sgs_points(list(91492.146, 11318.804), epsg=27700))) -
+  expect_true(all(abs(
+    sgs_points_xy(sgs_bng_latlon(sgs_points(
+      list(91492.146, 11318.804), epsg=27700))) -
         c(49.92226393730, -6.29977752014)) < threshold))
 
   #List of points
-  array_of_xy <- sgs_points_xy(sgs_bng_latlon(sgs_points(list(e, n), epsg=27700)))
+  array_of_xy <- sgs_points_xy(sgs_bng_latlon(sgs_points(list(e, n),
+                                                         epsg=27700)))
   array_of_substractions <- abs(array_of_xy - cbind(lat, lon))
   expect_true(all(sweep(array_of_substractions, 2, threshold, FUN="<")))
 
@@ -122,11 +142,13 @@ test_that("OS E/N to Lat/Lon", {
 
 test_that("Lat/Lon to OS E/N", {
 
-  expect_true(all(abs(sgs_points_xy(sgs_latlon_bng(sgs_points(list(49.92226393730, -6.29977752014), epsg=4258))) -
-                        c(91492.146, 11318.804)) < 0.001))
+  expect_true(all(abs(sgs_points_xy(sgs_latlon_bng(sgs_points(
+    list(49.92226393730, -6.29977752014), epsg=4258))) -
+      c(91492.146, 11318.804)) < 0.001))
 
   #List of points
-  array_of_xy <- sgs_points_xy(sgs_latlon_bng(sgs_points(list(lat, lon), epsg=4258)))
+  array_of_xy <- sgs_points_xy(sgs_latlon_bng(sgs_points(list(lat, lon),
+                                                         epsg=4258)))
   expect_true(all(array_of_xy == cbind(out.e, out.n)))
 
 })
@@ -135,75 +157,97 @@ test_that("Out of range conditions and comparison with Helmert", {
 
   #Royal Observatory Greenwich
   gw <- c(538874.197, 177344.080)
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(51.4775, 0), epsg=4277))) == gw))
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(51.4780161357,  -0.0015938564), epsg=4326))) == gw))
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(51.4780161357,  -0.0015938564), epsg=4326), OSTN = FALSE)) ==
-                  c(538876, 177344)))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_points(list(51.4775, 0), epsg=4277))) == gw))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_points(list(51.4780161357,  -0.0015938564),
+                              epsg=4326))) == gw))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_points(list(51.4780161357,  -0.0015938564), epsg=4326),
+                   OSTN = FALSE)) == c(538876, 177344)))
 
   #True origin of OSGB36
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(49, -2), epsg=4258))) ==
-                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(49, -2), epsg=4258), OSTN = FALSE))))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(49, -2),
+                                                          epsg=4258))) ==
+                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(49, -2),
+                                                          epsg=4258),
+                                               OSTN = FALSE))))
 
   #Outside OSTN15
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(55, -10), epsg=4258))) ==
-                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(55, -10), epsg=4258), OSTN = FALSE))))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(55, -10),
+                                                          epsg=4258))) ==
+                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(55, -10),
+                                                          epsg=4258),
+                                               OSTN = FALSE))))
 
   #In the White Sea, NW Russia
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(66, 40), epsg=4326))) ==
-                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(66, 40), epsg=4326), OSTN = FALSE))))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(66, 40),
+                                                          epsg=4326))) ==
+                  sgs_points_xy(sgs_latlon_bng(sgs_points(list(66, 40),
+                                                          epsg=4326),
+                                               OSTN = FALSE))))
 
   #True origin of OSGB36 in ETRS89 coordinates
   expect_equal(sprintf(c("%.7g", "%.6g"),
-               sgs_points_xy(sgs_bng_latlon(sgs_points(list(400096, -100086), epsg=27700), OSTN = FALSE))),
-               c("49", "-2"))
+               sgs_points_xy(sgs_bng_latlon(sgs_points(list(400096, -100086),
+                                                       epsg=27700),
+                                            OSTN = FALSE))), c("49", "-2"))
 
   # Outside OSTN15
   expect_equal(sprintf(c("%.7g", "%.6g"),
-               sgs_points_xy(sgs_bng_latlon(sgs_points(list(133985, 604172), epsg=27700), OSTN = FALSE))),
+               sgs_points_xy(sgs_bng_latlon(sgs_points(list(133985, 604172),
+                                                       epsg=27700),
+                                            OSTN = FALSE))),
                c("55.25972", "-6.18834"))
 })
 
 test_that("Boundaries of OSTN15 rectangle", {
 
   #Edge one
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_points(list(49.76705, -7.5569), epsg=4258)))==
-                  c(21,26)))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_points(list(49.76705, -7.5569), epsg=4258)))==c(21,26)))
   expect_equal(sprintf(c("%.7g", "%.5g"),
-              sgs_points_xy(sgs_bng_latlon(sgs_points(list(21, 26), epsg=27700)))),
+              sgs_points_xy(
+                sgs_bng_latlon(sgs_points(list(21, 26), epsg=27700)))),
               c("49.76705", "-7.5569"))
 
   #Off South Shields
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(449960,567710), epsg=27700)))) ==
-                  c(449960.000, 567710.000)))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(449960,567710),
+                                             epsg=27700)))) ==
+      c(449960.000, 567710.000)))
   #Near Uist
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(77360,895710), epsg=27700)))) ==
-                    c(77360.001, 895709.999)))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(77360,895710),
+                                             epsg=27700)))) ==
+      c(77360.001, 895709.999)))
   #Near Coll
   x <- c(109865, 109165)
   y <- c(764128, 763888)
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(x, y), epsg=27700)))) ==
-                    cbind(c(109865.000, 109165.000), c(764128.000, 763888.000))))
+  expect_true(all(sgs_points_xy(
+    sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(x, y), epsg=27700)))) ==
+      cbind(c(109865.000, 109165.000), c(764128.000, 763888.000))))
 
   #Near Yell
   x <- c(458020, 449611, 456720, 452979, 447086)
   y <- c(1217306, 1215083, 1210574, 1203121, 1203452)
   res.x <- c(458020.000, 449611.000, 456720.000, 452979.000, 447086.000)
   res.y <- c(1217306.000, 1215083.000, 1210574.000, 1203121.000, 1203452.000)
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(x, y), epsg=27700)))) ==
-                    cbind(res.x, res.y)))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(
+    sgs_points(list(x, y), epsg=27700)))) == cbind(res.x, res.y)))
 
   #Off Scarborough
   x <- c(382514, 377516, 363754)
   y <- c(682908, 684564, 724465)
   res.x <- c(382514.000, 377516.000, 363754.000)
   res.y <- c(682908.000, 684564.000, 724465.000)
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_points(list(x, y), epsg=27700)))) ==
-                    cbind(res.x, res.y)))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(
+    sgs_points(list(x, y), epsg=27700)))) == cbind(res.x, res.y)))
 
   #In SW
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_ngr_bng("SW 540 170")))) ==
-                    c(154000.000, 17000.000)))
-  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(sgs_ngr_bng("SW 910150")))) ==
-                    c(191000.000, 15000.000)))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(
+    sgs_ngr_bng("SW 540 170")))) == c(154000.000, 17000.000)))
+  expect_true(all(sgs_points_xy(sgs_latlon_bng(sgs_bng_latlon(
+    sgs_ngr_bng("SW 910150")))) == c(191000.000, 15000.000)))
 
 })

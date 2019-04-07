@@ -1,17 +1,23 @@
 Package: sgs
-Title: Simple GIS In Spotfire (Spatial Analysis)
-Version: 0.2.0
-Authors@R: person("Carlos", "Lozano Ruiz", email = "litos81@outlook.com", role = c("aut", "cre"))
+Title: Simple GIS (in Spotfire)
+Version: 0.3.0
+Authors@R: person("Carlos", "Lozano Ruiz", email = "litos81@outlook.com",
+  role = c("aut", "cre"))
 URL: https://github.com/litos81/sgs
 BugReports: https://github.com/litos81/sgs/issues
-Description: Set of functions to perform spatial or geographic analysis (using TERR and Spotfire).
+Description: A set of functions to perform mainly the OSGB36/ETRS89
+  transformation by using the Ordnance Survey's OSTN15 transformation model
+  without any other package dependency. Additionally, it includes a few wrappers
+  to functions from the sf package to make easier certain spatial operations in
+  TIBCO Spotfire.
 Depends: R (>= 3.3.0)
+Imports: sf, stats
+Suggests: testthat, goodpractice
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
 RoxygenNote: 6.1.1
-Suggests: sf, testthat, goodpractice
 Collate: 
     'common.R'
     'sgs.R'

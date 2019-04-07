@@ -3,3 +3,5 @@
 [![Latest release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.com/litos81/sgs/releases)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 # sgs
+
+To use only the OSGB36/ETRS89 transformations (OSTN15) there is no need to install the dependencies
