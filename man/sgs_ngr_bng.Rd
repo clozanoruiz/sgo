@@ -8,8 +8,9 @@
 sgs_ngr_bng(x, col = NULL)
 }
 \arguments{
-\item{x}{A list or vector containing strings describing OS National Grid
-References, with or without whitespace separators. (eg 'SU 387 148').}
+\item{x}{A data.frame, list or vector containing strings describing OS
+National Grid References, with or without whitespace separators.
+(eg 'SU 387 148').}
 
 \item{col}{Character string with the name of the 'column' containing the
 vector of NGR values, it is required when \code{x} is a list with more than

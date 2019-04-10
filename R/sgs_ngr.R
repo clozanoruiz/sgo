@@ -14,8 +14,9 @@
 #'
 #' @name sgs_ngr_bng
 #' @usage sgs_ngr_bng(x, col = NULL)
-#' @param x A list or vector containing strings describing OS National Grid
-#' References, with or without whitespace separators. (eg 'SU 387 148').
+#' @param x A data.frame, list or vector containing strings describing OS
+#' National Grid References, with or without whitespace separators.
+#' (eg 'SU 387 148').
 #' @param col Character string with the name of the 'column' containing the
 #' vector of NGR values, it is required when \code{x} is a list with more than
 #' one column.
@@ -48,7 +49,10 @@
 #'                                 epsg=27700))
 #' bng <- sgs_ngr_bng(grid, col="ngr")
 #' @export
-sgs_ngr_bng <- function(x, col=NULL) {
+sgs_ngr_bng <- function(x, col=NULL) UseMethod("sgs_ngr_bng")
+
+#' @export
+sgs_ngr_bng.list <- function(x, col=NULL) {
 
   err.msg <- "Invalid grid reference(s)"
   old.x <- x
@@ -124,6 +128,25 @@ sgs_ngr_bng <- function(x, col=NULL) {
   sgs_points(lst, epsg=27700)
 
 }
+
+#' @export
+sgs_ngr_bng.data.frame <- function(x, col=NULL) {
+
+  sgs_ngr_bng(as.list(x), col=col)
+
+}
+
+#' @export
+sgs_ngr_bng.default <- function(x, col=NULL) {
+
+  if (is.atomic(x)) {
+    sgs_ngr_bng(as.list(x), col=col)
+  } else {
+    stop("sgs_ngr_bng only works with atomic vectors, lists or dataframes")
+  }
+
+}
+
 
 #' @encoding UTF-8
 #' @title BNG Easting/Northing to National Grid References (NGR)
