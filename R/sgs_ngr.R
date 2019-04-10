@@ -60,7 +60,11 @@ sgs_ngr_bng.list <- function(x, col=NULL) {
   if (!is.null(col)) {
     x <- unlist(x[col], use.names = FALSE)
   } else {
-    x <- unlist(x, use.names = FALSE)
+    if (length(x) > 1) { #error if more than one column and 'col' is not defined
+      stop("Parameter 'col' must be entered")
+    } else {
+      x <- unlist(x, use.names = FALSE)
+    }
   }
 
 
