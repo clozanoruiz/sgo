@@ -32,6 +32,8 @@ test_that("sgs_points constructors", {
   #sfc
 })
 #TODO
+## ADD an option in sgs_ngr_bng to just check which ones are correct and return
+# a logic vector.
 # 1) Test multiple functions (sgs_bng_laton, sgs_set_gcs_etc) with those
 # different types of sgs_points (dataframes, lists, single, etc.)
 # 2) Confirm all of those keep the 'sgs_points' class and the names in the class
