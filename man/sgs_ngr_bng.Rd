@@ -5,7 +5,7 @@
 \alias{sgs_ngr_bng}
 \title{NGR to BNG Easting/Northing}
 \usage{
-sgs_ngr_bng(x, col = NULL)
+sgs_ngr_bng(x, col = NULL, check.only = FALSE)
 }
 \arguments{
 \item{x}{A data.frame, list or vector containing strings describing OS
@@ -15,10 +15,15 @@ National Grid References, with or without whitespace separators.
 \item{col}{Character string with the name of the 'column' containing the
 vector of NGR values, it is required when \code{x} is a list with more than
 one column.}
+
+\item{check.only}{Logical paramater. If it is set to TRUE then the routine
+returns a logical vector indicating which references are correct.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
-Easting/Northing.
+Easting/Northing when \code{check.only} is kept as FALSE. Otherwise, it
+returns a logical vector indicating which grid references are correct and
+which ones are not.
 }
 \description{
 Converts OS National Grid References to Easting/Northing coordinates
@@ -48,6 +53,10 @@ grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338,
                                     name="Ben Venue"),
                                 epsg=27700))
 bng <- sgs_ngr_bng(grid, col="ngr")
+
+# test
+bad <- c("NN 166 712", "AA 3863 7653")
+check <- sgs_ngr_bng(bad, check.only=TRUE) #returns a logical vector
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_bng_ngr}}.
