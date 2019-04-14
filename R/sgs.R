@@ -1,10 +1,10 @@
-#' sgs: Simple GIS In Spotfire (Spatial Analysis).
+#' sgs: Simple GIS (In Spotfire).
 #'
 #' The sgs package provides a set of functions to perform spatial or geographic
-#' analysis using TERR and Spotfire.
+#' analysis using 'TIBCO Spotfire' and 'TERR'.
 #'
 #' @encoding UTF-8
-#' @section Object contructors:
+#' @section Object constructors:
 #' \itemize{
 #' \item\code{\link{sgs_points}}: 2D point coordinates
 #' \item\code{\link{sgs_polygons}}: \code{sf} polygons.

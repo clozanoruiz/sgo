@@ -22,7 +22,7 @@ Converts BNG Easting/Northing coordinates to National Grid References
 }
 \details{
 All resulting grid references will have 10 digits (1m × 1m square) by
-default. In order to reduce the ouput precision change the digits paramater
+default. In order to reduce the output precision change the digits parameter
 accordingly. When \code{digits=0}, it returns the numeric format of the grid
 references.
 

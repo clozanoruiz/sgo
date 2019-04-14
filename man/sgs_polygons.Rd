@@ -17,11 +17,11 @@ buffer = NULL)
 \item{wkb}{Character. Name of the column containing WKB data. If this
 parameter is informed then the parameter \code{coords} is ignored.}
 
-\item{coords}{Vector of chracters containing the names of the columns with
-coordinates information. \code{wkb} must be NULL when using this paramater.}
+\item{coords}{Vector of characters containing the names of the columns with
+coordinates information. \code{wkb} must be NULL when using this parameter.}
 
 \item{by}{Character. Name of the column that will be used to group series of
-points into a single polygon. Ignored when using the paramater \code{wkb}.}
+points into a single polygon. Ignored when using the parameter \code{wkb}.}
 
 \item{buffer}{Numeric or character. If numeric, then it defines the buffer to
 apply to each polygon. If it is a string then it must contain the name of the

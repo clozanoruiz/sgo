@@ -9,7 +9,7 @@ sgs_latlon_bng(x, OSTN=TRUE)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object with coordinates defined in a Geodetic
-Coordinate System (eg. epsg=4258, 4326 or 4277)}
+Coordinate System (e.g. epsg=4258, 4326 or 4277)}
 
 \item{OSTN}{Logical variable indicating whether use OSTN15 transformation
 when TRUE or

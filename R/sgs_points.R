@@ -2,7 +2,7 @@
 #' @title Object containing 2D point coordinates
 #'
 #' @description
-#' 2D coordinates (and other atributes) of a point or collection of points
+#' 2D coordinates (and other attributes) of a point or collection of points
 #'
 #' @name sgs_points
 #' @usage sgs_points(x, coords=NULL, epsg = NULL)
@@ -96,7 +96,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     if (any(known.coords)) {
       coords <- names(x)[lnames %in% coordinates.names[known.coords]]
     } else {
-      stop("Must specify the coordinates columns using the 'coords' paramater")
+      stop("Must specify the coordinates columns using the 'coords' parameter")
     }
   }
 
@@ -195,7 +195,7 @@ sgs_points.sfc <- function (x, coords=NULL, epsg=NULL) {
 #' is a package that allows working with spatial vector data.
 #'
 #' The reverse conversion (from \code{sf} to \code{sgs_points}) is done
-#' automatically by the \code{\link{sgs_points}} contructor.
+#' automatically by the \code{\link{sgs_points}} constructor.
 #'
 #' @name sgs_points_sf
 #' @usage sgs_points_sf(x)

@@ -41,7 +41,7 @@ sgs_transform <- function(x, to=NULL) UseMethod("sgs_transform")
 #' @export
 sgs_transform.sgs_points <- function(x, to=NULL) {
 
-  if (is.null(to)) stop("Paramater 'to' must be specified")
+  if (is.null(to)) stop("Parameter 'to' must be specified")
   if (x$epsg==to) return(x)
 
   # Get list of functions and their arguments needed to run this transformation

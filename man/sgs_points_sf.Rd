@@ -18,7 +18,7 @@ Converts \code{sgs_points} objects to instances of class \code{sf}. \pkg{sf}
 is a package that allows working with spatial vector data.
 
 The reverse conversion (from \code{sf} to \code{sgs_points}) is done
-automatically by the \code{\link{sgs_points}} contructor.
+automatically by the \code{\link{sgs_points}} constructor.
 }
 \examples{
 p <- sgs_points(list(57.47777, -4.22472), epsg=4326)

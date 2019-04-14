@@ -28,7 +28,7 @@
 #' somewhat less - the lost of accuracy can be up to ±5m when using single
 #' Helmert transformations).
 #'
-#' Input points with a projected coordinate system (eg 27700 or 3857) are not
+#' Input points with a projected coordinate system (e.g. 27700 or 3857) are not
 #' allowed.
 #'
 #' \strong{Warning}

@@ -27,7 +27,7 @@ or \code{4258}.}
 An object of class \code{sgs_points}.
 }
 \description{
-2D coordinates (and other atributes) of a point or collection of points
+2D coordinates (and other attributes) of a point or collection of points
 }
 \details{
 This object stores 2D point coordinates and any other column-list of

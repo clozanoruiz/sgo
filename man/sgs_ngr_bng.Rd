@@ -10,13 +10,13 @@ sgs_ngr_bng(x, col = NULL, check.only = FALSE)
 \arguments{
 \item{x}{A data.frame, list or vector containing strings describing OS
 National Grid References, with or without whitespace separators.
-(eg 'SU 387 148').}
+(e.g. 'SU 387 148').}
 
 \item{col}{Character string with the name of the 'column' containing the
 vector of NGR values, it is required when \code{x} is a list with more than
 one column.}
 
-\item{check.only}{Logical paramater. If it is set to TRUE then the routine
+\item{check.only}{Logical parameter. If it is set to TRUE then the routine
 returns a logical vector indicating which references are correct.}
 }
 \value{

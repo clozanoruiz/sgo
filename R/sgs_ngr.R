@@ -16,11 +16,11 @@
 #' @usage sgs_ngr_bng(x, col = NULL, check.only = FALSE)
 #' @param x A data.frame, list or vector containing strings describing OS
 #' National Grid References, with or without whitespace separators.
-#' (eg 'SU 387 148').
+#' (e.g. 'SU 387 148').
 #' @param col Character string with the name of the 'column' containing the
 #' vector of NGR values, it is required when \code{x} is a list with more than
 #' one column.
-#' @param check.only Logical paramater. If it is set to TRUE then the routine
+#' @param check.only Logical parameter. If it is set to TRUE then the routine
 #' returns a logical vector indicating which references are correct.
 #' @details
 #' All entered standard grid references can range from two-digit references up
@@ -184,7 +184,7 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' references.
 #' @details
 #' All resulting grid references will have 10 digits (1m × 1m square) by
-#' default. In order to reduce the ouput precision change the digits paramater
+#' default. In order to reduce the output precision change the digits parameter
 #' accordingly. When \code{digits=0}, it returns the numeric format of the grid
 #' references.
 #'

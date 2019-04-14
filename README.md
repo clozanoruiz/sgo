@@ -13,7 +13,16 @@ release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
 
-The goal of sgs is to …
+The goal of sgs is to provide a set of methods to transform ETRS89 (2D)
+coordinates to the equivalent OSGB36 National Grid coordinates, and
+vice-versa, using [Ordnance Survey’s National Grid Transformation
+OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/).
+
+The Coordinate Systems EPSG:4326, etc.
+
+Additionally it also contains several methods wrapping `sf` functions
+that make certain actions easier when using gis in TERR/Open Source R
+within ‘TIBCO Spotfire’.
 
 ## Installation
 
@@ -24,8 +33,8 @@ You can install the released version of sgs from
 install.packages("sgs")
 ```
 
-**Note:** To use only the OSGB36/ETRS89 transformations (OSTN15) there
-is no need to install the package’s dependencies.
+**Note:** To use only the OSTN15 transformations there is no need to
+install the package’s dependencies.
 
 And the development version from [GitHub](https://github.com/) with:
 
@@ -36,7 +45,14 @@ devtools::install_github("litos81/sgs")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+Example 1:
+
+``` r
+library(sgs)
+## basic example code
+```
+
+Example 2:
 
 ``` r
 library(sgs)

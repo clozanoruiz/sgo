@@ -15,10 +15,10 @@
 #' (or WKB field) present int he dataframe.
 #' @param wkb Character. Name of the column containing WKB data. If this
 #' parameter is informed then the parameter \code{coords} is ignored.
-#' @param coords Vector of chracters containing the names of the columns with
-#' coordinates information. \code{wkb} must be NULL when using this paramater.
+#' @param coords Vector of characters containing the names of the columns with
+#' coordinates information. \code{wkb} must be NULL when using this parameter.
 #' @param by Character. Name of the column that will be used to group series of
-#' points into a single polygon. Ignored when using the paramater \code{wkb}.
+#' points into a single polygon. Ignored when using the parameter \code{wkb}.
 #' @param buffer Numeric or character. If numeric, then it defines the buffer to
 #' apply to each polygon. If it is a string then it must contain the name of the
 #' column having buffer distances to apply to each polygon. In this case every

@@ -5,12 +5,12 @@
 \name{sgs}
 \alias{sgs}
 \alias{sgs-package}
-\title{sgs: Simple GIS In Spotfire (Spatial Analysis).}
+\title{sgs: Simple GIS (In Spotfire).}
 \description{
 The sgs package provides a set of functions to perform spatial or geographic
-analysis using TERR and Spotfire.
+analysis using 'TIBCO Spotfire' and 'TERR'.
 }
-\section{Object contructors}{
+\section{Object constructors}{
 
 \itemize{
 \item\code{\link{sgs_points}}: 2D point coordinates

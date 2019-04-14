@@ -5,11 +5,12 @@ Authors@R: person("Carlos", "Lozano Ruiz", email = "litos81@outlook.com",
   role = c("aut", "cre"))
 URL: https://github.com/litos81/sgs
 BugReports: https://github.com/litos81/sgs/issues
+Language: en-GB
 Description: A set of functions to perform mainly the OSGB36/ETRS89
   transformation by using the Ordnance Survey's OSTN15 transformation model
   without any other package dependency. Additionally, it includes a few wrappers
   to functions from the sf package to make easier certain spatial operations in
-  TIBCO Spotfire.
+  'TIBCO Spotfire'.
 Depends: R (>= 3.3.0)
 Imports: sf, stats
 Suggests: testthat, goodpractice
