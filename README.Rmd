@@ -1,24 +1,31 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 # sgs
 
 <!-- badges: start -->
-
-[![Build
-Status](https://travis-ci.com/litos81/sgs.svg?branch=master)](https://travis-ci.com/litos81/sgs)
+[![Build Status](https://travis-ci.com/litos81/sgs.svg?branch=master)](https://travis-ci.com/litos81/sgs)
 [![codecov](https://codecov.io/gh/litos81/sgs/branch/master/graph/badge.svg?token=Qd5gkpnxFc)](https://codecov.io/gh/litos81/sgs)
-[![Latest
-release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.com/litos81/sgs/releases)
+[![Latest release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.com/litos81/sgs/releases)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
 
-The goal of sgs is to …
+The goal of sgs is to ...
 
 ## Installation
 
-You can install the released version of sgs from
-[CRAN](https://CRAN.R-project.org) with:
+You can install the released version of sgs from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("sgs")
@@ -30,12 +37,11 @@ And the development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("litos81/sgs")
 ```
-
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
+```{r example}
 library(sgs)
 ## basic example code
 ```

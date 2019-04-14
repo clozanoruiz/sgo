@@ -5,8 +5,9 @@
 ^\.gitignore$
 ^\.travis\.yml$
 codecov\.yml$
-LICENSE.md
-README.md
+^cran-comments\.md$
+^LICENSE\.md$
+^README\.Rmd$
 data-raw
 backup
 dev
