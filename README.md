@@ -24,6 +24,9 @@ You can install the released version of sgs from
 install.packages("sgs")
 ```
 
+**Note:** To use only the OSGB36/ETRS89 transformations (OSTN15) there
+is no need to install the package’s dependencies.
+
 And the development version from [GitHub](https://github.com/) with:
 
 ``` r
