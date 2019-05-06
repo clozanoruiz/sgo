@@ -294,7 +294,24 @@ sgs_points_xy.sgs_points <-function(x) {
 }
 
 # TODO print!
-print.sgs_points <- function(o) {
-  cat(o$epsg, "\n")
-  cat(o$datum, "\n")
+print.sgs_points <- function(x) {
+  #ADD attributes like sgs_x and sgs_y to sgspoints so we save all those coordinate checkins:
+  #like: attr(p1, "sgs_x") <-"latitude" (or easting)
+  # Projection type
+  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
+
+  if(coord.system == "GCS") {
+    coords <- c("longitude", "latitude")
+    len.coords <- length(x$latitude)
+  } else {
+    coords <- c("easting", "northing")
+    len.coords <- length(x$easting)
+  }
+
+  if (len.coords > 6) {
+    "showing only the first elements... or just add  an ellipsis after the 6 coordinates"
+  }
+
+  cat("EPSG:", x$epsg, "\n")
+
 }

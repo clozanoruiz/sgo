@@ -18,8 +18,13 @@ coordinates to the equivalent OSGB36 National Grid coordinates, and
 vice-versa, using [Ordnance Survey’s National Grid Transformation
 OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/).
 
-The Coordinate Systems supported by `sgs` are: \* EPSG:4326 \* EPSG:4258
-\* EPSG:27700 \* EPSG:3857 \* EPSG:4277
+The Coordinate Systems supported by `sgs` are:
+
+  - EPSG:4326
+  - EPSG:4258
+  - EPSG:27700
+  - EPSG:3857
+  - EPSG:4277
 
 Additionally it also contains several methods wrapping `sf` functions
 that make certain actions easier when using gis in TERR/Open Source R
