@@ -39,14 +39,14 @@ single Helmert transformation it is not recommended to call it directly. Use
 any other of the transformation functions available (\link{sgs}).
 }
 \examples{
-lat <- c(55.86424, 55.95325)
 lon <- c(-4.25181,-3.18827)
-p <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
+lat <- c(55.86424, 55.95325)
+p <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
 # warning: a single Helmert transformation is used in the next transformation
 p2 <- sgs_set_gcs(p, to=4277)
-# if higher precision is required to transform between OSGB36 latlon and
-# ETRS89/WGS84 latlon then use the OSTN15 transformation (will be slower):
-# Transform from WGS84 latlon coordinates to EPSG:4277 using OSTN15
+# if higher precision is required to transform between OSGB36 lon/lat and
+# ETRS89/WGS84 lon/lat then use the OSTN15 transformation (will be slower):
+# Transform from WGS84 lon/lat coordinates to EPSG:4277 using OSTN15
 p2 <- sgs_transform(p, to=4277)
 }
 \seealso{

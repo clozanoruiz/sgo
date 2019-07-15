@@ -215,12 +215,11 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
     stop(paste0("Invalid precision 'digits=", digits, "'"))
 
   core.cols <- sgs_points.core
- #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
-  e <- x$easting
-  n <- x$northing
+  e <- x$x
+  n <- x$y
 
   # Use digits = 0 to return numeric format
   # (in metres, allowing for decimals & for northing > 1e6)

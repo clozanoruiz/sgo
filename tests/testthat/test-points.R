@@ -1,31 +1,30 @@
 context("Rotines related to the construction and transformation of points")
 library(sgs)
 
-cols <- c("latitude", "longitude", "epsg", "datum")
-colsEN <- c("easting", "northing", "epsg", "datum")
+cols <- c("x", "y", "epsg", "datum")
 
 test_that("sgs_points constructors", {
   #lists
   p1 <- sgs_points(list(56.1165, -3.9369), epsg=4326)
   expect_true(all(cols %in% names(p1)) && class(p1) == "sgs_points")
 
-  lat <- c(55.86424, 55.95325)
   lon <- c(-4.25181,-3.18827)
-  p2 <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
+  lat <- c(55.86424, 55.95325)
+  p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
   expect_true(all(cols %in% names(p2)) && class(p2) == "sgs_points")
 
   p3 <- sgs_points(list(255005, 749423), epsg=27700)
-  expect_true(all(colsEN %in% names(p3)) && class(p3) == "sgs_points")
+  expect_true(all(cols %in% names(p3)) && class(p3) == "sgs_points")
 
   #data.frame
-  p1b <- sgs_points(data.frame(56.1165, -3.9369), epsg=4326)
+  p1b <- sgs_points(data.frame(-3.9369, 56.1165), epsg=4326)
   expect_true(all(cols %in% names(p1)) && class(p1) == "sgs_points")
 
-  lt <- c(57.47777, 57.14965)
   ln <- c(-4.22472, -2.09908)
+  lt <- c(57.47777, 57.14965)
   n <- c("Inverness", "Aberdeen")
-  df <- data.frame(n, lt, ln, stringsAsFactors = FALSE)
-  p4 <- sgs_points(df, coords=c("lt", "ln"), epsg=4326)
+  df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
+  p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
   expect_true(all(cols %in% names(p4)) && class(p4) == "sgs_points")
   #sf
 

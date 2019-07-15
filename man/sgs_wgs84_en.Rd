@@ -33,7 +33,7 @@ Usually, those include Google, Bing, OpenStreetMap and several other webmap
 applications including the MapChart in Spotfire.
 }
 \examples{
-p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
+p <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 res <- sgs_wgs84_en(p)
 }
 \references{

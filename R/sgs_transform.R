@@ -16,8 +16,8 @@ NULL
 #' \code{27700} or \code{4258}.
 #' @details
 #' This function is a wrapper of specific transformation functions
-#' (\code{\link{sgs_bng_latlon}}, \code{\link{sgs_en_wgs84}},
-#' \code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
+#' (\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
+#' \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
 #' coordinate system of a set of points to any of the supported coordinate
 #' systems.
 #' @return
@@ -25,11 +25,11 @@ NULL
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_points_xy}},
 #' \code{\link{sgs_set_gcs}}, \code{\link{sgs_bng_ngr}}.
 #' @examples
-#' lt <- c(57.47777, 57.14965)
 #' ln <- c(-4.22472, -2.09908)
+#' lt <- c(57.47777, 57.14965)
 #' n <- c("Inverness", "Aberdeen")
-#' df <- data.frame(n, lt, ln, stringsAsFactors = FALSE)
-#' locations <- sgs_points(df, coords=c("lt", "ln"), epsg=4326)
+#' df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
+#' locations <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
 #'
 #' locations.bng <- sgs_transform(locations, to=27700)
 #' locations.osgb36 <- sgs_transform(locations, to=4277)
@@ -67,11 +67,11 @@ sgs_transform.sgs_points <- function(x, to=NULL) {
 # nolint start
 FROM <-          list(4326,                                 3857,                                               4277,                                               27700,                              4258)
 
-FUN_TO_4326 <-   list(NULL,                                 list(sgs_en_wgs84),                                 list(sgs_latlon_bng, sgs_bng_latlon),               list(sgs_bng_latlon),               list(sgs_set_gcs))
-FUN_TO_3857 <-   list(list(sgs_wgs84_en),                   NULL,                                               list(sgs_latlon_bng, sgs_bng_latlon, sgs_wgs84_en), list(sgs_bng_latlon, sgs_wgs84_en), list(sgs_set_gcs, sgs_wgs84_en))
-FUN_TO_4277 <-   list(list(sgs_latlon_bng, sgs_bng_latlon), list(sgs_en_wgs84, sgs_latlon_bng, sgs_bng_latlon), NULL,                                               list(sgs_bng_latlon),               list(sgs_latlon_bng, sgs_bng_latlon))
-FUN_TO_27700 <-  list(list(sgs_latlon_bng),                 list(sgs_en_wgs84, sgs_latlon_bng),                 list(sgs_latlon_bng),                               NULL,                               list(sgs_latlon_bng))
-FUN_TO_4258 <-   list(list(sgs_set_gcs),                    list(sgs_en_wgs84, sgs_set_gcs),                    list(sgs_latlon_bng, sgs_bng_latlon),               list(sgs_bng_latlon),               NULL)
+FUN_TO_4326 <-   list(NULL,                                 list(sgs_en_wgs84),                                 list(sgs_lonlat_bng, sgs_bng_lonlat),               list(sgs_bng_lonlat),               list(sgs_set_gcs))
+FUN_TO_3857 <-   list(list(sgs_wgs84_en),                   NULL,                                               list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_wgs84_en), list(sgs_bng_lonlat, sgs_wgs84_en), list(sgs_set_gcs, sgs_wgs84_en))
+FUN_TO_4277 <-   list(list(sgs_lonlat_bng, sgs_bng_lonlat), list(sgs_en_wgs84, sgs_lonlat_bng, sgs_bng_lonlat), NULL,                                               list(sgs_bng_lonlat),               list(sgs_lonlat_bng, sgs_bng_lonlat))
+FUN_TO_27700 <-  list(list(sgs_lonlat_bng),                 list(sgs_en_wgs84, sgs_lonlat_bng),                 list(sgs_lonlat_bng),                               NULL,                               list(sgs_lonlat_bng))
+FUN_TO_4258 <-   list(list(sgs_set_gcs),                    list(sgs_en_wgs84, sgs_set_gcs),                    list(sgs_lonlat_bng, sgs_bng_lonlat),               list(sgs_bng_lonlat),               NULL)
 
 ARGS_TO_4326 <-  list(NULL,                                 list(4326),                                         list(list(TRUE), list(4326, TRUE)),                 list(4326, TRUE),                   list(4326))
 ARGS_TO_3857 <-  list(list(3857),                           NULL,                                               list(list(TRUE), list(4326, TRUE), list(3857)),     list(list(4326, TRUE), list(3857)), list(list(4326), list(3857)))

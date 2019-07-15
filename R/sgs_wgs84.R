@@ -27,7 +27,7 @@
 #' 2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_en_wgs84}}.
 #' @examples
-#' p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
+#' p <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 #' res <- sgs_wgs84_en(p)
 #' @export
 sgs_wgs84_en <- function(x, to=3857) UseMethod("sgs_wgs84_en")
@@ -48,12 +48,12 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  phi <- x$latitude / 57.29577951308232087679815481410517
-  lambda <- x$longitude / 57.29577951308232087679815481410517
+  phi <- x$y / 57.29577951308232087679815481410517
+  lambda <- x$x / 57.29577951308232087679815481410517
 
-  ellipsoid <- latlon.datum[latlon.datum$datum==x$datum, "ellipsoid"]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
 
-  a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
   FE <- 0L; FN <- 0L # False Easting, Northing
   lambda0 <- 0L      # True origin
 
@@ -73,7 +73,7 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 
 
 #' @encoding UTF-8
-#' @title Pseudo - Mercator to WGS84 latitude Longitude
+#' @title Pseudo - Mercator to WGS84 Longitude/Latitude
 #'
 #' @description
 #' Converts Pseudo - Mercator coordinates to WGS84 (EPSG=4326)
@@ -86,10 +86,10 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 #' Coordinate System. 4326 (WGS84) by default. And currently doesn't support any
 #' other.
 #' @details
-#' Currently converts ONLY from EPSG 3857 to 4326 (Latitude/Longitude).
+#' Currently converts ONLY from EPSG 3857 to 4326 (Longitude/Latitude).
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Latitude/Longitude.
+#' Longitude/Latitude.
 #' @references OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
 #' 2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_wgs84_en}}.
@@ -105,22 +105,22 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   if (x$epsg != 3857) stop("This routine only supports EPSG:3857 WGS84 entries")
 
   if(to != 4326)
-    stop("This routine only supports converting to EPSG:4326 lat/lon.")
+    stop("This routine only supports converting to EPSG:4326 lon/lat.")
 
   core.cols <- sgs_points.core
- #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude", "longitude")]
+ #core.cols <- sgs_points.core[!sgs_points.core %in% c("x", "y")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  ellipsoid <- latlon.datum[latlon.datum$datum==x$datum, "ellipsoid"]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
 
-  a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
   FE <- 0; FN <- 0  # False Easting, Northing
   lambda0 <- 0      # True origin
 
-  E <- x$easting
-  N <- x$northing
+  E <- x$x
+  N <- x$y
 
   D <- (FN - N) / a
   phi <- (pi/2) - 2 * atan(exp(D))
@@ -128,8 +128,8 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
 
   # Round and Return
   new.x <- sgs_points(
-    list(x=round(phi * 57.29577951308232087679815481410517, 8),
-         y=round(lambda * 57.29577951308232087679815481410517, 8)), epsg=to)
+    list(x=round(lambda * 57.29577951308232087679815481410517, 8),
+         y=round(phi * 57.29577951308232087679815481410517, 8)), epsg=to)
   if (num.elements > 0) new.x <- c(x[additional.elements], new.x)
   new.x
 

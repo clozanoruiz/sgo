@@ -39,14 +39,14 @@
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_transform}}.
 #' @examples
-#' lat <- c(55.86424, 55.95325)
 #' lon <- c(-4.25181,-3.18827)
-#' p <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
+#' lat <- c(55.86424, 55.95325)
+#' p <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' # warning: a single Helmert transformation is used in the next transformation
 #' p2 <- sgs_set_gcs(p, to=4277)
-#' # if higher precision is required to transform between OSGB36 latlon and
-#' # ETRS89/WGS84 latlon then use the OSTN15 transformation (will be slower):
-#' # Transform from WGS84 latlon coordinates to EPSG:4277 using OSTN15
+#' # if higher precision is required to transform between OSGB36 lon/lat and
+#' # ETRS89/WGS84 lon/lat then use the OSTN15 transformation (will be slower):
+#' # Transform from WGS84 lon/lat coordinates to EPSG:4277 using OSTN15
 #' p2 <- sgs_transform(p, to=4277)
 #' @export
 sgs_set_gcs <- function(x, to=NULL) UseMethod("sgs_set_gcs")
@@ -62,7 +62,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     stop("This routine only only accepts Geodetic Coordinate Systems")
 
   core.cols <- sgs_points.core
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c("easting", "northing")]
+  #core.cols <- sgs_points.core[!sgs_points.core %in% c(x", "y")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -72,41 +72,41 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   if (x$datum == "WGS84") {
     # converting from WGS84
-    transform <- latlon.datum[latlon.datum$datum==to.datum, 3:9]
+    transform <- lonlat.datum[lonlat.datum$datum==to.datum, 3:9]
   }
   if (to.datum == "WGS84") {
     # converting to WGS84; use inverse transform
-    transform <- -latlon.datum[latlon.datum$datum==x$datum, 3:9]
+    transform <- -lonlat.datum[lonlat.datum$datum==x$datum, 3:9]
   }
   if (is.null(transform)) {
     # neither x$datum nor to.datum are WGS84 pipe throuhgh WGS84 first
     x <- sgs_set_gcs(x, to=4326)
-    transform <- latlon.datum[latlon.datum$datum==to.datum, 3:9]
+    transform <- lonlat.datum[lonlat.datum$datum==to.datum, 3:9]
   }
 
-  old.cartesian <- latlon_to_cartesian(x)
+  old.cartesian <- lonlat_to_cartesian(x)
   new.cartesian <- apply_transform(old.cartesian, transform)
-  new.latlon <- cartesian_to_latlon(new.cartesian, to)
+  new.lonlat <- cartesian_to_lonlat(new.cartesian, to)
 
   # return sgs_points object
-  if (num.elements > 0) new.latlon <- c(x[additional.elements], new.latlon)
-  sgs_points(new.latlon, epsg=to)
+  if (num.elements > 0) new.lonlat <- c(x[additional.elements], new.lonlat)
+  sgs_points(new.lonlat, epsg=to)
 
 }
 
 
-# Converts from geodetic latitude/longitude coordinates to geocentric
+# Converts from geodetic longitude/latitude coordinates to geocentric
 # cartesian (x/y/z) coordinates.
-latlon_to_cartesian <- function(points) {
+lonlat_to_cartesian <- function(points) {
 
   datum <- points$datum
-  ellipsoid <- latlon.datum[latlon.datum$datum==datum, "ellipsoid"]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
 
-  phi <- points$latitude / 57.29577951308232087679815481410517
-  lambda <- points$longitude / 57.29577951308232087679815481410517
+  phi <- points$y / 57.29577951308232087679815481410517
+  lambda <- points$x / 57.29577951308232087679815481410517
   h <- 0L # height above ellipsoid - not currently used
-  a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]
-  e2 <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "e2"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
+  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"]
 
   sin.phi <- sin(phi)
   cos.phi <- cos(phi)
@@ -150,17 +150,17 @@ apply_transform <- function(points, t)   {
 }
 
 
-# Converts cartesian (x/y/z) point to ellipsoidal geodetic latitude/longitude
+# Converts cartesian (x/y/z) point to ellipsoidal geodetic longitude/latitude
 # coordinates on specified epsg/datum.
-cartesian_to_latlon <- function(points, epsg) {
+cartesian_to_lonlat <- function(points, epsg) {
 
   x <- points$x
   y <- points$y
   z <- points$z
   datum <- epsgs[epsgs[, "epsg"]==epsg, "datum"]
 
-  ellipsoid <- latlon.datum[latlon.datum$datum==datum, "ellipsoid"]
-  params <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, 2:5]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, 2:5]
   a <- params$a
   b <- params$b
   e2 <- params$e2
@@ -185,6 +185,6 @@ cartesian_to_latlon <- function(points, epsg) {
   # height above ellipsoid [not currently used]
   h <- unname(p / cos(phi) - nu)
 
-  list(latitude=lat, longitude=lon)
+  list(x=lon, y=lat)
 
 }

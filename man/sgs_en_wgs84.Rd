@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{sgs_en_wgs84}
 \alias{sgs_en_wgs84}
-\title{Pseudo - Mercator to WGS84 latitude Longitude}
+\title{Pseudo - Mercator to WGS84 Longitude/Latitude}
 \usage{
 sgs_en_wgs84(x, to = 4326)
 }
@@ -17,13 +17,13 @@ other.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
-Latitude/Longitude.
+Longitude/Latitude.
 }
 \description{
 Converts Pseudo - Mercator coordinates to WGS84 (EPSG=4326)
 }
 \details{
-Currently converts ONLY from EPSG 3857 to 4326 (Latitude/Longitude).
+Currently converts ONLY from EPSG 3857 to 4326 (Longitude/Latitude).
 }
 \examples{
 p <- sgs_points(list(-11169055.58, 2810000.00), epsg=3857)

@@ -44,14 +44,14 @@ list of coordinates or WKB fields. This object facilitates all the operations
 with polygons in this package.
 }
 \examples{
-df <- data.frame(latitude=c(55.86424,55.95325,55.87426,56.87426,55.75426),
-                 longitude=c(-4.25181,-3.18827,-3.78690,-2.78690,-3.54690),
+df <- data.frame(longitude=c(-4.25181,-3.18827,-3.78690,-2.78690,-3.54690),
+                 latitude=c(55.86424,55.95325,55.87426,56.87426,55.75426),
                  id = c(1,1,1,2,2))
 # create a single polygon disregarding different id's
-polygon <- sgs_polygons(df, epsg=4326, coords=c("latitude","longitude"))
+polygon <- sgs_polygons(df, epsg=4326, coords=c("longitude","latitude"))
 
 # create a set of polygons, identified by a column in df
-polygons <- sgs_polygons(df, epsg=4326, coords=c("latitude","longitude"),
+polygons <- sgs_polygons(df, epsg=4326, coords=c("longitude","latitude"),
 by="id")
 }
 \seealso{

@@ -12,8 +12,8 @@
 #' Converts a geodetic coordinate system to BNG (projected) Easting/Northing
 #' coordinates.
 #'
-#' @name sgs_latlon_bng
-#' @usage sgs_latlon_bng(x, OSTN=TRUE)
+#' @name sgs_lonlat_bng
+#' @usage sgs_lonlat_bng(x, OSTN=TRUE)
 #' @param x A \code{sgs_points} object with coordinates defined in a Geodetic
 #' Coordinate System (e.g. epsg=4258, 4326 or 4277)
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
@@ -22,7 +22,7 @@
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
-#' ETRS89 for latitude/longitude coordinates. Thus, \code{x} should be defined
+#' ETRS89 for longitude/latitude coordinates. Thus, \code{x} should be defined
 #' as ETRS89 (or WGS84) most of the times.
 #'
 #' According to the Transformations and OSGM15 User Guide, p. 8:
@@ -38,33 +38,32 @@
 #' will be automatically computed using the small Helmert transformation. Such
 #' coordinates will be accurate up to about +/-5 metres, therefore the resulting
 #' easting and northing coordinates will be rounded to the metre.
-#' Converting from lat/lon to BNG coordinates is faster than the other way
+#' Converting from lon/lat to BNG coordinates is faster than the other way
 #' around, due to the iterative nature of the algorithm that is built into
 #' OSTN15.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
 #' Easting/Northing (epsg=27700). They are adjusted to the SW corner of
 #' 1m grid square.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_latlon}},
+#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_lonlat}},
 #' \code{\link{sgs_set_gcs}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples
-#' lat <- c(55.86424, 55.95325)
 #' lon <- c(-4.25181,-3.18827)
-#' pts <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
-#' bng.pts <- sgs_latlon_bng(pts)
+#' lat <- c(55.86424, 55.95325)
+#' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
+#' bng.pts <- sgs_lonlat_bng(pts)
 #' @export
-sgs_latlon_bng <- function(x, OSTN=TRUE) UseMethod("sgs_latlon_bng")
+sgs_lonlat_bng <- function(x, OSTN=TRUE) UseMethod("sgs_lonlat_bng")
 
 #' @export
-sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
+sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 
   if (x$epsg == 27700)
     stop("This routine only supports geodetic coordinate systems")
 
   core.cols <- sgs_points.core
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c("easting", "northing")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -79,7 +78,7 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
 
   if (OSTN) {
 
-    projected <- project.onto.grid(x$latitude, x$longitude, x$datum)
+    projected <- project.onto.grid(x$x, x$y, x$datum)
     e <- projected[, 1]
     n <- projected[, 2]
 
@@ -104,8 +103,8 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
-        helmert.projected <- project.onto.grid(helmert.x$latitude,
-                                               helmert.x$longitude,
+        helmert.projected <- project.onto.grid(helmert.x$x,
+                                               helmert.x$y,
                                                helmert.x$datum)
         e[shifts$out] <- round(helmert.projected[, 1], 0) # Round to metres
         n[shifts$out] <- round(helmert.projected[, 2], 0)
@@ -116,8 +115,8 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
   } else {  # single Helmert transformation
 
     helmert.x <- sgs_set_gcs(x, to = 4277)
-    helmert.projected <- project.onto.grid(helmert.x$latitude,
-                                           helmert.x$longitude,
+    helmert.projected <- project.onto.grid(helmert.x$x,
+                                           helmert.x$y,
                                            helmert.x$datum)
     e <- round(helmert.projected[, 1], 0) # Round to metres
     n <- round(helmert.projected[, 2], 0)
@@ -138,10 +137,10 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
 #'
 #' @description
 #' Converts Ordnance Survey grid reference easting/northing coordinates to GCS
-#' latitude/longitude (SW corner of grid square).
+#' longitude/latitude (SW corner of grid square).
 #'
-#' @name sgs_bng_latlon
-#' @usage sgs_bng_latlon(x, to = 4258, OSTN = TRUE)
+#' @name sgs_bng_lonlat
+#' @usage sgs_bng_lonlat(x, to = 4258, OSTN = TRUE)
 #' @param x A \code{sgs_points} object with coordinates defined in the projected
 #' coordinate system BNG (epsg=27700)
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
@@ -152,8 +151,8 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
-#' ETRS89 for latitude/longitude coordinates. Thus, when converting to
-#' latitude/longitude the OSGB36 datum should be always converted to ETRS89
+#' ETRS89 for longitude/latitude coordinates. Thus, when converting to
+#' longitude/latitude the OSGB36 datum should be always converted to ETRS89
 #' (or WGS84).
 #'
 #' According to the Transformations and OSGM15 User Guide, p. 8:
@@ -165,31 +164,31 @@ sgs_latlon_bng.sgs_points <- function(x, OSTN=TRUE) {
 #' synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
 #' EPSG:4326(WGS84) will be considered equivalent by this routine.
 #'
-#' If, for historical reasons, latitude/longitude coordinates must have the old
+#' If, for historical reasons, longitude/latitude coordinates must have the old
 #' OSGB36 datum, then the parameter \code{to} must be set to 4277.
 #'
 #' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15,
 #' will be automatically computed using the small Helmert transformation. Such
 #' coordinates will be accurate up to about +/-5 metres.
-#' Converting from BNG to lat/lon coordinates is slower than the other way
+#' Converting from BNG to lon/lat coordinates is slower than the other way
 #' around, due to the iterative nature of the algorithm that is built into
 #' OSTN15.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Latitude/Longitude.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_latlon_bng}},
+#' Longitude/Latitude.
+#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_lonlat_bng}},
 #' \code{\link{sgs_set_gcs}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples
 #' p <- sgs_points(list(651409.903, 313177.270), epsg=27700)
-#' p.84 <- sgs_bng_latlon(p) #ETRS89 lat/lon
-#' p.36 <- sgs_bng_latlon(p, to=4277) #OSGB36 lat/lon
+#' p.84 <- sgs_bng_lonlat(p) #ETRS89 lon/lat
+#' p.36 <- sgs_bng_lonlat(p, to=4277) #OSGB36 lon/lat
 #' @export
-sgs_bng_latlon <- function(x, to=4258, OSTN=TRUE) UseMethod("sgs_bng_latlon")
+sgs_bng_lonlat <- function(x, to=4258, OSTN=TRUE) UseMethod("sgs_bng_lonlat")
 
 #' @export
-sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
+sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
   if (x$epsg != 27700)
     stop("This routine only supports BNG Easting and Northing entries")
@@ -197,7 +196,6 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
     stop("This routine only supports converting to epsg 4258, 4277 or 4326")
 
   core.cols <- sgs_points.core
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c("latitude","longitude")]
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -205,14 +203,14 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
   if (OSTN) {
 
     if (to == 4277) {
-      unprojected <- unproject.onto.ellipsoid(x$easting, x$northing, x$datum)
+      unprojected <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
     }
 
     if (to == 4258 || to == 4326) {
 
-      shifts <- find.OSTN.shifts.at(x$easting, x$northing)
-      e <- x$easting - shifts$dx
-      n <- x$northing - shifts$dy
+      shifts <- find.OSTN.shifts.at(x$x, x$y)
+      e <- x$x - shifts$dx
+      n <- x$y - shifts$dy
       last.shifts <- shifts
 
       for (i in c(1:20)) {
@@ -223,8 +221,8 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
           break
         }
 
-        e <- x$easting - shifts$dx
-        n <- x$northing - shifts$dy
+        e <- x$x - shifts$dx
+        n <- x$y - shifts$dy
         if (max(abs(shifts$dx - last.shifts$dx)) < 0.0001 &&
             max(abs(shifts$dy - last.shifts$dy)) < 0.0001) { break }
         last.shifts <- shifts
@@ -232,26 +230,26 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       }
 
       #initialise 'unprojected' matrix of coordinates
-      items <- rep(NA, length(x$easting))
+      items <- rep(NA, length(x$x))
       unprojected <- cbind(items, items, deparse.level = 0)
 
       # unproject any shifted coordinates
       if (any(shifts$out) == FALSE) {
-        e <- x$easting[!shifts$out] - shifts$dx[!shifts$out]
-        n <- x$northing[!shifts$out] - shifts$dy[!shifts$out]
+        e <- x$x[!shifts$out] - shifts$dx[!shifts$out]
+        n <- x$y[!shifts$out] - shifts$dy[!shifts$out]
         unprojected[!shifts$out, ] <- unproject.onto.ellipsoid(e, n,
                                         epsgs[epsgs$epsg==to, "datum"])
       }
 
       # unproject the rest of coordinates (the ones that couldn't be shifted)
       if (any(shifts$out) == TRUE) {
-        os.ll <- unproject.onto.ellipsoid(x$easting[shifts$out],
-                                          x$northing[shifts$out], x$datum)
+        os.ll <- unproject.onto.ellipsoid(x$x[shifts$out],
+                                          x$y[shifts$out], x$datum)
         os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]),
                                                epsg=4277),
                                     to=to)
-        unprojected[shifts$out, ] <- cbind(lat=os.ll.points$latitude,
-                                           lon=os.ll.points$longitude)
+        unprojected[shifts$out, ] <- cbind(x=os.ll.points$x,
+                                           y=os.ll.points$y)
       }
 
     }
@@ -261,7 +259,7 @@ sgs_bng_latlon.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
   } else {  # single Helmert transformation
 
-    os.ll <- unproject.onto.ellipsoid(x$easting, x$northing, x$datum)
+    os.ll <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
 
     unprojected <- list(x=os.ll[, 1], y=os.ll[, 2])
     if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
@@ -284,10 +282,10 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
   E <- e
   N <- n
 
-  ellipsoid <- latlon.datum[latlon.datum$datum==datum, "ellipsoid"]
-  a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
-  b <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
-  e2 <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
+  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
+  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
 
   f0 <- 0.9996012717                # Converge factor
   af <- a * f0
@@ -351,21 +349,21 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
   phi <- phi + ( -VII + ( VIII - IX * dE2 ) * dE2) * dE2
   lambda <- lambda + ( X + ( -XI + ( XII - XIIA * dE2 ) * dE2) * dE2) * dE
 
-  unname(cbind(phi    * 57.29577951308232087679815481410517,
-               lambda * 57.29577951308232087679815481410517))
+  unname(cbind(lambda * 57.29577951308232087679815481410517,
+               phi    * 57.29577951308232087679815481410517))
 
 }
 
 #Helper function. Project geodetic coordinates onto BNG
-project.onto.grid <- function (lat, lon, datum) {
+project.onto.grid <- function (lon, lat, datum) {
 
   phi <- lat / 57.29577951308232087679815481410517
   lambda <- lon / 57.29577951308232087679815481410517
 
-  ellipsoid <- latlon.datum[latlon.datum$datum==datum, "ellipsoid"]
-  a <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
-  b <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
-  e2 <- latlon.ellipsoid[latlon.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
+  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
+  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
 
   f0 <- 0.9996012717      # Convergence factor
   af <- a * f0            # NatGrid scale factor on central meridian

@@ -15,18 +15,16 @@ epsgs <- data.frame(epsg=c(4326, 3857, 4277, 27700, 4258),
 
 
 # Vector with all the main elements a sgs_points object contains
-# But actually: Easting or Latitude; Northing or Longitude
-sgs_points.core <- c("easting", "northing",
-                     "latitude", "longitude",
-                     "epsg", "datum")
-coordinates.names <- cbind(x=c("x", "lat", "latitude", "easting"),
-                           y=c("y", "lon","longitude", "northing"))
+sgs_points.core <- c("x", "y", "epsg", "datum")
+
+coordinates.names <- cbind(x=c("x", "lon", "longitude", "easting"),
+                           y=c("y", "lat","latitude", "northing"))
 
 
 # Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f)
 # for each ellipsoid. For all practical applications GRS80 abd WGS84 ellipsoids
 # are identical
-latlon.ellipsoid <- data.frame(
+lonlat.ellipsoid <- data.frame(
   ellipsoid=c("WGS84", "Airy1830",      "GRS80"),
   a=c(6378137.000,      6377563.396,    6378137.000),
   b=c(6356752.31424518, 6356256.909,    6356752.314140),
@@ -45,7 +43,7 @@ latlon.ellipsoid <- data.frame(
 # (OSGB36 to WGS84 or ETRS89 the lost of accuracy can be up to 5m with single
 # Helmert transformations.
 # transforms: t in metres, s in ppm, r in arcseconds
-latlon.datum <- data.frame(datum=c("OSGB36", "WGS84", "ETRS89"),
+lonlat.datum <- data.frame(datum=c("OSGB36", "WGS84", "ETRS89"),
                            ellipsoid=c("Airy1830","WGS84", "GRS80"),
                            tx=c(-446.448, 0L, 0L),
                            ty=c(125.157, 0L, 0L),

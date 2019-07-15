@@ -23,17 +23,17 @@ coordinate system.
 }
 \details{
 This function is a wrapper of specific transformation functions
-(\code{\link{sgs_bng_latlon}}, \code{\link{sgs_en_wgs84}},
-\code{\link{sgs_latlon_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
+(\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
+\code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
 coordinate system of a set of points to any of the supported coordinate
 systems.
 }
 \examples{
-lt <- c(57.47777, 57.14965)
 ln <- c(-4.22472, -2.09908)
+lt <- c(57.47777, 57.14965)
 n <- c("Inverness", "Aberdeen")
-df <- data.frame(n, lt, ln, stringsAsFactors = FALSE)
-locations <- sgs_points(df, coords=c("lt", "ln"), epsg=4326)
+df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
+locations <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
 
 locations.bng <- sgs_transform(locations, to=27700)
 locations.osgb36 <- sgs_transform(locations, to=4277)

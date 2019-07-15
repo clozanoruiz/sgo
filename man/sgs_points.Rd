@@ -9,15 +9,15 @@ sgs_points(x, coords=NULL, epsg = NULL)
 }
 \arguments{
 \item{x}{A list or dataframe with at least 2 columns of either
-easting/northing or latitude/longitude coordinates per row - depending on
-\code{epsg}. \strong{Please note} that the order is important: lon/lat or
+easting/northing or longitude/latitude coordinates per row - depending on
+\code{epsg}. \strong{Please note} that the order is important: lat/lon or
 northing/easting will produce wrong results.
 
 It also accepts objects of class \code{sf POINT/MULTIPOINT} or
 \code{sfc POINT/MULTIPOINT}.}
 
 \item{coords}{A vector with the names of the columns containing the
-easting/northing (or latitude/longitude) coordinates.}
+easting/northing (or longitude/latitude) coordinates.}
 
 \item{epsg}{Specifies the EPSG code of coordinates to store. It can take any
 of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
@@ -31,11 +31,12 @@ An object of class \code{sgs_points}.
 }
 \details{
 This object stores 2D point coordinates and any other column-list of
-attributes related to each point. Currently it only supports 5 \code{epsg}s
-for coordinates:
+attributes related to each point. Note that additional column-lists will be
+expanded with \code{NA} values if they contain less elements than coordinates.
+Currently it only supports 5 \code{epsg}s for coordinates:
 \itemize{
 \item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in
-\code{x} be defined as Latitude and Longitude values respectively. The
+\code{x} be defined as Longitude and Latitude values respectively. The
 defined datum for this set of coordinates is WGS84 (https://epsg.io/4326)
 
 \item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
@@ -44,7 +45,7 @@ respectively. The defined datum for this set of coordinates is WGS84
 (https://epsg.io/3857)
 
 \item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in
-\code{x} must be defined as Latitude and Longitude values respectively. The
+\code{x} must be defined as Longitude and Latitude values respectively. The
 defined datum for this set of coordinates is OSGB 1936
 (https://epsg.io/4277). \emph{Coordinates defined like this should only be
 used for historical reasons.}
@@ -55,29 +56,30 @@ respectively. The defined datum for this set of coordinates is OSGB 1936
 (https://epsg.io/27700).
 
 \item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in
-\code{x} must be defined as Latitude and Longitude values respectively. The
+\code{x} must be defined as Longitude and Latitude values respectively. The
 defined datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
 }
 }
 \examples{
 # lists:
-p1 <- sgs_points(list(56.1165, -3.9369), epsg=4326)
-lat <- c(55.86424, 55.95325)
+p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 lon <- c(-4.25181,-3.18827)
-p2 <- sgs_points(list(latitude=lat, longitude=lon), epsg=4326)
+lat <- c(55.86424, 55.95325)
+p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
+#p3 will expand the list 'desc' up to 2 elements with NA's
 # dataframe:
-lt <- c(57.47777, 57.14965)
 ln <- c(-4.22472, -2.09908)
+lt <- c(57.47777, 57.14965)
 n <- c("Inverness", "Aberdeen")
-df <- data.frame(n, lt, ln, stringsAsFactors = FALSE)
-p3 <- sgs_points(df, coords=c("lt", "ln"), epsg=4326)
+df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
+p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
 
 \dontrun{
 library(maps)
 map('world', regions=('uk'))
 points(x=p1$longitude, y=p1$latitude, pch=0, col="green")
 points(x=p2$lon, y=p2$lat, pch=0, col="blue")
-points(x=p3$lon, y=p3$lat, pch=0, col="red")
+points(x=p4$lon, y=p4$lat, pch=0, col="red")
 }
 }
 \seealso{
