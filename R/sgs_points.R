@@ -263,14 +263,7 @@ sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
 #' @export
 sgs_points_xy.sgs_points <-function(x) {
 
-  # Projection type
-  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
-
-  coords <- if(coord.system == "GCS") {
-    c("latitude", "longitude")
-  } else {
-    c("easting", "northing")
-  }
+  coords <- c("X", "Y")
 
   xy <- matrix(unlist(x[c("x", "y")]), ncol=2)
   colnames(xy) <- coords
@@ -331,16 +324,16 @@ c.sgs_points <- function(...) {
 }
 
 # TODO print!
-print.sgs_points <- function(x) {
+#print.sgs_points <- function(x) {
   #ADD attributes like sgs_x and sgs_y to sgspoints so we save all those coordinate checkins:
   #like: attr(p1, "sgs_x") <-"latitude" (or easting)
 
   #len.coords <- length(x$x)
-  if (length(x$x) > 6) {
-    "showing only the first elements... or just add  an ellipsis after the 6 coordinates"
-  }
+  #if (length(x$x) > 6) {
+  #  "showing only the first elements... or just add  an ellipsis after the 6 coordinates"
+  #}
 
-  cat("EPSG:", x$epsg, "\n",
-      x$x, x$y)
+  #cat("EPSG:", x$epsg, "\n",
+  #    x$x, x$y)
 
-}
+#}
