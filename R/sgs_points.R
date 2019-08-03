@@ -96,7 +96,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if(is.null(coords)) {
     lnames <- tolower(names(x))
     known.coords <- t(apply(coordinates.names, 1, function(n) n %in% lnames))
-    if (any(known.coords)) {
+    if (any(known.coords) && sum(known.coords, na.rm = TRUE) == 2) {
       coords <- names(x)[lnames %in% coordinates.names[known.coords]]
     } else {
       stop("Must specify the coordinates columns using the 'coords' parameter")
@@ -107,9 +107,18 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     stop("All coordinates must be numeric")
 
   other.columns <- x[!(names(x) %in% coords)]
+
   if (length(other.columns)==0) {
     other.columns <- NULL
   } else {
+    # if other.columns contains the column names 'x' or 'y' we will remove them
+    # and warn the user about it.
+    old.length <- length(other.columns)
+    other.columns <- other.columns[!(names(other.columns) %in% c("x", "y"))]
+    if (length(other.columns) != old.length) {
+      warning("Any column from input data named 'x' or 'y' has been removed")
+    }
+
     # all additional columns will expanded to contain the same number of
     # elements as coordinates in the object
     max.len <- length(x[[coords[1]]])
@@ -279,6 +288,7 @@ sgs_points_xy.sgs_points <-function(x) {
 
 }
 
+# TODO export
 # Extending '[' function to support sgs_points:
 # Attributes are usually lost when subsetting lists, therefore we need to
 # extend a subsetting operator that will keep all attributes of our object.
@@ -293,6 +303,7 @@ sgs_points_xy.sgs_points <-function(x) {
 
 }
 
+#TODO export
 #c.sgs_points <- function(..., recursive = FALSE) {
 c.sgs_points <- function(...) {
 
@@ -330,7 +341,7 @@ c.sgs_points <- function(...) {
 
 }
 
-# TODO print!
+#TODO improve print! and export
 print.sgs_points <- function(x) {
   #ADD attributes like sgs_x and sgs_y to sgspoints so we save all those coordinate checkins:
   #like: attr(p1, "sgs_x") <-"latitude" (or easting)

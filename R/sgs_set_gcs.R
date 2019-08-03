@@ -90,7 +90,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   # return sgs_points object
   if (num.elements > 0) new.lonlat <- c(x[additional.elements], new.lonlat)
-  sgs_points(new.lonlat, epsg=to)
+  sgs_points(new.lonlat, coords=c("x", "y"), epsg=to)
 
 }
 

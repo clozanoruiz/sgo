@@ -127,7 +127,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
   en <- list(x=e, y=n)
   if (num.elements > 0) en <- c(x[additional.elements], en)
 
-  return (sgs_points(en, epsg=27700))
+  return (sgs_points(en, coords=c("x", "y"), epsg=27700))
 
 }
 
@@ -246,6 +246,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
         os.ll <- unproject.onto.ellipsoid(x$x[shifts$out],
                                           x$y[shifts$out], x$datum)
         os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]),
+                                               coords=c("x", "y"),
                                                epsg=4277),
                                     to=to)
         unprojected[shifts$out, ] <- cbind(x=os.ll.points$x,

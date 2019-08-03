@@ -67,7 +67,7 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   en <- list(x=e, y=n)
   if (num.elements > 0) en <- c(x[additional.elements], en)
 
-  sgs_points(en, epsg=to)
+  sgs_points(en, coords=c("x", "y"), epsg=to)
 
 }
 
@@ -129,7 +129,9 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   # Round and Return
   new.x <- sgs_points(
     list(x=round(lambda * 57.29577951308232087679815481410517, 8),
-         y=round(phi * 57.29577951308232087679815481410517, 8)), epsg=to)
+         y=round(phi * 57.29577951308232087679815481410517, 8)),
+		 coords=c("x", "y"),
+		 epsg=to)
   if (num.elements > 0) new.x <- c(x[additional.elements], new.x)
   new.x
 

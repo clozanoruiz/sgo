@@ -147,7 +147,7 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
     lst <- c(old.x[!names(old.x) %in% col],
              list(x=as.numeric(e), y=as.numeric(n)))
   }
-  sgs_points(lst, epsg=27700)
+  sgs_points(lst, coords=c("x", "y"), epsg=27700)
 
 }
 
