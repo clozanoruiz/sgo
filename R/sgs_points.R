@@ -272,14 +272,7 @@ sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
 #' @export
 sgs_points_xy.sgs_points <-function(x) {
 
-  # Projection type
-  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
-
-  coords <- if(coord.system == "GCS") {
-    c("latitude", "longitude")
-  } else {
-    c("easting", "northing")
-  }
+  coords <- c("x", "y")
 
   xy <- matrix(unlist(x[c("x", "y")]), ncol=2)
   colnames(xy) <- coords
