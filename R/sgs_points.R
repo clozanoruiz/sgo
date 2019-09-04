@@ -348,3 +348,15 @@ print.sgs_points <- function(x) {
       x$x, x$y)
 
 }
+
+
+#TODO perhaps add functionality to connect to arcgis server?? and what about WMS?
+#library(httr)
+#library(jsonlite)
+
+#call1 <-"http://sepa-app-gis01/arcgis/rest/services/Utilities/Geometry/GeometryServer/project?inSR=27700&outSR=4326&geometries=%7B%22geometries%22%3A+%5B%7B%22xmin%22%3A376899.62711532967%2C%22ymin%22%3A3773691.3005017433%2C%22xmax%22%3A377475.15287916746%2C%22ymax%22%3A3774194.0492160516%7D%5D%2C%22geometryType%22%3A%22esriGeometryEnvelope%22%7D&transformation=5339&transformForward=true&vertical=false&f=json"
+#get_geo <- GET(call1)
+#get_geo_text <- content(get_geo, "text")
+#get_geo_json <- fromJSON(get_geo_text, flatten = TRUE) #or true?
+#get_geo_df <- as.data.frame(get_geo_json)
+######do results come in multiples pages?
