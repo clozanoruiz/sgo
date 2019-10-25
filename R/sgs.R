@@ -1,7 +1,7 @@
 #' sgs: Simple GIS (In Spotfire).
 #'
 #' The sgs package provides a set of functions to perform spatial or geographic
-#' analysis using 'TIBCO Spotfire' and 'TERR'.
+#' analysis in R, or using 'TIBCO Spotfire' and 'TERR'.
 #'
 #' @encoding UTF-8
 #' @section Object constructors:

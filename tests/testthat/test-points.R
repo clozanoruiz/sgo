@@ -31,6 +31,9 @@ test_that("sgs_points constructors", {
   #sfc
 })
 #TODO
+## ADD a warning when convering netween e/n to latlon and viceversa when there
+# are points out of bounds of the grid. Perhaps add a parameter like in
+# sgs_ngr_bng to list those out of bounds.
 # 1) Test multiple functions (sgs_bng_laton, sgs_set_gcs_etc, points_xy) with those
 # different types of sgs_points (dataframes, lists, single, etc.)
 # 2) Confirm all of those keep the 'sgs_points' class and the names in the class

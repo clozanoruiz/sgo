@@ -7,14 +7,15 @@
 #' @name sgs_points
 #' @usage sgs_points(x, coords=NULL, epsg = NULL)
 #' @param x A list or dataframe with at least 2 columns of either
-#' easting/northing or longitude/latitude coordinates per row - depending on
-#' \code{epsg}. \strong{Please note} that the order is important: lat/lon or
-#' northing/easting will produce wrong results.
+#' easting/northing or longitude/latitude coordinates per row.
+#' \strong{Please note} that the order is important when \code{x} has only 2
+#' columns and \code{coords} is not informed: lat/lon or northing/easting will
+#' produce wrong results.
 #'
 #' It also accepts objects of class \code{sf POINT/MULTIPOINT} or
 #' \code{sfc POINT/MULTIPOINT}.
-#' @param coords A vector with the names of the columns containing the
-#' easting/northing (or longitude/latitude) coordinates.
+#' @param coords A vector with the names of the two columns containing the
+#' X (easting or longitude) and Y (northing or latitude) coordinates.
 #' @param epsg Specifies the EPSG code of coordinates to store. It can take any
 #' of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
 #' or \code{4258}.
@@ -58,8 +59,8 @@
 #' lon <- c(-4.25181,-3.18827)
 #' lat <- c(55.86424, 55.95325)
 #' p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#' #p3 will expand the list 'desc' up to 2 elements with NA's
-#  p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"), epsg=4326)
+#' #p3 will fill up the list 'desc' up to 2 elements with NA's:
+#' p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"), epsg=4326)
 #' # dataframe:
 #' ln <- c(-4.22472, -2.09908)
 #' lt <- c(57.47777, 57.14965)

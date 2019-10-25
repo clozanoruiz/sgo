@@ -34,7 +34,7 @@
 #' synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
 #' EPSG:4326(WGS84) will be considered equivalent by this routine.
 #'
-#' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15,
+#' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15
 #' will be automatically computed using the small Helmert transformation. Such
 #' coordinates will be accurate up to about +/-5 metres, therefore the resulting
 #' easting and northing coordinates will be rounded to the metre.
@@ -167,7 +167,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 #' If, for historical reasons, longitude/latitude coordinates must have the old
 #' OSGB36 datum, then the parameter \code{to} must be set to 4277.
 #'
-#' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15,
+#' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15
 #' will be automatically computed using the small Helmert transformation. Such
 #' coordinates will be accurate up to about +/-5 metres.
 #' Converting from BNG to lon/lat coordinates is slower than the other way
