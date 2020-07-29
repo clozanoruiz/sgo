@@ -9,7 +9,7 @@ sgs_bng_ngr(x, digits = 10)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object with coordinates defined as
-\code{epsg=27700}.}
+\code{epsg=27700} or \code{epsg=7405}.}
 
 \item{digits}{Numeric. It defines the precision of the resulting grid
 references.}
@@ -33,7 +33,8 @@ square - to ensure the more precise polygon will remain within the boundaries
 of the less precise polygon.
 }
 \examples{
-sgs <- sgs_points(list(x=247455, y=706338, name="Ben Venue"), epsg=27700)
+sgs <- sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+coords=c("x", "y"), epsg=27700)
 grid10 <- sgs_bng_ngr(sgs)
 grid8 <- sgs_bng_ngr(sgs, digits=8)
 #and notice the truncating, not rounding, of grid8 regarding grid10.

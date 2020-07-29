@@ -7,18 +7,33 @@ is_nothing <- function(x) {
 }
 
 
-# list of EPSG codes and types #
-epsgs <- data.frame(epsg=c(4326, 3857, 4277, 27700, 4258),
-                    datum=c("WGS84", "WGS84", "OSGB36", "OSGB36", "ETRS89"),
-                    type=c("GCS","PCS", "GCS","PCS", "GCS"),
+# list of EPSG codes and types #,
+# we could admit some epsg which should be XY as XYZ (eg. 4258, 4326, 27700)
+# format is either ll (lon/lat), c (cartesians), en (easting/northing)
+epsgs <- data.frame(epsg=c(4258, 4937, 4936,
+                           4326, 4979, 4978, 3857,
+                           4277, 27700, 7405),
+                    datum=c("ETRS89", "ETRS89", "ETRS89",
+                            "WGS84", "WGS84", "WGS84", "WGS84",
+                            "OSGB36", "OSGB36", "OSGB36"),
+                    type=c("GCS", "GCS", "GCS",
+                           "GCS", "GCS", "GCS", "PCS",
+                           "GCS", "PCS", "PCS"),
+                    dimension=c("XY/Z", "XYZ", "XYZ",
+                                "XY/Z", "XYZ", "XYZ", "XY",
+                                "XY", "XY/Z", "XYZ"),
+                    format=c("ll", "ll", "c",
+                             "ll", "ll", "c", "en",
+                             "ll", "en", "en"),
                     stringsAsFactors = FALSE)
 
 
 # Vector with all the main elements a sgs_points object contains
-sgs_points.core <- c("x", "y", "epsg", "datum")
+sgs_points.core <- c("x", "y", "z", "epsg", "datum", "dimension")
 
 coordinates.names <- cbind(x=c("x", "lon", "longitude", "easting"),
-                           y=c("y", "lat","latitude", "northing"))
+                           y=c("y", "lat","latitude", "northing"),
+                           z=c("z", "H", "h","height"))
 
 
 # Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f)
@@ -53,6 +68,19 @@ lonlat.datum <- data.frame(datum=c("OSGB36", "WGS84", "ETRS89"),
                            ry=c(-0.2470, 0L, 0L),
                            rz=c(-0.8421, 0L, 0L),
                            stringsAsFactors = FALSE)
+
+
+# Datum flag references. The Geoid datum flag is a number representing the local
+# height datum or area of applicability of the transformation
+datum.flags <- data.frame(
+  geoid.datum.flag=c(1, 2, 3, 4, 6, 7, 15, 16),
+  datum.name=c("Newlyn", "St Marys", "Douglas02", "Stornoway15", "Lerwick",
+               "Newlyn (Orkney)", "Newlyn Offshore",
+               "Outside trnasformation area"),
+  region=c("UK mainland", "Scilly Isles", "Isle of Man", "Outer Hebrides",
+           "Shetland Isles", "Orkney Isles",
+           "Offshore (from 2km offshore up to transformation boundary)",
+           "Outside transformation area"))
 
 
 # Helper function. Extract last n characters from a string

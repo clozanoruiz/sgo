@@ -9,7 +9,7 @@ sgs_wgs84_en(x, to = 3857)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object describing a set of points in the
-geodetic coordinate system EPSG=4326.}
+geodetic coordinate system EPSG=4326 or 4979.}
 
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
 Coordinate System. 3857 (WGS84) by default. And currently doesn't support any
@@ -24,8 +24,8 @@ Converts WGS84 coordinates to Easting/Northing (Pseudo-Mercator)
 }
 \details{
 This routine also accepts source data expressed in ETRS89 coordinates
-(EPSG=4258) as it is considered the difference between those two GCS is far
-less than the accuracy available when working with Pseudo-Mercator
+(EPSG=4258 or 4937) as it is considered the difference between those two GCS
+is far less than the accuracy available when working with Pseudo-Mercator
 coordinates.
 
 The results can be used in maps where Pseudo-Mercator coordinates are needed.
@@ -37,8 +37,8 @@ p <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 res <- sgs_wgs84_en(p)
 }
 \references{
-OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
-2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
+part 2 (March 2020) \url{https://epsg.org/guidance-notes.html}
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_en_wgs84}}.

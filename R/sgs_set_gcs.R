@@ -1,11 +1,3 @@
-################################################################################
-#                                                                              #
-# Adapted from 'Geo-Coordinates-OSGB-2.20', a Perl routine by Toby Thurston:   #
-# https://metacpan.org/release/Geo-Coordinates-OSGB                            #
-#                                                                              #
-################################################################################
-
-
 #' @encoding UTF-8
 #' @title Set GCS of a set of points
 #'
@@ -18,8 +10,8 @@
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param to Specifies the EPSG code to convert the coordinates to. Currently it
-#' can take any of the following values: \code{4258}, \code{4326} or
-#' \code{4277}.
+#' can take any of the following values: \code{4258}, \code{4937}, \code{4936},
+#' \code{4326}, \code{4979}, \code{4978} or \code{4277}.
 #' @details
 #' Changes the geodetic coordinate system of a set of points. Note that the
 #' precision of various datums will vary, and (original) WGS-84 is not defined
@@ -28,8 +20,8 @@
 #' somewhat less - the lost of accuracy can be up to ±5m when using single
 #' Helmert transformations).
 #'
-#' Input points with a projected coordinate system (e.g. 27700 or 3857) are not
-#' allowed.
+#' Input points with a projected coordinate system (e.g. 27700, 7405 or 3857)
+#' are not allowed.
 #'
 #' \strong{Warning}
 #' This function is mainly for internal use of the program. Since it relies on a
@@ -61,10 +53,17 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   if (coord.system != "GCS")
     stop("This routine only only accepts Geodetic Coordinate Systems")
 
-  core.cols <- sgs_points.core
-  #core.cols <- sgs_points.core[!sgs_points.core %in% c(x", "y")]
+  # If converting from 3D to 2D in the same datum, just remove the z coordinate
+  # and return
+  if ((x$epsg == 4937 && to == 4258) || (x$epsg == 4979 && to == 4326)) {
+    x$z <- NULL
+    x$dimension <- "XY"
+    return (x)
+  }
 
-  additional.elements <- !names(x) %in% core.cols
+  coord.format <- epsgs[epsgs[, "epsg"]==x$epsg, "format"] # ll, c or en
+
+  additional.elements <- !names(x) %in% sgs_points.core
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   to.datum <- epsgs[epsgs[, "epsg"]==to, "datum"]
@@ -79,18 +78,35 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     transform <- -lonlat.datum[lonlat.datum$datum==x$datum, 3:9]
   }
   if (is.null(transform)) {
-    # neither x$datum nor to.datum are WGS84 pipe throuhgh WGS84 first
-    x <- sgs_set_gcs(x, to=4326)
+    # neither x$datum nor to.datum are WGS84 pipe through WGS84 first
+    if (coord.format == "c") {
+      x <- sgs_set_gcs(x, to=4978)
+    } else if (x$dimension == "XYZ") {
+      x <- sgs_set_gcs(x, to=4979)
+    } else {
+      x <- sgs_set_gcs(x, to=4326)
+    }
     transform <- lonlat.datum[lonlat.datum$datum==to.datum, 3:9]
   }
 
-  old.cartesian <- lonlat_to_cartesian(x)
+  if (coord.format == "ll") {
+    old.cartesian <- lonlat_to_cartesian(x)
+  } else {
+    old.cartesian <- list(x=x$x, y=x$y, z=x$z)
+  }
   new.cartesian <- apply_transform(old.cartesian, transform)
   new.lonlat <- cartesian_to_lonlat(new.cartesian, to)
 
+  if (epsgs[epsgs[, "epsg"]==to, "dimension"] != "XYZ") {
+    new.lonlat <- new.lonlat[1:2]
+    coords <- c("x", "y")
+  } else {
+    coords <- c("x", "y", "z")
+  }
+
   # return sgs_points object
   if (num.elements > 0) new.lonlat <- c(x[additional.elements], new.lonlat)
-  sgs_points(new.lonlat, coords=c("x", "y"), epsg=to)
+  sgs_points(new.lonlat, coords=coords, epsg=to)
 
 }
 
@@ -104,7 +120,7 @@ lonlat_to_cartesian <- function(points) {
 
   phi <- points$y / 57.29577951308232087679815481410517
   lambda <- points$x / 57.29577951308232087679815481410517
-  h <- 0L # height above ellipsoid - not currently used
+  H <- if (points$dimension=="XYZ") points$z else 0L # height above ellipsoid
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
   e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"]
 
@@ -115,9 +131,9 @@ lonlat_to_cartesian <- function(points) {
 
   nu <- a / sqrt(1L - e2 * sin.phi * sin.phi) #r of curvature in prime vertical
 
-  x <- (nu + h) * cos.phi * cos.lambda
-  y <- (nu + h) * cos.phi * sin.lambda
-  z <- (nu * (1L - e2) + h) * sin.phi
+  x <- (nu + H) * cos.phi * cos.lambda
+  y <- (nu + H) * cos.phi * sin.lambda
+  z <- (nu * (1L - e2) + H) * sin.phi
 
   list(x=x, y=y, z=z)
 
@@ -182,9 +198,111 @@ cartesian_to_lonlat <- function(points, epsg) {
 
   lat <- phi * 57.29577951308232087679815481410517
   lon <- lambda * 57.29577951308232087679815481410517
-  # height above ellipsoid [not currently used]
-  h <- unname(p / cos(phi) - nu)
+  # height above ellipsoid
+  H <- unname(p / cos(phi) - nu)
 
-  list(x=lon, y=lat)
+  list(x=lon, y=lat, z=H)
+
+}
+
+#' @encoding UTF-8
+#' @title Geodetic Coordinate System (GCS) in polar coordinates to cartesian
+#' coordinates
+#'
+#' @description
+#' Converts a GCS expressed in Longitude and Latitude
+#' (and Ellipsoid Height) to an Earth-centered Earth-fixed (ECEF) cartesian
+#' coordinate system.
+#'
+#' @name sgs_lonlat_cart
+#' @usage sgs_lonlat_cart(x)
+#' @param x A \code{sgs_points} object with coordinates expressed as Longitude
+#' and Latitude (and Ellipsoid Height if they are 3D points).
+#' @details
+#' Currently converts from EPSGs \code{4258} and \code{4937} to \code{4936} or
+#' from EPSGs \code{4326}, \code{4979} to \code{4978}
+#' @return
+#' An object of class \code{sgs_points} whose coordinates are defined as a
+#' x, y and z cartesian vector.
+#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_lonlat_bng}},
+#' \code{\link{sgs_set_gcs}}.
+#' @examples
+#' p <- sgs_points(list(-5.00355049, 56.7968571), epsg=4326)
+#' p.xyz <- sgs_lonlat_cart(p) #Cartesian coordinates
+#' @export
+sgs_lonlat_cart <- function(x) UseMethod("sgs_lonlat_cart")
+
+#' @export
+sgs_lonlat_cart.sgs_points <- function(x) {
+
+  if (!x$epsg %in% c(4258, 4937, 4326, 4979))
+    stop("This routine can only convert from epsg 4258, 4937, 4326 or 4979")
+
+  # set the proper output EPSG
+  if (x$datum == "ETRS89") {
+    to.epsg <- 4936
+  } else {
+    to.epsg <- 4978
+  }
+
+  additional.elements <- !names(x) %in% sgs_points.core
+  num.elements <- sum(additional.elements, na.rm=TRUE)
+
+  cartesian <- lonlat_to_cartesian(x)
+
+  # return sgs_points object
+  if (num.elements > 0) cartesian <- c(x[additional.elements], cartesian)
+  sgs_points(cartesian, coords=c("x", "y", "z"), epsg=to.epsg)
+
+}
+
+
+#' @encoding UTF-8
+#' @title Geodetic Coordinate System (GCS) in cartesian coordinates to polar
+#' coordinates
+#'
+#' @description
+#' Converts a GCS expressed Earth-centered Earth-fixed (ECEF) cartesian
+#' coordinate to Longitude and Latitude and Ellipsoid Height.
+#'
+#' @name sgs_cart_lonlat
+#' @usage sgs_cart_lonlat(x)
+#' @param x A \code{sgs_points} object with coordinates expressed in cartesian
+#' coordinates
+#' @details
+#' Currently converts from EPSGs \code{4936} and \code{4978} to \code{4937} and
+#' \code{4979}
+#' @return
+#' An object of class \code{sgs_points} with polar coordinates (Longitude,
+#' Latitude and Ellipsoid Height).
+#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_lonlat}},
+#' \code{\link{sgs_set_gcs}}.
+#' @examples
+#' p <- sgs_points(list(3487823.234, -305433.201, 5313739.634), epsg=4936)
+#' p.xyz <- sgs_cart_lonlat(p) #Cartesian coordinates
+#' @export
+sgs_cart_lonlat <- function(x) UseMethod("sgs_cart_lonlat")
+
+#' @export
+sgs_cart_lonlat.sgs_points <- function(x) {
+
+  if (!x$epsg %in% c(4936, 4978))
+    stop("This routine can only convert from epsg 4936, 4978")
+
+  # set the proper output EPSG
+  if (x$datum == "ETRS89") {
+    to.epsg <- 4937
+  } else {
+    to.epsg <- 4979
+  }
+
+  additional.elements <- !names(x) %in% sgs_points.core
+  num.elements <- sum(additional.elements, na.rm=TRUE)
+
+  lonlat <- cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
+
+  # return sgs_points object
+  if (num.elements > 0) lonlat <- c(x[additional.elements], lonlat)
+  sgs_points(lonlat, coords=c("x", "y", "z"), epsg=to.epsg)
 
 }

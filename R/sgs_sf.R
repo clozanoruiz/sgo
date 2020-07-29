@@ -23,19 +23,3 @@ sf_checks <-function (x, epsg) {
   epsg
 
 }
-
-
-# As of today: only used in sgs_polygons.data.frame
-# Helper function to apply a buffer to any feature.
-# d can be a scalar or a vector with the buffers to apply to each element of x
-apply_buffer <- function(x, d) {
-
-  if (length(d) == 1) {
-    x <- sf::st_buffer(x, d)
-  } else {
-    sf::st_geometry(x) <- sf::st_sfc(mapply(sf::st_buffer, x=x$geometry,
-                                            dist=d, SIMPLIFY = FALSE))
-  }
-
-  x
-}

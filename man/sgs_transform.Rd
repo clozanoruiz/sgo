@@ -41,6 +41,6 @@ locations.ngr <- sgs_bng_ngr(sgs_transform(locations, to=27700))
 locations.wgs84EN <- sgs_transform(locations.bng, to=3857)
 }
 \seealso{
-\code{\link{sgs_points}}, \code{\link{sgs_points_xy}},
+\code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
 \code{\link{sgs_set_gcs}}, \code{\link{sgs_bng_ngr}}.
 }

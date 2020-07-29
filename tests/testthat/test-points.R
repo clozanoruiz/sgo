@@ -1,4 +1,4 @@
-context("Rotines related to the construction and transformation of points")
+context("Routines related to the construction and transformation of points")
 library(sgs)
 
 cols <- c("x", "y", "epsg", "datum")
@@ -41,9 +41,9 @@ test_that("sgs_points constructors", {
 # 3) Test all the extended operators '['. Check they do what is required from
 # them and they keep all attributes/class of sgs
 
-#additional
-# sgs_polygons should accept sgs_points. Conversely, sgs_points should accept
-# sgs_polygons
+#test all the options that use sf (like converting from sgs to sf!)
 
-#test all the options that use sf (like converting from sgs to sf!!, and
-# polygons)
+#confirm that I cannot improve accuracy/precision in test-trnasform to/from 4277
+
+#test bng where the OSGM heights are outside of the transformationa rea (flag16)
+#test cases when BNG is out of boundaries: ie. 1000000

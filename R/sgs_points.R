@@ -1,58 +1,93 @@
 #' @encoding UTF-8
-#' @title Object containing 2D point coordinates
+#' @title Object containing 2D or 3D point coordinates
 #'
 #' @description
-#' 2D coordinates (and other attributes) of a point or collection of points
+#' 2D or 3D coordinates (and other attributes) of a point or collection of
+#' points
 #'
 #' @name sgs_points
 #' @usage sgs_points(x, coords=NULL, epsg = NULL)
 #' @param x A list or dataframe with at least 2 columns of either
-#' easting/northing or longitude/latitude coordinates per row.
-#' \strong{Please note} that the order is important when \code{x} has only 2
-#' columns and \code{coords} is not informed: lat/lon or northing/easting will
-#' produce wrong results.
+#' easting/northing or longitude/latitude coordinates per row. A third column
+#' with height values is optional.
+#' \strong{Please note} that the order is important when \code{x} has only 2 or
+#' 3 columns and \code{coords} is not informed: lat/lon or northing/easting
+#' (and height) will produce wrong results.
 #'
-#' It also accepts objects of class \code{sf POINT/MULTIPOINT} or
-#' \code{sfc POINT/MULTIPOINT}.
-#' @param coords A vector with the names of the two columns containing the
-#' X (easting or longitude) and Y (northing or latitude) coordinates.
+#' @param coords A vector with the names of the two or three columns containing
+#' the X (easting or longitude), Y (northing or latitude) and optionally Z
+#' (ellipsoid or orthometric height) coordinates.
 #' @param epsg Specifies the EPSG code of coordinates to store. It can take any
-#' of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
-#' or \code{4258}.
-#' @details
-#' This object stores 2D point coordinates and any other column-list of
-#' attributes related to each point. Note that additional column-lists will be
-#' expanded with \code{NA} values if they contain less elements than coordinates.
-#' Currently it only supports 5 \code{epsg}s for coordinates:
+#' of the following values:
 #' \itemize{
-#' \item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in
-#' \code{x} be defined as Longitude and Latitude values respectively. The
-#' defined datum for this set of coordinates is WGS84 (https://epsg.io/4326)
+#' \item when working with (2D/3D) ETRS89 Datum: \code{4258}, \code{4937},
+#' \code{4936}
+#' \item when working with (2D/3D) WGS84 Datum:\code{4326}, \code{4979},
+#' \code{4978}
+#' \item when working with (2D/3D) OSGB36 Datum:\code{4277}, \code{27700},
+#' \code{7405}
+#' \item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
+#' }
+#' @details
+#' This object stores 2D or 3D point coordinates and any other column-list of
+#' attributes related to each point. Note that additional column-lists will be
+#' expanded with \code{NA} values if they contain less elements than
+#' coordinates. Currently it only supports the following \code{epsg}s:
+#' \itemize{
+#' \item\code{4258}: ETRS89, geodetic coordinate system. The columns in
+#' \code{x} must be defined as Longitude and Latitude (\code{sgs} also accepts
+#' a third column for ellipsoid heights). The defined datum for this set of
+#' coordinates is ETRS89 (https://epsg.io/4258).
 #'
-#' \item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
-#' 2 columns in \code{x} must be defined as Easting and Northing values
-#' respectively. The defined datum for this set of coordinates is WGS84
-#' (https://epsg.io/3857)
+#' \item\code{4937}: ETRS89, geodetic coordinate system. The columns in
+#' \code{x} must be defined as Longitude, Latitude and Ellipsoid Heights
+#' respectively. The defined datum for this set of coordinates is ETRS89
+#' (https://epsg.io/4937).
+#'
+#' \item\code{4936}: ETRS89, geodetic coordinate system. The columns in
+#' \code{x} must be defined as cartesian coordinates x, y and z. The defined
+#' datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
+#'
+#' \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
+#' must be defined as Longitude and Latitude (\code{sgs} also accepts a
+#' third column for ellipsoid heights). The defined datum for this set of
+#' coordinates is WGS84 (https://epsg.io/4326).
+#'
+#' \item\code{4979}: WGS84, geodetic coordinate system. The columns in \code{x}
+#' must be defined as Longitude, Latitude and Ellipsoid Height respectively.
+#' The defined datum for this set of coordinates is WGS84 (https://epsg.io/4979)
+#'
+#' \item\code{4978}: WGS84, geodetic coordinate system. The columns in \code{x}
+#' must be defined as cartesian coordinates x, y and z. The
+#' defined datum for this set of coordinates is WGS84 (https://epsg.io/4978)
 #'
 #' \item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in
 #' \code{x} must be defined as Longitude and Latitude values respectively. The
 #' defined datum for this set of coordinates is OSGB 1936
 #' (https://epsg.io/4277). \emph{Coordinates defined like this should only be
-#' used for historical reasons.}
+#' used for historical reasons.} \strong{Height values will be discarded when
+#' working with this coordinate system.}
 #'
-#' \item\code{27700}: British National Grid, projected coordinate system. The 2
-#' columns in \code{x} must be defined as Easting and Northing values
-#' respectively. The defined datum for this set of coordinates is OSGB 1936
-#' (https://epsg.io/27700).
+#' \item\code{27700}: British National Grid, projected coordinate system. The
+#' columns in \code{x} must be defined as Easting and Northing (\code{sgs} also
+#' accepts a third column for orthometric heights). The defined datum for this
+#' set of coordinates is OSGB 1936 (https://epsg.io/27700).
 #'
-#' \item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in
-#' \code{x} must be defined as Longitude and Latitude values respectively. The
-#' defined datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
+#' \item\code{7405}: British National Grid, projected coordinate system. The
+#' columns in \code{x} must be defined as Easting, Northing and ODN Orthometric
+#' height respectively (\code{sgs} accepts heights from other datums like
+#' Orkney, Lerwick, Stornoway, Douglas, St.Marys and 'Newlyn offshore').
+#' The defined datum for this set of coordinates is OSGB 1936
+#' (https://epsg.io/7405).
+#'
+#' \item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
+#' columns in \code{x} must be defined as Easting and Northing. The defined
+#' datum for this set of coordinates is WGS84 (https://epsg.io/3857)
 #' }
+#'
 #' @return
 #' An object of class \code{sgs_points}.
-#' @seealso \code{\link{sgs_polygons}}, \code{\link{sgs_points_xy}},
-#' \code{\link{sgs_points_sf}}, \code{\link{sgs_set_gcs}}.
+#' @seealso \code{\link{sgs_coordinates}}, \code{\link{sgs_transform}}.
 #' @examples
 #' # lists:
 #' p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
@@ -60,7 +95,8 @@
 #' lat <- c(55.86424, 55.95325)
 #' p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' #p3 will fill up the list 'desc' up to 2 elements with NA's:
-#' p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"), epsg=4326)
+#' p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"),
+#'                  coords=c("longitude", "latitude"), epsg=4326)
 #' # dataframe:
 #' ln <- c(-4.22472, -2.09908)
 #' lt <- c(57.47777, 57.14965)
@@ -76,7 +112,8 @@
 #' points(x=p4$lon, y=p4$lat, pch=0, col="red")
 #' }
 #' @export
-sgs_points <- function (x, coords=NULL, epsg=NULL) UseMethod("sgs_points")
+sgs_points <- function (x, coords=NULL, epsg=NULL)
+  UseMethod("sgs_points")
 
 #' @export
 sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
@@ -86,38 +123,74 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if (len < 2) stop("This method accepts lists with at least 2 columns")
 
   if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
-    stop("'epsg' must be entered as 4326, 3857, 4277, 27700 or 4258")
+    stop("'epsg' must be entered as one of the accepted numbers")
   }
 
-  if (len == 2 && is.null(names(x)) ) {
-    coords <- coordinates.names[1, ] #just because
+  if (len < 4 && is.null(names(x)) ) {
+    coords <- coordinates.names[1, 1:len] #c(x,y,(z)) just because
     names(x) <- coords
   }
 
   if(is.null(coords)) {
     lnames <- tolower(names(x))
     known.coords <- t(apply(coordinates.names, 1, function(n) n %in% lnames))
-    if (any(known.coords) && sum(known.coords, na.rm = TRUE) == 2) {
+    if (any(known.coords) && sum(known.coords, na.rm = TRUE) == len) {
       coords <- names(x)[lnames %in% coordinates.names[known.coords]]
     } else {
       stop("Must specify the coordinates columns using the 'coords' parameter")
     }
   }
 
-  if(!is.numeric(x[[coords[1]]]) | !is.numeric(x[[coords[2]]]))
-    stop("All coordinates must be numeric")
+  num.coords <- length(coords)
+
+  #check those epsgs that ONLY admit 2 and have 3, and viceversa
+  if ((epsg %in% epsgs[epsgs$dimension=="XY", "epsg"] && num.coords > 2) ||
+      (epsg %in% epsgs[epsgs$dimension=="XYZ", "epsg"] && num.coords < 3)) {
+    stop("Wrong number of coordinates for the The specified 'epsg'")
+  }
+
+  for (i in 1:num.coords) {
+    if (!is.numeric(x[[coords[i]]]) )
+      stop("All coordinates must be numeric")
+  }
+
+  dimension <- if(num.coords == 2) "XY" else "XYZ"
+
+  #correct 3D EPSG 4258, 4326, 27700 if needed
+  if (epsg %in% epsgs[epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
+    if (epsg == 4258) {
+      epsg <- 4937
+    } else if (epsg == 4326) {
+      epsg <- 4979
+    } else if (epsg == 27700) {
+      epsg <- 7405
+    }
+  }
+
+
+  if (dimension == "XY") {
+    point.coords <- list(x = x[[coords[1]]],
+                         y = x[[coords[2]]])
+  } else {
+    point.coords <- list(x = x[[coords[1]]],
+                         y = x[[coords[2]]],
+                         z = x[[coords[3]]])
+  }
 
   other.columns <- x[!(names(x) %in% coords)]
 
   if (length(other.columns)==0) {
     other.columns <- NULL
   } else {
-    # if other.columns contains the column names 'x' or 'y' we will remove them
-    # and warn the user about it.
+    # if other.columns contains the column names 'x', 'y' or 'z' we will remove
+    # them and warn the user about it.
     old.length <- length(other.columns)
-    other.columns <- other.columns[!(names(other.columns) %in% c("x", "y"))]
+    cols.to.check <- if(dimension == "XY") c("x", "y") else c("x", "y", "z")
+    other.columns <- other.columns[!(names(other.columns) %in% cols.to.check)]
     if (length(other.columns) != old.length) {
-      warning("Any column from input data named 'x' or 'y' has been removed")
+      warning(paste0("Any column from input data named ",
+                     paste(cols.to.check, collapse = ", "),
+                     " has been removed"))
     }
 
     # all additional columns will expanded to contain the same number of
@@ -130,33 +203,11 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
                        expand.columns)
   }
 
-  points <- switch(as.character(epsg),
-                   "4326" = structure(c(other.columns,
-                                        list(x = x[[coords[1]]],
-                                             y = x[[coords[2]]],
-                                             epsg=epsg, datum="WGS84")),
-                                      class="sgs_points"),
-                   "3857" = structure(c(other.columns,
-                                         list(x = x[[coords[1]]],
-                                              y = x[[coords[2]]],
-                                              epsg=epsg, datum="WGS84")),
-                                       class="sgs_points"),
-                   "4277" = structure(c(other.columns,
-                                        list(x = x[[coords[1]]],
-                                             y = x[[coords[2]]],
-                                             epsg=epsg, datum="OSGB36")),
-                                      class="sgs_points"),
-                   "27700" = structure(c(other.columns,
-                                        list(x = x[[coords[1]]],
-                                             y = x[[coords[2]]],
-                                             epsg=epsg, datum="OSGB36")),
-                                      class="sgs_points"),
-                   "4258" = structure(c(other.columns,
-                                         list(x = x[[coords[1]]],
-                                              y = x[[coords[2]]],
-                                              epsg=epsg, datum="ETRS89")),
-                                       class="sgs_points")
-  )
+  points <- structure(c(other.columns, point.coords,
+                        epsg=epsg,
+                        datum=epsgs[epsgs$epsg==epsg, "datum"],
+                        dimension=dimension),
+                      class="sgs_points")
 
 }
 
@@ -168,13 +219,13 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
   if (cols < 2) stop("This method accepts dataframes with at least 2 columns")
 
   if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
-    stop("'epsg' must be entered as 4326, 3857, 4277, 27700 or 4258")
+    stop("'epsg' must be entered as one of the accepted numbers")
   }
 
   # the names we apply don't matter for the rest of the function
   # when there are only 2 columns
   if (cols == 2) {
-    coords <- coordinates.names[1, ] #just because
+    coords <- coordinates.names[1, 1:cols] #just because
     names(x) <- coords
   }
 
@@ -182,76 +233,76 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
 
 }
 
-#' @export
-sgs_points.sf <- function (x, coords=NULL, epsg=NULL) {
+## @export
+#sgs_points.sf <- function (x, coords=NULL, epsg=NULL) {
+#
+#  epsg <- sf_checks(x, epsg)
+#
+#  coordinates <- sf::st_coordinates(x)
+#  coords <- colnames(coordinates)
+#  rownames(coordinates) <- NULL
+#
+#  sf::st_geometry(x) <- NULL
+#  sgs_points(as.list(cbind(x, coordinates)), coords=coords, epsg=epsg)
+#
+#}
 
-  epsg <- sf_checks(x, epsg)
-
-  coordinates <- sf::st_coordinates(x)
-  coords <- colnames(coordinates)
-  rownames(coordinates) <- NULL
-
-  sf::st_geometry(x) <- NULL
-  sgs_points(as.list(cbind(x, coordinates)), coords=coords, epsg=epsg)
-
-}
-
-#' @export
-sgs_points.sfc <- function (x, coords=NULL, epsg=NULL) {
-
-  epsg <- sf_checks(x, epsg)
-
-  coordinates <- sf::st_coordinates(x)
-  coords <- colnames(coordinates)
-  rownames(coordinates) <- NULL
-
-  lst <- list(coordinates[, 1], coordinates[, 2])
-  names(lst) <- coords
-  sgs_points(lst, coords=coords, epsg=epsg)
-
-}
+## @export
+#sgs_points.sfc <- function (x, coords=NULL, epsg=NULL) {
+#
+#  epsg <- sf_checks(x, epsg)
+#
+#  coordinates <- sf::st_coordinates(x)
+#  coords <- colnames(coordinates)
+#  rownames(coordinates) <- NULL
+#
+#  lst <- list(coordinates[, 1], coordinates[, 2])
+#  names(lst) <- coords
+#  sgs_points(lst, coords=coords, epsg=epsg)
+#
+#}
 
 
-#' @encoding UTF-8
-#' @title Convert sgs_points objects to sf objects
-#'
-#' @description
-#' Converts \code{sgs_points} objects to instances of class \code{sf}. \pkg{sf}
-#' is a package that allows working with spatial vector data.
-#'
-#' The reverse conversion (from \code{sf} to \code{sgs_points}) is done
-#' automatically by the \code{\link{sgs_points}} constructor.
-#'
-#' @name sgs_points_sf
-#' @usage sgs_points_sf(x)
-#' @param x An instance of \code{sgs_points}.
-#' @return
-#' An object of class \code{sf}.
-#' @examples
-#' p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
-#' sf.p <- sgs_points_sf(p)
-#' sf::st_crs(sf.p)
-#' @export
-sgs_points_sf <- function (x) UseMethod("sgs_points_sf")
+## @encoding UTF-8
+## @title Convert sgs_points objects to sf objects
+##
+## @description
+## Converts \code{sgs_points} objects to instances of class \code{sf}. \pkg{sf}
+## is a package that allows working with spatial vector data.
+##
+## The reverse conversion (from \code{sf} to \code{sgs_points}) is done
+## automatically by the \code{\link{sgs_points}} constructor.
+##
+## @name sgs_points_sf
+## @usage sgs_points_sf(x)
+## @param x An instance of \code{sgs_points}.
+## @return
+## An object of class \code{sf}.
+## @examples
+## p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
+## sf.p <- sgs_points_sf(p)
+## sf::st_crs(sf.p)
+## @export
+#sgs_points_sf <- function (x) UseMethod("sgs_points_sf")
 
-#' @export
-sgs_points_sf.sgs_points <-function(x) {
-
-  x <- unclass(x)
-  names <- names(x)
-  columns <- !names %in% c("epsg", "datum")
-
-  len.coords <- length(x$x)
-
-  # Ensure all extra columns have the same numbers of elements as coordinates
-  # This means there won't be 'recycling' of elements
-  x[columns] <- lapply(x[columns], function(col, len) {
-                                    length(col) <- len; col}, len=len.coords)
-
-  sf::st_as_sf(data.frame(x[columns], stringsAsFactors = FALSE),
-               coords=c("x", "y"), crs =x$epsg, dim="XY")
-
-}
+## @export
+#sgs_points_sf.sgs_points <-function(x) {
+#
+#  x <- unclass(x)
+#  names <- names(x)
+#  columns <- !names %in% c("epsg", "datum")
+#
+#  len.coords <- length(x$x)
+#
+#  # Ensure all extra columns have the same numbers of elements as coordinates
+#  # This means there won't be 'recycling' of elements
+#  x[columns] <- lapply(x[columns], function(col, len) {
+#                                    length(col) <- len; col}, len=len.coords)
+#
+#  sf::st_as_sf(data.frame(x[columns], stringsAsFactors = FALSE),
+#               coords=c("x", "y"), crs =x$epsg, dim="XY")
+#
+#}
 
 #' @encoding UTF-8
 #' @title Extracts coordinates from an \code{sgs_points} object
@@ -259,19 +310,30 @@ sgs_points_sf.sgs_points <-function(x) {
 #' @description
 #' Extract the coordinates of an \code{sgs_points} object expressed as a matrix.
 #'
-#' @name sgs_points_xy
+#' @name sgs_points_xy-deprecated
 #' @usage sgs_points_xy(x)
 #' @param x An instance of \code{sgs_points}.
 #' @return
 #' A matrix with 2 named columns.
+#' @seealso \code{\link{sgs-deprecated}}
+#' @keywords internal
 #' @examples
+#' \dontrun{
 #' p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
 #' coords <- sgs_points_xy(p)
+#' }
+NULL
+
+#' @rdname sgs-deprecated
+#' @section \code{sgs_points_xy}:
+#' For \code{sgs_points_xy}, use \code{\link{sgs_coordinates}}.
+#'
 #' @export
 sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
 
 #' @export
 sgs_points_xy.sgs_points <-function(x) {
+  .Deprecated("sgs_coordinates")
 
   coords <- c("x", "y")
 
@@ -282,13 +344,43 @@ sgs_points_xy.sgs_points <-function(x) {
 
 }
 
+#' @encoding UTF-8
+#' @title Extracts coordinates from an \code{sgs_points} object
+#'
+#' @description
+#' Extract the coordinates of an \code{sgs_points} object expressed as a matrix.
+#'
+#' @name sgs_coordinates
+#' @usage sgs_coordinates(x)
+#' @param x An instance of \code{sgs_points}.
+#' @return
+#' A matrix with 2 or 3 named columns.
+#' @examples
+#' p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
+#' coords <- sgs_coordinates(p)
+#'
+#' @export
+sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
+
+#' @export
+sgs_coordinates.sgs_points <- function(x) {
+
+  coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
+
+  xyz <- matrix(unlist(x[coords]), ncol=length(coords))
+  colnames(xyz) <- coords
+
+  xyz
+
+}
+
 # TODO export
 # Extending '[' function to support sgs_points:
 # Attributes are usually lost when subsetting lists, therefore we need to
 # extend a subsetting operator that will keep all attributes of our object.
 `[.sgs_points` <- function(x, i, ...) {
 
-  core.cols <- sgs_points.core[!sgs_points.core %in% c("x", "y")]
+  core.cols <- sgs_points.core[!sgs_points.core %in% c("x", "y", "z")]
 
   r <- NextMethod("[")
   if ( all(core.cols %in% names(r)) ) class(r) <- "sgs_points"
@@ -298,6 +390,7 @@ sgs_points_xy.sgs_points <-function(x) {
 }
 
 #TODO export
+# does this actually make sense?? other.columns should be the same? and the number of points? etc
 #c.sgs_points <- function(..., recursive = FALSE) {
 c.sgs_points <- function(...) {
 
@@ -306,19 +399,27 @@ c.sgs_points <- function(...) {
 
   if (all(classes == "sgs_points")) { #merge them
 
-    if (length(unique(sapply(dots, `[`, "epsg"))) == 1) { #all equal
-      coords <- do.call(mapply,
-                        c(FUN=c, lapply(dots, `[`, c("longitude", "latitude"))))
+    #all equal
+    if (length(unique(lapply(dots, `[`, "epsg"))) == 1) {
+
+      coord.cols <- if (dots[[1]]$dimension == "XY") c("x", "y")
+                      else c("x", "y", "z")
+      coords <- do.call(mapply, c(FUN=c, lapply(dots, `[`, coord.cols)))
       coords <- split(coords, col(coords))
 
       other.columns <- unlist(sapply(dots, function(x, n) {x[!names(x) %in% n]},
                                      n=sgs_points.core), recursive=FALSE)
 
       r <- structure(c(other.columns,
-                       list(coords, epsg=dots[[1]]$epsg, datum=dots[[1]]$datum)),
+                       list(coords, epsg=dots[[1]]$epsg,
+                            datum=dots[[1]]$datum,
+                            dimension=dots[[1]]$dimension)),
                      class = "sgs_points")
+
     } else { #different EPSG's we cannot merge
+
       stop("Objects with different EPSG codes cannot be combined")
+
     }
 
   } else { #only the first one can be sgs_points
@@ -336,6 +437,10 @@ c.sgs_points <- function(...) {
 }
 
 #TODO improve print! and export
+#If you’re implementing more complicated print() methods, it’s a better idea to
+#implement format() methods that return a string, and then implement
+#print.class <- function(x, ...) cat(format(x, ...), "\n". This makes for methods
+#that are much easier to compose, because the side-effects are isolated to a single place.
 print.sgs_points <- function(x) {
   #ADD attributes like sgs_x and sgs_y to sgspoints so we save all those coordinate checkins:
   #like: attr(p1, "sgs_x") <-"latitude" (or easting)
@@ -350,14 +455,14 @@ print.sgs_points <- function(x) {
 
 }
 
+#TODO
+#create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
+#implement: length, [, [<-, [[, [[<-, c. (If [ is implemented rev, head, and tail should all work).
+#implement Summary?
+#implement cbind, rbind
 
-#TODO perhaps add functionality to connect to arcgis server?? and what about WMS?
-#library(httr)
-#library(jsonlite)
-
-#call1 <-"http://sepa-app-gis01/arcgis/rest/services/Utilities/Geometry/GeometryServer/project?inSR=27700&outSR=4326&geometries=%7B%22geometries%22%3A+%5B%7B%22xmin%22%3A376899.62711532967%2C%22ymin%22%3A3773691.3005017433%2C%22xmax%22%3A377475.15287916746%2C%22ymax%22%3A3774194.0492160516%7D%5D%2C%22geometryType%22%3A%22esriGeometryEnvelope%22%7D&transformation=5339&transformForward=true&vertical=false&f=json"
-#get_geo <- GET(call1)
-#get_geo_text <- content(get_geo, "text")
-#get_geo_json <- fromJSON(get_geo_text, flatten = TRUE) #or true?
-#get_geo_df <- as.data.frame(get_geo_json)
-######do results come in multiples pages?
+#work with EPSGs
+#4277 (only 2D), 27700, 7405 (assume it works for ODN heights, so show datum flag in output!) -> OSGB36
+#4258, 4937, 4936 (assume h=0 when XY only) -> ETRS89
+#4326, 4979, 4978 (assume h=0 when XY only) -> WGS84
+#3857 -> Pseudo-Mercator

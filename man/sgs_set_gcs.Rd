@@ -12,8 +12,8 @@ sgs_set_gcs(x, to = NULL)
 coordinate system.}
 
 \item{to}{Specifies the EPSG code to convert the coordinates to. Currently it
-can take any of the following values: \code{4258}, \code{4326} or
-\code{4277}.}
+can take any of the following values: \code{4258}, \code{4937}, \code{4936},
+\code{4326}, \code{4979}, \code{4978} or \code{4277}.}
 }
 \value{
 An object of class 'sgs_points'.
@@ -30,8 +30,8 @@ assumed to be accurate to better than a meter; between OSGB36 and WGS84
 somewhat less - the lost of accuracy can be up to ±5m when using single
 Helmert transformations).
 
-Input points with a projected coordinate system (e.g. 27700 or 3857) are not
-allowed.
+Input points with a projected coordinate system (e.g. 27700, 7405 or 3857)
+are not allowed.
 
 \strong{Warning}
 This function is mainly for internal use of the program. Since it relies on a

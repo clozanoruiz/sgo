@@ -49,9 +49,9 @@ res
 
 # grid references returned by sgs_bng_ngr are within an
 # element (column) named 'ngr'
-grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338,
-                                    name="Ben Venue"),
-                                epsg=27700))
+grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+                               coords=c("x","y"),
+                               epsg=27700))
 bng <- sgs_ngr_bng(grid, col="ngr")
 
 # test

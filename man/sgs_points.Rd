@@ -3,61 +3,96 @@
 \encoding{UTF-8}
 \name{sgs_points}
 \alias{sgs_points}
-\title{Object containing 2D point coordinates}
+\title{Object containing 2D or 3D point coordinates}
 \usage{
 sgs_points(x, coords=NULL, epsg = NULL)
 }
 \arguments{
 \item{x}{A list or dataframe with at least 2 columns of either
-easting/northing or longitude/latitude coordinates per row - depending on
-\code{epsg}. \strong{Please note} that the order is important: lat/lon or
-northing/easting will produce wrong results.
+easting/northing or longitude/latitude coordinates per row. A third column
+with height values is optional.
+\strong{Please note} that the order is important when \code{x} has only 2 or
+3 columns and \code{coords} is not informed: lat/lon or northing/easting
+(and height) will produce wrong results.}
 
-It also accepts objects of class \code{sf POINT/MULTIPOINT} or
-\code{sfc POINT/MULTIPOINT}.}
-
-\item{coords}{A vector with the names of the columns containing the
-easting/northing (or longitude/latitude) coordinates.}
+\item{coords}{A vector with the names of the two or three columns containing
+the X (easting or longitude), Y (northing or latitude) and optionally Z
+(ellipsoid or orthometric height) coordinates.}
 
 \item{epsg}{Specifies the EPSG code of coordinates to store. It can take any
-of the following values: \code{4326}, \code{3857}, \code{4277}, \code{27700}
-or \code{4258}.}
+of the following values:
+\itemize{
+\item when working with (2D/3D) ETRS89 Datum: \code{4258}, \code{4937},
+\code{4936}
+\item when working with (2D/3D) WGS84 Datum:\code{4326}, \code{4979},
+\code{4978}
+\item when working with (2D/3D) OSGB36 Datum:\code{4277}, \code{27700},
+\code{7405}
+\item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
+}}
 }
 \value{
 An object of class \code{sgs_points}.
 }
 \description{
-2D coordinates (and other attributes) of a point or collection of points
+2D or 3D coordinates (and other attributes) of a point or collection of
+points
 }
 \details{
-This object stores 2D point coordinates and any other column-list of
+This object stores 2D or 3D point coordinates and any other column-list of
 attributes related to each point. Note that additional column-lists will be
-expanded with \code{NA} values if they contain less elements than coordinates.
-Currently it only supports 5 \code{epsg}s for coordinates:
+expanded with \code{NA} values if they contain less elements than
+coordinates. Currently it only supports the following \code{epsg}s:
 \itemize{
-\item\code{4326}: WGS84, geodetic coordinate system. The 2 columns in
-\code{x} be defined as Longitude and Latitude values respectively. The
-defined datum for this set of coordinates is WGS84 (https://epsg.io/4326)
+\item\code{4258}: ETRS89, geodetic coordinate system. The columns in
+\code{x} must be defined as Longitude and Latitude (\code{sgs} also accepts
+a third column for ellipsoid heights). The defined datum for this set of
+coordinates is ETRS89 (https://epsg.io/4258).
 
-\item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
-2 columns in \code{x} must be defined as Easting and Northing values
-respectively. The defined datum for this set of coordinates is WGS84
-(https://epsg.io/3857)
+\item\code{4937}: ETRS89, geodetic coordinate system. The columns in
+\code{x} must be defined as Longitude, Latitude and Ellipsoid Heights
+respectively. The defined datum for this set of coordinates is ETRS89
+(https://epsg.io/4937).
+
+\item\code{4936}: ETRS89, geodetic coordinate system. The columns in
+\code{x} must be defined as cartesian coordinates x, y and z. The defined
+datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
+
+\item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
+must be defined as Longitude and Latitude (\code{sgs} also accepts a
+third column for ellipsoid heights). The defined datum for this set of
+coordinates is WGS84 (https://epsg.io/4326).
+
+\item\code{4979}: WGS84, geodetic coordinate system. The columns in \code{x}
+must be defined as Longitude, Latitude and Ellipsoid Height respectively.
+The defined datum for this set of coordinates is WGS84 (https://epsg.io/4979)
+
+\item\code{4978}: WGS84, geodetic coordinate system. The columns in \code{x}
+must be defined as cartesian coordinates x, y and z. The
+defined datum for this set of coordinates is WGS84 (https://epsg.io/4978)
 
 \item\code{4277}: OSGB36, geodetic coordinate system. The 2 columns in
 \code{x} must be defined as Longitude and Latitude values respectively. The
 defined datum for this set of coordinates is OSGB 1936
 (https://epsg.io/4277). \emph{Coordinates defined like this should only be
-used for historical reasons.}
+used for historical reasons.} \strong{Height values will be discarded when
+working with this coordinate system.}
 
-\item\code{27700}: British National Grid, projected coordinate system. The 2
-columns in \code{x} must be defined as Easting and Northing values
-respectively. The defined datum for this set of coordinates is OSGB 1936
-(https://epsg.io/27700).
+\item\code{27700}: British National Grid, projected coordinate system. The
+columns in \code{x} must be defined as Easting and Northing (\code{sgs} also
+accepts a third column for orthometric heights). The defined datum for this
+set of coordinates is OSGB 1936 (https://epsg.io/27700).
 
-\item\code{4258}: ETRS89, geodetic coordinate system. The 2 columns in
-\code{x} must be defined as Longitude and Latitude values respectively. The
-defined datum for this set of coordinates is ETRS89 (https://epsg.io/4258).
+\item\code{7405}: British National Grid, projected coordinate system. The
+columns in \code{x} must be defined as Easting, Northing and ODN Orthometric
+height respectively (\code{sgs} accepts heights from other datums like
+Orkney, Lerwick, Stornoway, Douglas, St.Marys and 'Newlyn offshore').
+The defined datum for this set of coordinates is OSGB 1936
+(https://epsg.io/7405).
+
+\item\code{3857}: WGS 84 / Pseudo-Mercator, projected coordinate system. The
+columns in \code{x} must be defined as Easting and Northing. The defined
+datum for this set of coordinates is WGS84 (https://epsg.io/3857)
 }
 }
 \examples{
@@ -66,7 +101,9 @@ p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 lon <- c(-4.25181,-3.18827)
 lat <- c(55.86424, 55.95325)
 p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#p3 will expand the list 'desc' up to 2 elements with NA's
+#p3 will fill up the list 'desc' up to 2 elements with NA's:
+p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"),
+                 coords=c("longitude", "latitude"), epsg=4326)
 # dataframe:
 ln <- c(-4.22472, -2.09908)
 lt <- c(57.47777, 57.14965)
@@ -83,6 +120,5 @@ points(x=p4$lon, y=p4$lat, pch=0, col="red")
 }
 }
 \seealso{
-\code{\link{sgs_polygons}}, \code{\link{sgs_points_xy}},
-\code{\link{sgs_points_sf}}, \code{\link{sgs_set_gcs}}.
+\code{\link{sgs_coordinates}}, \code{\link{sgs_transform}}.
 }

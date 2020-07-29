@@ -1,29 +1,31 @@
-################################################################################
-#                                                                              #
-# Adapted from 'Geo-Coordinates-OSGB-2.20', a Perl routine by Toby Thurston:   #
-# https://metacpan.org/release/Geo-Coordinates-OSGB                            #
-#                                                                              #
-################################################################################
-
 #' @encoding UTF-8
 #' @title GCS to BNG Easting/Northing
 #'
 #' @description
 #' Converts a geodetic coordinate system to BNG (projected) Easting/Northing
-#' coordinates.
+#' coordinates. It also transforms GPS ellipsoid heights to orthometric
+#' (mean sea level) heights on the relevant Ordnance Survey mapping datum, using
+#' the National Geoid Model OSGM15.
 #'
 #' @name sgs_lonlat_bng
-#' @usage sgs_lonlat_bng(x, OSTN=TRUE)
+#' @usage sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=TRUE)
 #' @param x A \code{sgs_points} object with coordinates defined in a Geodetic
-#' Coordinate System (e.g. epsg=4258, 4326 or 4277)
+#' Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
+#' 4326, 4979 or 4277)
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
-#' when TRUE or
-#' a less accurate but slightly faster single Helmert transformation when FALSE.
+#' when TRUE or a less accurate but slightly faster single Helmert
+#' transformation when FALSE.
+#' @param ODN.datum Logical variable. When TRUE, a new column will be added to
+#' the result indicating the ODN datum used on each point. It is ignored when
+#' \code{OSTN=FALSE}.
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
 #' ETRS89 for longitude/latitude coordinates. Thus, \code{x} should be defined
 #' as ETRS89 (or WGS84) most of the times.
+#'
+#' When transforming from EPSG=4277 any height included in the input will be
+#' simply discarded.
 #'
 #' According to the Transformations and OSGM15 User Guide, p. 8:
 #' \emph{"...ETRS89 is a precise version of the better known WGS84 reference
@@ -31,19 +33,23 @@
 #' considered equivalent to WGS84."} and \emph{"For all navigation, mapping,
 #' GIS, and engineering applications within the tectonically stable parts of
 #' Europe (including UK and Ireland), the term ETRS89 should be taken as
-#' synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
-#' EPSG:4326(WGS84) will be considered equivalent by this routine.
+#' synonymous with WGS84."} This means that EPSGs with the ETRS89 datum or
+#' WGS84 will be considered equivalent by this routine.
 #'
 #' \strong{Note}: All those coordinates outside the rectangle covered by OSTN15
 #' will be automatically computed using the small Helmert transformation. Such
 #' coordinates will be accurate up to about +/-5 metres, therefore the resulting
-#' easting and northing coordinates will be rounded to the metre.
+#' easting and northing coordinates will be rounded to the metre. Since those
+#' coordinates are outside of the OSTN15 domain the resulting coordinates will
+#' have the resulting height defined as \code{NA}.
+#' Similarly, when using \code{OSTN=FALSE} on 3D coordinates, the result will
+#' have all the heights defined as \code{NA}.
 #' Converting from lon/lat to BNG coordinates is faster than the other way
 #' around, due to the iterative nature of the algorithm that is built into
 #' OSTN15.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Easting/Northing (epsg=27700). They are adjusted to the SW corner of
+#' Easting/Northing (epsg=27700 or 7405). They are adjusted to the SW corner of
 #' 1m grid square.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_lonlat}},
 #' \code{\link{sgs_set_gcs}}.
@@ -55,13 +61,15 @@
 #' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' bng.pts <- sgs_lonlat_bng(pts)
 #' @export
-sgs_lonlat_bng <- function(x, OSTN=TRUE) UseMethod("sgs_lonlat_bng")
+sgs_lonlat_bng <- function(x, OSTN=TRUE, ODN.datum=TRUE)
+  UseMethod("sgs_lonlat_bng")
 
 #' @export
-sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
+sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
 
-  if (x$epsg == 27700)
-    stop("This routine only supports geodetic coordinate systems")
+  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, c("type", "format")]
+  if (coord.system$type != "GCS" || coord.system$format != "ll")
+    stop("This routine only only accepts Geodetic Coordinate Systems")
 
   core.cols <- sgs_points.core
 
@@ -70,13 +78,19 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 
   # Convert datum from WGS84 to ETRS89
   # Currently we consider both EPSGs practically equal
-  #if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
-  if (x$epsg == 4326) {
-    x$epsg <- 4258
-    x$datum <- epsgs[epsgs[, "epsg"] == 4258, "datum"]
+  # otherwise: if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
+  if (x$datum == "WGS84") {
+    if (x$epsg == 4326) {
+      x$epsg <- 4258
+      x$datum <- epsgs[epsgs[, "epsg"] == 4258, "datum"]
+    } else {
+      x$epsg <- 4937
+      x$datum <- epsgs[epsgs[, "epsg"] == 4937, "datum"]
+    }
   }
 
   if (OSTN) {
+    out.of.bounds <- FALSE # as of now no coordinate out of bounds
 
     projected <- project.onto.grid(x$x, x$y, x$datum)
     e <- projected[, 1]
@@ -92,9 +106,9 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
     }
 
     # If datum is WGS84/ETRS89, we need to adjust with OSTN15
-    if (x$epsg == 4258) {
+    if (x$epsg %in% c(4258, 4937)) {
 
-      shifts <- find.OSTN.shifts.at(e, n)
+      shifts <- find.OSTN.shifts.at(e, n, x$dimension == "XYZ")
       # Round to mm precision
       e <- round(e + shifts$dx, 3)
       n <- round(n + shifts$dy, 3)
@@ -102,6 +116,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
       # Helmert shift into OSGB36 and then reproject all those coordinates
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
+        out.of.bounds <- TRUE
         helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
         helmert.projected <- project.onto.grid(helmert.x$x,
                                                helmert.x$y,
@@ -123,11 +138,27 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 
   } # end if (OSTN)
 
-  # Return values
-  en <- list(x=e, y=n)
-  if (num.elements > 0) en <- c(x[additional.elements], en)
 
-  return (sgs_points(en, coords=c("x", "y"), epsg=27700))
+  # Return values
+  if (OSTN && x$dimension == "XYZ") {
+    if (ODN.datum) {
+      en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3), gf=shifts$gf)
+    } else {
+      en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
+    }
+    coords <- c("x", "y", "z")
+    epsg <- 7405
+  } else {
+    en <- list(x=e, y=n)
+    coords <- c("x", "y")
+    epsg <- 27700
+  }
+  if (OSTN && out.of.bounds) {
+    warning("There are points outside of the OSTN15 rectangle")
+  }
+
+  if (num.elements > 0) en <- c(x[additional.elements], en)
+  return (sgs_points(en, coords=coords, epsg=epsg))
 
 }
 
@@ -142,7 +173,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 #' @name sgs_bng_lonlat
 #' @usage sgs_bng_lonlat(x, to = 4258, OSTN = TRUE)
 #' @param x A \code{sgs_points} object with coordinates defined in the projected
-#' coordinate system BNG (epsg=27700)
+#' coordinate system BNG (EPSGs 27700 or 7405)
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
 #' Coordinate System. 4258 (ETRS89) by default.
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
@@ -161,8 +192,8 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE) {
 #' considered equivalent to WGS84."} and \emph{"For all navigation, mapping,
 #' GIS, and engineering applications within the tectonically stable parts of
 #' Europe (including UK and Ireland), the term ETRS89 should be taken as
-#' synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
-#' EPSG:4326(WGS84) will be considered equivalent by this routine.
+#' synonymous with WGS84."} This means that ETRS89 and WGS84 datums will be
+#' considered equivalent by this routine.
 #'
 #' If, for historical reasons, longitude/latitude coordinates must have the old
 #' OSGB36 datum, then the parameter \code{to} must be set to 4277.
@@ -190,32 +221,43 @@ sgs_bng_lonlat <- function(x, to=4258, OSTN=TRUE) UseMethod("sgs_bng_lonlat")
 #' @export
 sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
-  if (x$epsg != 27700)
+  if (!x$epsg %in% c(27700, 7405))
     stop("This routine only supports BNG Easting and Northing entries")
-  if (!to %in% c(4258, 4326, 4277))
-    stop("This routine only supports converting to epsg 4258, 4277 or 4326")
+
+  out.dimension <- epsgs[epsgs[, "epsg"]==to, "dimension"]
+
+  if (!OSTN && out.dimension == "XYZ")
+    stop("The destination EPSG cannot be 3D when not using OSTN15")
+
+  if (x$dimension == "XY" && out.dimension == "XYZ")
+    stop("The destination EPSG cannot be 3D when the input are 2D points")
+
+  if (!to %in% c(4258, 4937, 4326, 4979, 4277))
+    stop("This routine only supports converting to polar coordinates")
 
   core.cols <- sgs_points.core
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
+  has.z <- x$dimension == "XYZ"
 
   if (OSTN) {
+    out.of.bounds <- FALSE # as of now no coordinate out of bounds
 
     if (to == 4277) {
       unprojected <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
     }
 
-    if (to == 4258 || to == 4326) {
+    if (to %in% c(4258, 4937, 4326, 4979)) {
 
-      shifts <- find.OSTN.shifts.at(x$x, x$y)
+      shifts <- find.OSTN.shifts.at(x$x, x$y, has.z)
       e <- x$x - shifts$dx
       n <- x$y - shifts$dy
       last.shifts <- shifts
 
       for (i in c(1:20)) {
 
-        shifts <- find.OSTN.shifts.at(e, n)
+        shifts <- find.OSTN.shifts.at(e, n, has.z)
         if (all(shifts$out) == TRUE) {
           # all coordinates have been shifted off the edge
           break
@@ -223,8 +265,8 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
         e <- x$x - shifts$dx
         n <- x$y - shifts$dy
-        if (max(abs(shifts$dx - last.shifts$dx)) < 0.0001 &&
-            max(abs(shifts$dy - last.shifts$dy)) < 0.0001) { break }
+        if (max(abs(shifts$dx - last.shifts$dx), na.rm=TRUE) < 0.0001 &&
+            max(abs(shifts$dy - last.shifts$dy), na.rm=TRUE) < 0.0001) { break }
         last.shifts <- shifts
 
       }
@@ -234,7 +276,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       unprojected <- cbind(items, items, deparse.level = 0)
 
       # unproject any shifted coordinates
-      if (any(shifts$out) == FALSE) {
+      if (any(shifts$out == FALSE)) {
         e <- x$x[!shifts$out] - shifts$dx[!shifts$out]
         n <- x$y[!shifts$out] - shifts$dy[!shifts$out]
         unprojected[!shifts$out, ] <- unproject.onto.ellipsoid(e, n,
@@ -242,21 +284,34 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       }
 
       # unproject the rest of coordinates (the ones that couldn't be shifted)
-      if (any(shifts$out) == TRUE) {
+      if (any(shifts$out == TRUE)) {
+        out.of.bounds <- TRUE
         os.ll <- unproject.onto.ellipsoid(x$x[shifts$out],
                                           x$y[shifts$out], x$datum)
         os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]),
                                                coords=c("x", "y"),
                                                epsg=4277),
                                     to=to)
-        unprojected[shifts$out, ] <- cbind(x=os.ll.points$x,
-                                           y=os.ll.points$y)
+        unprojected[shifts$out, ] <- cbind(x=os.ll.points$x, y=os.ll.points$y)
       }
 
     }
-    unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
+
+    if (has.z && out.dimension == "XYZ") {
+      unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
+                          z=x$z + shifts$dz)
+      coords <- c("x", "y", "z")
+    } else {
+      unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
+      coords <- c("x", "y")
+    }
+
     if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
-    unprojected <- sgs_points(unprojected, coords=c("x", "y"), epsg=to)
+    unprojected <- sgs_points(unprojected, coords=coords, epsg=to)
+
+    if (out.of.bounds) {
+      warning("There are points outside of the OSTN15 rectangle")
+    }
 
   } else {  # single Helmert transformation
 
@@ -418,18 +473,20 @@ project.onto.grid <- function (lon, lat, datum) {
 }
 
 #Helper function. Get OSTN shift of coordinates
-find.OSTN.shifts.at <- function(e, n) {
+find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # Initialise list of shifts
   items <- rep(NA, length(e))
-  out <- rep(TRUE, length(e))
-  shifts <- list(dx=items, dy=items, out=out)
+  out <- rep(FALSE, length(e))
+  shifts <- list(dx=items, dy=items, dz=items, gf=items, out=out)
 
   # No need to continue when everything is NA
   if (all(is.na(e))) { return (shifts) }
 
-  # OSTN15 covers grid point (0, 0) to (700000,1250000)
-  out.of.bounds <- (e < 0L | e > 700000L) | (n < 0L | n > 1250000L)
+  # OSTN15 covers grid point (0, 0) to (700000, 1250000)
+  out.of.bounds <- (e < 0L | e > 700000L) |
+                   (n < 0L | n > 1250000L) |
+                   (is.na(e) | is.na(n))
   shifts$out <- out.of.bounds
 
 
@@ -439,39 +496,50 @@ find.OSTN.shifts.at <- function(e, n) {
     os.e <- e[!out.of.bounds] / 1000L
     os.n <- n[!out.of.bounds] / 1000L
 
-    min.ee.shift <- 82140L
-    min.nn.shift <- -84180L
-
     east.km <- trunc(os.e)
     north.km <- trunc(os.n)
 
-    # R 'lists' are 1-based
-    lle <- min.ee.shift + ostn_east_shift[east.km + north.km * 701L + 1L]
-    lre <- min.ee.shift + ostn_east_shift[east.km + north.km * 701L + 2L]
-    ule <- min.ee.shift + ostn_east_shift[east.km + north.km * 701L + 702L]
-    ure <- min.ee.shift + ostn_east_shift[east.km + north.km * 701L + 703L]
-
-    lln <- min.nn.shift + ostn_north_shift[east.km + north.km * 701L + 1L]
-    lrn <- min.nn.shift + ostn_north_shift[east.km + north.km * 701L + 2L]
-    uln <- min.nn.shift + ostn_north_shift[east.km + north.km * 701L + 702L]
-    urn <- min.nn.shift + ostn_north_shift[east.km + north.km * 701L + 703L]
+    # R 'lists' are 1-based (find which data records to use)
+    ll <- ostn_shifts[east.km + north.km * 701L + 1L, , drop=FALSE]
+    lr <- ostn_shifts[east.km + north.km * 701L + 2L, , drop=FALSE]
+    ul <- ostn_shifts[east.km + north.km * 701L + 702L, , drop=FALSE]
+    ur <- ostn_shifts[east.km + north.km * 701L + 703L, , drop=FALSE]
 
     t <- os.e - east.km
     u <- os.n - north.km
 
     one.t <- 1L - t
     one.u <- 1L - u
-    dx <- (one.t * one.u * lle
-           + t * one.u * lre
-           + one.t * u * ule
-           + t * u * ure)/1000L
-    dy <- (one.t * one.u * lln
-           + t * one.u * lrn
-           + one.t * u * uln
-           + t * u * urn)/1000L
+    dx <- (one.t * one.u * ll[, "e"]
+           + t * one.u * lr[, "e"]
+           + one.t * u * ul[, "e"]
+           + t * u * ur[, "e"])
+    dy <- (one.t * one.u * ll[, "n"]
+           + t * one.u * lr[, "n"]
+           + one.t * u * ul[, "n"]
+           + t * u * ur[, "n"])
 
     shifts$dx[!out.of.bounds] <- dx
     shifts$dy[!out.of.bounds] <- dy
+
+    if (z) {
+      dz <- (one.t * one.u * ll[, "g"]
+             + t * one.u * lr[, "g"]
+             + one.t * u * ul[, "g"]
+             + t * u * ur[, "g"])
+
+      llf <- as.integer(ll[, "f"])
+      lrf <- as.integer(lr[, "f"])
+      ulf <- as.integer(ul[, "f"])
+      urf <- as.integer(ur[, "f"])
+      gf <- ifelse(llf == lrf & lrf == ulf & ulf == urf, llf #all equal
+                 , ifelse(t <= 0.5 & u <= 0.5, llf #point in SW (or dead centre)
+                 , ifelse(t > 0.5 & u <= 0.5, lrf #point in SE quadrant
+                 , ifelse(t > 0.5 & u > 0.5, urf  #point in NE quadrant
+                 , ulf))))
+      shifts$dz[!out.of.bounds] <- dz
+      shifts$gf[!out.of.bounds] <- gf
+    }
 
   }
 

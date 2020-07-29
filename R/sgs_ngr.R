@@ -48,9 +48,9 @@
 #'
 #' # grid references returned by sgs_bng_ngr are within an
 #' # element (column) named 'ngr'
-#' grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338,
-#'                                     name="Ben Venue"),
-#'                                 epsg=27700))
+#' grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+#'                                coords=c("x","y"),
+#'                                epsg=27700))
 #' bng <- sgs_ngr_bng(grid, col="ngr")
 #'
 #' # test
@@ -179,7 +179,7 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' @name sgs_bng_ngr
 #' @usage sgs_bng_ngr(x, digits = 10)
 #' @param x A \code{sgs_points} object with coordinates defined as
-#' \code{epsg=27700}.
+#' \code{epsg=27700} or \code{epsg=7405}.
 #' @param digits Numeric. It defines the precision of the resulting grid
 #' references.
 #' @details
@@ -197,7 +197,8 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' A list with at least one element named 'ngr'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_ngr_bng}}.
 #' @examples
-#' sgs <- sgs_points(list(x=247455, y=706338, name="Ben Venue"), epsg=27700)
+#' sgs <- sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+#' coords=c("x", "y"), epsg=27700)
 #' grid10 <- sgs_bng_ngr(sgs)
 #' grid8 <- sgs_bng_ngr(sgs, digits=8)
 #' #and notice the truncating, not rounding, of grid8 regarding grid10.
@@ -208,7 +209,7 @@ sgs_bng_ngr <- function(x, digits=10) UseMethod("sgs_bng_ngr")
 #' @export
 sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
-  if (x$epsg != 27700)
+  if (!x$epsg %in% c(27700, 7405))
     stop("This routine only supports BNG Easting and Northing entries")
 
   if (digits%%2!=0 || digits>16)

@@ -1,13 +1,17 @@
-#' sgs: Simple GIS (In Spotfire).
+#' sgs: Simple GIS (with OSGB).
 #'
-#' The sgs package provides a set of functions to perform spatial or geographic
-#' analysis in R, or using 'TIBCO Spotfire' and 'TERR'.
+#' The sgs package aims to provide a set of functions to perform spatial or
+#' geographic analysis in R, 'TIBCO Spotfire' and 'TERR'. Currently it
+#' mainly permforms OSGB36/ETRS89 transformations using the Ordnance Survey's
+#' OSTN15 transformation model for Great Britain and the Isle of Man. It also
+#' transforms GPS ellipsoid heights to orthometric (mean sea level)
+#' heights on the relevant Ordnance Survey mapping datum, using the National
+#' Geoid Model OSGM15.
 #'
 #' @encoding UTF-8
 #' @section Object constructors:
 #' \itemize{
-#' \item\code{\link{sgs_points}}: 2D point coordinates
-#' \item\code{\link{sgs_polygons}}: \code{sf} polygons.
+#' \item\code{\link{sgs_points}}: 2D/3D point coordinates
 #' }
 #'
 #' @section Transformation and Conversion functions:
@@ -19,14 +23,14 @@
 #' References
 #' \item\code{\link{sgs_ngr_bng}}: National Grid References and British National
 #' Grid (E/N)
+#' \item\code{\link{sgs_cart_lonlat}}: 3D Earth Centred Earth Fixed (ECEF)
+#' Cartesian coordinates and polar coordinates
+#' \item\code{\link{sgs_lonlat_cart}}: Polar and 3D Cartesian coordinates
 #' \item\code{\link{sgs_wgs84_en}}: WGS84 Lon/Lat and Pseudo-Mercator (E/N)
 #' \item\code{\link{sgs_en_wgs84}}: Pseudo-Mercator (E/N) and WGS84 Lon/Lat
 #' \item\code{\link{sgs_transform}}: Wrapper for all the transformations above
-#' }
-#'
-#' Functions to convert between data formats:
-#' \itemize{
-#' \item\code{\link{sgs_points_sf}}: Conversion from sgs_points to sf
+#' \item\code{\link{sgs_coordinates}}: Extract coordinates from a
+#' \code{sgs_points} object
 #' }
 #'
 #' @section Disclaimer:

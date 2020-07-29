@@ -11,16 +11,8 @@
 file <- "./data-raw/OSTN15_OSGM15_DataFile.txt"
 OSTN15 <- read.csv(file)
 
-# Encode shift data as integers representing the shift in m
-ee <- OSTN15$ETRS89_OSGB36_EShift * 1000L
-nn <- OSTN15$ETRS89_OSGB36_NShift * 1000L
+ostn_shifts <- data.matrix(OSTN15[c("ETRS89_OSGB36_EShift", "ETRS89_OSGB36_NShift", "ETRS89_ODN_HeightShift", "Height_Datum_Flag")])
+colnames(ostn_shifts) <- c("e", "n", "g", "f")
 
-min_e <- min(ee)  #  82140
-min_n <- min(nn)  # -84180
-
-ostn_east_shift  <- ee - min_e
-ostn_north_shift <- nn - min_n
-
-save(ostn_east_shift, ostn_north_shift, file = "./R/sysdata.rda",
-     compress = "xz")
+save(ostn_shifts, file = "./R/sysdata.rda", compress = "xz")
 #load(file = "./R/sysdata.rda")

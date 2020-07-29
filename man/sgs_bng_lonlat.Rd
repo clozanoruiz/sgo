@@ -10,7 +10,7 @@ sgs_bng_lonlat(x, to = 4258, OSTN = TRUE)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object with coordinates defined in the projected
-coordinate system BNG (epsg=27700)}
+coordinate system BNG (EPSGs 27700 or 7405)}
 
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
 Coordinate System. 4258 (ETRS89) by default.}
@@ -40,13 +40,13 @@ system optimised for use in Europe; however, for most purposes it can be
 considered equivalent to WGS84."} and \emph{"For all navigation, mapping,
 GIS, and engineering applications within the tectonically stable parts of
 Europe (including UK and Ireland), the term ETRS89 should be taken as
-synonymous with WGS84."} This means that EPSG:4258(ETRS89) and
-EPSG:4326(WGS84) will be considered equivalent by this routine.
+synonymous with WGS84."} This means that ETRS89 and WGS84 datums will be
+considered equivalent by this routine.
 
 If, for historical reasons, longitude/latitude coordinates must have the old
 OSGB36 datum, then the parameter \code{to} must be set to 4277.
 
-\strong{Note}: All those coordinates outside the rectangle covered by OSTN15,
+\strong{Note}: All those coordinates outside the rectangle covered by OSTN15
 will be automatically computed using the small Helmert transformation. Such
 coordinates will be accurate up to about +/-5 metres.
 Converting from BNG to lon/lat coordinates is slower than the other way

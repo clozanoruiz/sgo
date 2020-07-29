@@ -30,8 +30,8 @@ p <- sgs_points(list(-11169055.58, 2810000.00), epsg=3857)
 res <- sgs_en_wgs84(p)
 }
 \references{
-OGP Publication 373-7-2 - Geomatics Guidance Note number 7, part
-2 (September 2016) \url{http://www.epsg.org/Portals/0/373-07-2.pdf}
+IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
+part 2 (March 2020) \url{https://epsg.org/guidance-notes.html}
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_wgs84_en}}.
