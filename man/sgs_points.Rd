@@ -3,17 +3,15 @@
 \encoding{UTF-8}
 \name{sgs_points}
 \alias{sgs_points}
+\alias{[.sgs_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
 sgs_points(x, coords=NULL, epsg = NULL)
+
+\method{[}{sgs_points}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
-\item{x}{A list or dataframe with at least 2 columns of either
-easting/northing or longitude/latitude coordinates per row. A third column
-with height values is optional.
-\strong{Please note} that the order is important when \code{x} has only 2 or
-3 columns and \code{coords} is not informed: lat/lon or northing/easting
-(and height) will produce wrong results.}
+\item{x}{Object of class \code{sgs_points}}
 
 \item{coords}{A vector with the names of the two or three columns containing
 the X (easting or longitude), Y (northing or latitude) and optionally Z
@@ -30,6 +28,15 @@ of the following values:
 \code{7405}
 \item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
 }}
+
+\item{i}{Record selection, see \link{[.data.frame}}
+
+\item{j}{Variable selection, see \link{[.data.frame}}
+
+\item{drop}{Logical variable, default \code{FALSE}. If \code{TRUE} it will
+drop the \code{sgs_points} class of the object.}
+
+\item{...}{Not currently used}
 }
 \value{
 An object of class \code{sgs_points}.
@@ -94,6 +101,10 @@ The defined datum for this set of coordinates is OSGB 1936
 columns in \code{x} must be defined as Easting and Northing. The defined
 datum for this set of coordinates is WGS84 (https://epsg.io/3857)
 }
+
+\code{[.sgs_points} will return a \code{sgs_points} object or a
+\code{data.frame} if any of the coordinates columns is dropped ; \code{...}
+arguments are not currently used.
 }
 \examples{
 # lists:

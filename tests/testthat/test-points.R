@@ -47,3 +47,9 @@ test_that("sgs_points constructors", {
 
 #test bng where the OSGM heights are outside of the transformationa rea (flag16)
 #test cases when BNG is out of boundaries: ie. 1000000
+#add these tests: https://github.com/thruston/grid-banger/blob/master/test/test_some_more_places.py
+
+#Write in documentation somewhre:
+#**Accuracy**: Grid references rounded to whole metres will give lat/lon that
+#are accurate to about 5 decimal places.  In the UK, 0.00001 of a degree of
+#latitude is about 70cm, 0.00001 of a degree of longitude is about 1m.

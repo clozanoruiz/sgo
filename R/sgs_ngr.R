@@ -280,7 +280,7 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
   #return
   ngr <- list(ngr=paste0(let.pair, " ", e, " ", n))
   if (num.elements > 0) {
-    return (c(x[additional.elements], ngr))
+    return (c(x[, additional.elements, drop=TRUE], ngr))
   } else { return (ngr) }
 
 }

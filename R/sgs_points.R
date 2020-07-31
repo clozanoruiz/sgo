@@ -337,7 +337,7 @@ sgs_points_xy.sgs_points <-function(x) {
 
   coords <- c("x", "y")
 
-  xy <- matrix(unlist(x[c("x", "y")]), ncol=2)
+  xy <- matrix(unlist(x[, c("x", "y"), drop=TRUE]), ncol=2)
   colnames(xy) <- coords
 
   xy
@@ -367,25 +367,73 @@ sgs_coordinates.sgs_points <- function(x) {
 
   coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
 
-  xyz <- matrix(unlist(x[coords]), ncol=length(coords))
+  xyz <- matrix(unlist(x[, coords, drop=TRUE]), ncol=length(coords))
   colnames(xyz) <- coords
 
   xyz
 
 }
 
-# TODO export
+# TODO
 # Extending '[' function to support sgs_points:
-# Attributes are usually lost when subsetting lists, therefore we need to
-# extend a subsetting operator that will keep all attributes of our object.
-`[.sgs_points` <- function(x, i, ...) {
+#' @name sgs_points
+#' @param x Object of class \code{sgs_points}
+#' @param i Record selection, see \link{[.data.frame}
+#' @param j Variable selection, see \link{[.data.frame}
+#' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
+#' drop the \code{sgs_points} class of the object.
+#' @param ... Not currently used
+#' @details \code{[.sgs_points} will return a \code{sgs_points} object or a
+#' \code{data.frame} if any of the coordinates columns is dropped ; \code{...}
+#' arguments are not currently used.
+# @examples
+# g = st_sfc(st_point(1:2), st_point(3:4))
+# s = st_sf(a=3:4, g)
+# s[1,]
+# class(s[1,])
+# s[,1]
+# class(s[,1])
+# s[,2]
+# class(s[,2])
+# g = st_sf(a=2:3, g)
+# pol = st_sfc(st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))))
+# h = st_sf(r = 5, pol)
+# g[h,]
+#' @export
+`[.sgs_points` <- function(x, i, j, drop=FALSE, ...) {
 
-  core.cols <- sgs_points.core[!sgs_points.core %in% c("x", "y", "z")]
+  coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
+  other.cols <- names(x)[!names(x) %in% sgs_points.core]
+  selected.columns <- c(coords, other.cols)
+  class(x) <- NULL
 
-  r <- NextMethod("[")
-  if ( all(core.cols %in% names(r)) ) class(r) <- "sgs_points"
-  #if (!inherits(r, "sgs_points")) class(r) <- "sgs_points"
-  r
+  if (!missing(i)) {
+    x <- lapply(x[selected.columns], function(p) p[i])
+  }
+
+  if (!missing(j)) {
+    # remove any reference to "epsg", "datum", "dimension"
+    if (is.character(j)) {
+      j <- setdiff(j, setdiff(sgs_points.core, c("x", "y", "z")))
+    }
+    x <- x[j]
+    selected.columns <- names(x[j])
+  }
+
+  if (all(coords %in% selected.columns) && !drop) {
+    if(is.matrix(x)){
+      x <- split(x, rep(1:ncol(x), each = nrow(x))) #to list
+      names(x) <- selected.columns
+    } else {
+      names(x) <- selected.columns
+      x <- as.list(x)
+    }
+    x <- sgs_points(x, coords=coords, epsg=x$epsg)
+  } else {
+    x <- data.frame(x, stringsAsFactors = FALSE)
+  }
+
+  x
 
 }
 
@@ -457,7 +505,7 @@ print.sgs_points <- function(x) {
 
 #TODO
 #create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
-#implement: length, [, [<-, [[, [[<-, c. (If [ is implemented rev, head, and tail should all work).
+#implement: length, [<-, [[, [[<-, c. (If [ is implemented rev, head, and tail should all work).
 #implement Summary?
 #implement cbind, rbind
 

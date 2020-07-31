@@ -117,7 +117,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         out.of.bounds <- TRUE
-        helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
+        helmert.x <- sgs_set_gcs(x[, shifts$out], to = 4277)
         helmert.projected <- project.onto.grid(helmert.x$x,
                                                helmert.x$y,
                                                helmert.x$datum)
@@ -157,7 +157,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
     warning("There are points outside of the OSTN15 rectangle")
   }
 
-  if (num.elements > 0) en <- c(x[additional.elements], en)
+  if (num.elements > 0) en <- c(x[, additional.elements, drop=TRUE], en)
   return (sgs_points(en, coords=coords, epsg=epsg))
 
 }
@@ -306,7 +306,8 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       coords <- c("x", "y")
     }
 
-    if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
+    if (num.elements > 0) unprojected <- c(x[, additional.elements, drop=TRUE],
+                                           unprojected)
     unprojected <- sgs_points(unprojected, coords=coords, epsg=to)
 
     if (out.of.bounds) {
@@ -318,7 +319,8 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
     os.ll <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
 
     unprojected <- list(x=os.ll[, 1], y=os.ll[, 2])
-    if (num.elements > 0) unprojected <- c(x[additional.elements], unprojected)
+    if (num.elements > 0) unprojected <- c(x[, additional.elements, drop=TRUE],
+                                           unprojected)
     unprojected <- sgs_set_gcs(sgs_points(unprojected, coords=c("x", "y"),
                                           epsg=4277), to=to)
 
@@ -485,8 +487,7 @@ find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # OSTN15 covers grid point (0, 0) to (700000, 1250000)
   out.of.bounds <- (e < 0L | e > 700000L) |
-                   (n < 0L | n > 1250000L) |
-                   (is.na(e) | is.na(n))
+                   (n < 0L | n > 1250000L) #| (is.na(e) | is.na(n))
   shifts$out <- out.of.bounds
 
 
