@@ -58,6 +58,16 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   if ((x$epsg == 4937 && to == 4258) || (x$epsg == 4979 && to == 4326)) {
     x$z <- NULL
     x$dimension <- "XY"
+    x$epsg <- to
+    return (x)
+  }
+
+  # If converting from 2D to 3D in the same datum, just add a z coordinate
+  # and return
+  if ((x$epsg == 4258 && to == 4937) || (x$epsg == 4326 && to == 4979)) {
+    x$z <- 0
+    x$dimension <- "XYZ"
+    x$epsg <- to
     return (x)
   }
 

@@ -405,6 +405,7 @@ sgs_coordinates.sgs_points <- function(x) {
   coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
   other.cols <- names(x)[!names(x) %in% sgs_points.core]
   selected.columns <- c(coords, other.cols)
+  epsg <- x$epsg
   class(x) <- NULL
 
   if (!missing(i)) {
@@ -428,7 +429,7 @@ sgs_coordinates.sgs_points <- function(x) {
       names(x) <- selected.columns
       x <- as.list(x)
     }
-    x <- sgs_points(x, coords=coords, epsg=x$epsg)
+    x <- sgs_points(x, coords=coords, epsg=epsg)
   } else {
     x <- data.frame(x, stringsAsFactors = FALSE)
   }

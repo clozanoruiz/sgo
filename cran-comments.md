@@ -1,7 +1,8 @@
 ## Test environments
-* local OS X install, R 3.4.4
-* ubuntu 14.04 (on travis-ci), R 3.4.4
-* win-builder (devel and release)
+* macOS 10.13.6, R-release, CRAN'setup (on r-hub)
+* ubuntu 14.04, R 3.4.4 (on travis-ci)
+* Windows Server 2008 R2 SP1, R-oldrelease, R-release, R-devel (on r-hub)
+
 
 ## R CMD check results
 

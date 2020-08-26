@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# sgs
+# sgs - Simple GIS (with OSGB)
 
 <!-- badges: start -->
 
@@ -13,22 +13,16 @@ release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
 
-The goal of sgs is to provide a set of methods to transform ETRS89 (2D)
+The goal of sgs is to provide a set of methods to transform ETRS89
 coordinates to the equivalent OSGB36 National Grid coordinates, and
 vice-versa, using [Ordnance Survey’s National Grid Transformation
 OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/).
 
 The Coordinate Systems supported by `sgs` are:
 
-  - EPSG:4326
-  - EPSG:4258
-  - EPSG:27700
-  - EPSG:3857
-  - EPSG:4277
-
-Additionally it also contains several methods wrapping `sf` functions
-that make certain actions easier when using gis in TERR/Open Source R
-within ‘TIBCO Spotfire’.
+  - ETRS89: EPSGs 4258, 4937, 4936 (and 3857)
+  - WGS84: EPSGs 4326, 4979, 4978
+  - OSGB36: EPSGs 27700, 7405, 4277
 
 ## Installation
 
@@ -38,9 +32,6 @@ You can install the released version of sgs from
 ``` r
 install.packages("sgs")
 ```
-
-**Note:** To use only the OSTN15 transformations there is no need to
-install the package’s dependencies.
 
 And the development version from [GitHub](https://github.com/) with:
 

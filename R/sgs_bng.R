@@ -117,7 +117,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         out.of.bounds <- TRUE
-        helmert.x <- sgs_set_gcs(x[, shifts$out], to = 4277)
+        helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
         helmert.projected <- project.onto.grid(helmert.x$x,
                                                helmert.x$y,
                                                helmert.x$datum)
