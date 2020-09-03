@@ -5,7 +5,7 @@
 \alias{sgs_transform}
 \title{Coordinates transformation of a set of points}
 \usage{
-sgs_transform(x, to = NULL)
+sgs_transform(x, to = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object.}
@@ -13,6 +13,8 @@ sgs_transform(x, to = NULL)
 \item{to}{Specifies the EPSG code to convert the coordinates to. Currently it
 can take any of the following values: \code{4326}, \code{3857}, \code{4277},
 \code{27700} or \code{4258}.}
+
+\item{...}{Additional parameters passed to internal functions.}
 }
 \value{
 An object of class 'sgs_points'.
@@ -24,8 +26,9 @@ coordinate system.
 \details{
 This function is a wrapper of specific transformation functions
 (\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
-\code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}}) that transforms the
-coordinate system of a set of points to any of the supported coordinate
+\code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}},
+\code{\link{sgs_lonlat_bng}}, \code{\link{sgs_lonlat_bng}}) that transforms
+the coordinate system of a set of points to any of the supported coordinate
 systems.
 }
 \examples{
@@ -42,5 +45,5 @@ locations.wgs84EN <- sgs_transform(locations.bng, to=3857)
 }
 \seealso{
 \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
-\code{\link{sgs_set_gcs}}, \code{\link{sgs_bng_ngr}}.
+\code{\link{sgs_set_gcs}}, \code{\link{sgs_bng_ngr}}
 }

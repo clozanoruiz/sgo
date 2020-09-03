@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 [![Latest release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.com/litos81/sgs/releases)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
+(DO NOT USE... YET)
 
 The goal of sgs is to provide a set of methods to transform ETRS89 coordinates to the equivalent
 OSGB36 National Grid coordinates, and vice-versa, using [Ordnance Survey's National Grid Transformation OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/).

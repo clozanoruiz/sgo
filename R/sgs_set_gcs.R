@@ -79,22 +79,22 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   to.datum <- epsgs[epsgs[, "epsg"]==to, "datum"]
   transform <- NULL
 
-  if (x$datum == "WGS84") {
-    # converting from WGS84
+  if (x$datum == "ETRS89") {
+    # converting from ETRS89
     transform <- lonlat.datum[lonlat.datum$datum==to.datum, 3:9]
   }
-  if (to.datum == "WGS84") {
-    # converting to WGS84; use inverse transform
+  if (to.datum == "ETRS89") {
+    # converting to ETRS89; use inverse transform
     transform <- -lonlat.datum[lonlat.datum$datum==x$datum, 3:9]
   }
   if (is.null(transform)) {
-    # neither x$datum nor to.datum are WGS84 pipe through WGS84 first
+    # neither x$datum nor to.datum are ETRS89 pipe through ETRS89 first
     if (coord.format == "c") {
-      x <- sgs_set_gcs(x, to=4978)
+      x <- sgs_set_gcs(x, to=4936)
     } else if (x$dimension == "XYZ") {
-      x <- sgs_set_gcs(x, to=4979)
+      x <- sgs_set_gcs(x, to=4937)
     } else {
-      x <- sgs_set_gcs(x, to=4326)
+      x <- sgs_set_gcs(x, to=4258)
     }
     transform <- lonlat.datum[lonlat.datum$datum==to.datum, 3:9]
   }

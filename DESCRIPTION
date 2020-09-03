@@ -24,6 +24,7 @@ Collate:
     'sgs-deprecated.R'
     'sgs.R'
     'sgs_bng.R'
+    'sgs_distance.R'
     'sgs_ngr.R'
     'sgs_points.R'
     'sgs_set_gcs.R'
