@@ -6,7 +6,7 @@
 #' points
 #'
 #' @name sgs_points
-#' @usage sgs_points(x, coords=NULL, epsg = NULL)
+#' @usage sgs_points(x, coords = NULL, epsg = NULL)
 #' @param x A list or dataframe with at least 2 columns of either
 #' easting/northing or longitude/latitude coordinates per row. A third column
 #' with height values is optional.
@@ -377,7 +377,6 @@ sgs_coordinates.sgs_points <- function(x) {
 # TODO
 # Extending '[' function to support sgs_points:
 #' @name sgs_points
-#' @param x Object of class \code{sgs_points}
 #' @param i Record selection, see \link{[.data.frame}
 #' @param j Variable selection, see \link{[.data.frame}
 #' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
