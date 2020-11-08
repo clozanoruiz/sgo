@@ -7,7 +7,8 @@
 #'
 #' @name sgs_distance
 #' @usage sgs_distance(x, y, by.element = FALSE,
-#'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"))
+#'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+#'   iterations = 20)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param y A \code{sgs_points} object, defaults to \code{x}.
@@ -17,6 +18,8 @@
 #' @param which Character vector. For geodetic coordinates one of
 #' \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
 #' coordinates it defaults to \code{BNG}.
+#' @param iterations Numeric variable. Maximum number of iterations used in the
+#' Vicenty method.
 #' @details
 #' TODO.
 #' @return
@@ -28,18 +31,14 @@
 #' #TODO
 #' @export
 sgs_distance <- function (x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"))
+  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  iterations = 20)
     UseMethod("sgs_distance")
 
 #' @export
 sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine")) {
-
-  #TODO
-  #algorithms
-  #great_circle harvesine
-  #geodesic vicenty ellipsoidal
-  #bng
+  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  iterations = 20) {
 
   if (missing(y))
     y <- x
@@ -47,11 +46,32 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   if (x$epsg != y$epsg)
     stop("All points must have the same EPSG code")
 
+  if (isTRUE(x$epsg %in% c(4936, 3035, 4978, 3857)))
+    stop("This function doesn't support the input's EPSG")
+
+  coords <- c("x", "y")
   if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
-    #BNG
+
+    p1 <- as.matrix(x[, coords, drop=TRUE])
+    p2 <- as.matrix(y[, coords, drop=TRUE])
+
+    if (by.element) {
+      bng.distance(p1, p2, dist.simpson=20L) #20km
+    } else {
+      rows.p1 <- nrow(p1)
+      rows.p2 <- nrow(p2)
+
+      # Kronecker product of mathe matrices with vectors of 1's:
+      # rep(1, nTimes) %x% mt would be 'similar' to rep(mt, times = nTimes)
+      # mt %x% rep(1, nTimes) would be 'similar' to rep(mt, each = nTimes)
+      m1 <- rep(1, rows.p2) %x% p1
+      m2 <- p2 %x% rep(1, rows.p1)
+
+      matrix(bng.distance(m1, m2, dist.simpson=20L), rows.p1, rows.p2)
+    }
+
   } else {
-    #harvesine, vicenty(vicenty can use any ellipsoid so accept 4258,4937;4326,4979;4277) iterations as a parameter
-    coords <- c("x", "y")
+
     p1 <- as.matrix(x[, coords, drop=TRUE] /
                       57.29577951308232087679815481410517)
     p2 <- as.matrix(y[, coords, drop=TRUE] /
@@ -68,17 +88,13 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
-      # Kronecker product of mathe matrices with vectors of 1's:
-      # rep(1, nTimes) %x% mt would be 'similar' to rep(mt, times = nTimes)
-      # mt %x% rep(1, nTimes) would be 'similar' to rep(mt, each = nTimes)
+
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
-
 
       if (which == "Harvesine") {
         matrix(great.circle.harvesine(m1, m2), rows.p1, rows.p2)
       } else if (which == "Vicenty") {
-        vicenty.ellipsoid(p1, p2, x$datum, iterations)
         matrix(vicenty.ellipsoid(m1, m2, x$datum, iterations), rows.p1, rows.p2)
       }
     }
@@ -86,6 +102,95 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   }
 
 }
+
+# parametres:
+# dist.simpson: with distances (km) greater than those will apply simpson rule
+bng.distance <- function(p1, p2, dist.simpson = 20L) {
+
+  E1 <- p1[, 1]; E2 <- p2[, 1]
+  N1 <- p1[, 2]; N2 <- p2[, 2]
+  Em <- E1 + (E2 - E1) / 2L # E at midpoint
+  Nm <- N1 + (N2 - N1) / 2L # N at midpoint
+
+  dE <- E2 - E1
+  dN <- N2 - N1
+  s <- sqrt(dE * dE + dN * dN)
+
+  if (any(s >= dist.simpson)) {
+    Ft <- local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
+    len.E1 <- length(E1) # E1, E2, Em have the same length
+    F1 <- Ft[(1:len.E1)]
+    F2 <- Ft[length(Ft) - (len.E1:0)]
+    Fm <- Ft[((len.E1 + 1):(len.E1 * 2))]
+    F <- (F1 + 4L * Fm + F2) / 6L
+  } else {
+    #F for mid point only
+    F <- local.scale.factor(Em, Nm)
+  }
+
+  round(s / F, 2) # S (true distance)
+
+}
+
+local.scale.factor <- function(E, N) {
+
+  # ellipsoid parameters
+  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid=="Airy1830",
+                             c("a","b","e2")]
+  a <- params$a
+  b <- params$b
+  e2 <- params$e2
+  F0 <- 0.9996012717 #Central meridian scale factor
+  aF0 <- a * F0
+  bF0 <- b * F0
+  n <- (a-b) / (a+b)
+  N0 <- -100000L; E0 <- 400000L # True origin
+  phi0 <- 49L / 57.29577951308232087679815481410517
+
+  # Initial latitude φ'
+  dN <- N - N0
+  phi <- phi0 + dN/aF0
+
+  M <- NA
+  phi.plus <- NA
+  phi.minus <- NA
+  repeat {
+    phi.minus <- phi - phi0
+    phi.plus <- phi + phi0
+
+    M <- bF0 * (
+      (1L + n * (1L + 5L/4L * n * (1L + n))) * phi.minus
+      - 3L * n * (1L + n * (1L + 7L / 8L * n)) * sin(phi.minus) * cos(phi.plus)
+      + (15L / 8L * n * (n * (1L + n))) * sin(2L * phi.minus) * cos(2L * phi.plus)
+      - 35L / 24L * n^3 * sin(3L * phi.minus) * cos(3L * phi.plus)
+    ) # meridional arc
+
+    if ( max(abs(dN - M)) < 0.00001 ) { break } # ie until < 0.01mm
+    phi <- phi + (dN - M) / aF0
+  }
+
+  cos.phi <- cos(phi)
+  sin.phi <- sin(phi)
+
+  splat <- 1L - e2 * sin.phi * sin.phi
+  sqrtsplat <- sqrt(splat)
+
+  # radius of curvature at latitude φ perpendicular to a meridian
+  nu <- aF0 / sqrtsplat
+  # radius of curvature of a meridian at latitude φ
+  rho <- aF0 * (1L - e2) / (splat * sqrtsplat)
+  # East - west component of the deviation of the vertical, squared
+  eta2 <- nu / rho - 1L
+
+  XXI <- 1L / (2L * rho * nu)
+  XXII <- (1L + 4L * eta2 * eta2) / (24 * rho * rho * nu * nu)
+
+  dE <- E - E0
+  dE2 <- dE * dE
+  F <- F0 * (1 + dE2 * XXI + dE2 * dE2 * XXII)
+
+}
+
 
 # Default R as defined by the International Union of Geodesy and Geophysics
 # Harvesine error up to 0.5%
@@ -189,8 +294,8 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
                     B/6L * cos.2sigma.m * (-3L + 4L * sin.sigma * sin.sigma) *
                       (-3L + 4L * cos2.2sigma.m)))
 
-  s <- unname(round(b * A * (sigma - delta.sigma), 3)) #round to mm
-  s
+  s <- unname(b * A * (sigma - delta.sigma)) #round to mm
+  round(s, 3) #round to mm
 
 }
 

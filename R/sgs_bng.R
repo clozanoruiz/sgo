@@ -335,10 +335,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 }
 
 #Helper function. Unproject BNG (OSGB36) to geodetic coordinates
-unproject.onto.ellipsoid <- function(e, n, datum) {
-
-  E <- e
-  N <- n
+unproject.onto.ellipsoid <- function(E, N, datum) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
@@ -347,6 +344,7 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
 
   f0 <- 0.9996012717                # Converge factor
   af <- a * f0
+  bf <- b * f0
   n <- (a-b) / (a+b)
   N0 <- (-100000L); E0 <- (400000L) # northing & easting of true origin, metres
 
@@ -367,7 +365,7 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
     phi.minus <- phi - phi0
     phi.plus <- phi + phi0
 
-    M <- b * f0 * (
+    M <- bf * (
     (1L + n * (1L + 5L/4L * n * (1L + n))) * phi.minus
     - 3L * n * (1L + n * (1L + 7L / 8L * n)) * sin(phi.minus) * cos(phi.plus)
     + (15L / 8L * n * (n * (1L + n))) * sin(2L * phi.minus) * cos(2L * phi.plus)
@@ -384,9 +382,13 @@ unproject.onto.ellipsoid <- function(e, n, datum) {
 
   splat <- 1L - e2 * sin.phi * sin.phi
   sqrtsplat <- sqrt(splat)
-  nu <- af / sqrtsplat                        # nu = transverse r of curvature
-  rho <- af * (1L - e2) / (splat * sqrtsplat) # rho = meridional r of curvature
-  eta2 <- nu / rho - 1L                       # eta = ?
+
+  # radius of curvature at latitude φ perpendicular to a meridian
+  nu <- af / sqrtsplat
+  # radius of curvature of a meridian at latitude φ
+  rho <- af * (1L - e2) / (splat * sqrtsplat)
+  # East - west component of the deviation of the vertical, squared
+  eta2 <- nu / rho - 1L
 
   tan2.phi <- tan.phi * tan.phi
   VII <- tan.phi / (2L * rho * nu)

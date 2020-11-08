@@ -5,8 +5,9 @@
 \alias{sgs_distance}
 \title{Calculate distances between a set of points}
 \usage{
-sgs_distance(x, y, by_element = FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"))
+sgs_distance(x, y, by.element = FALSE,
+  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  iterations = 20)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object describing a set of points in a geodetic
@@ -14,16 +15,19 @@ coordinate system.}
 
 \item{y}{A \code{sgs_points} object, defaults to \code{x}.}
 
-\item{by_element}{Logical variable. If \code{TRUE}, return a vector with
+\item{by.element}{Logical variable. If \code{TRUE}, return a vector with
 distance between the first elements of \code{x} and \code{y}, the second,
 etc. If \code{FALSE}, return the dense matrix with all pairwise distances.}
 
 \item{which}{Character vector. For geodetic coordinates one of
 \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
-coordinates it default to \code{BNG}.}
+coordinates it defaults to \code{BNG}.}
+
+\item{iterations}{Numeric variable. Maximum number of iterations used in the
+Vicenty method.}
 }
 \value{
-If \code{by_element} is \code{FALSE} \code{sgs_distance} returns a dense
+If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 numeric matrix of dimension length(x) by length(y). Otherwise it returns a
 numeric vector of length \code{x} or \code{y}, the shorter one being
 recycled. Distances involving empty geometries are \code{NA}.

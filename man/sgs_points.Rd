@@ -6,12 +6,17 @@
 \alias{[.sgs_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
-sgs_points(x, coords=NULL, epsg = NULL)
+sgs_points(x, coords = NULL, epsg = NULL)
 
 \method{[}{sgs_points}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
-\item{x}{Object of class \code{sgs_points}}
+\item{x}{A list or dataframe with at least 2 columns of either
+easting/northing or longitude/latitude coordinates per row. A third column
+with height values is optional.
+\strong{Please note} that the order is important when \code{x} has only 2 or
+3 columns and \code{coords} is not informed: lat/lon or northing/easting
+(and height) will produce wrong results.}
 
 \item{coords}{A vector with the names of the two or three columns containing
 the X (easting or longitude), Y (northing or latitude) and optionally Z
