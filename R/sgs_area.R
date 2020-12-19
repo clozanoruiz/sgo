@@ -1,0 +1,48 @@
+#' @encoding UTF-8
+#' @title Calculate areas from a set of points
+#'
+#' @description
+#' Calculates the planar area for a set of points defined in the OS NGR or
+#' ETRS89-LAEA. The geodetic area is calculated when the entered points are
+#' expressed in angular coordinates.
+#'
+#' @name sgs_area
+#' @usage sgs_area(x, ...)
+#' @param x A \code{sgs_points} object describing a set of points (clockwise, countercockwise?)
+#' @param ... Currently ignored
+#' @details
+#' TODO.
+#' @return
+#' Value of the are in squared metres.
+#' @examples
+#' #TODO
+#' @export
+sgs_area <- function (x, ...)
+  UseMethod("sgs_area")
+
+#' @export
+sgs_area.sgs_points <- function(x, ...) {
+
+  if (isTRUE(x$epsg %in% c(4936, 4978, 3857)))
+    stop("This function doesn't support the input's EPSG")
+
+  coords <- c("x", "y")
+
+  if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
+    # Planar area (27700, 7405, 3035)
+    # Translate to 0,0 to minimise losing floating point precision
+  } else {
+    # Geodetic area
+  }
+
+}
+
+#Areas:
+# compute planar area for BNG and LAEA projections (shoelace) - althoufg BNG would be 'ncorrect'
+# compute geodetic area from lon/lat cordinates projecting to equal-area mapping (pdf's)
+#translate points by substraction MinX and MinY (https://www.johndcook.com/blog/2018/09/26/polygon-area/)
+#https://support.esri.com/en/technical-article/000006109
+#https://en.wikipedia.org/wiki/Shoelace_formula
+
+#https://github.com/rspatial/raster/blob/19db58371dc37562a74f23830174da47c1e8b9b4/src/area.cpp#L58
+#https://rdrr.io/cran/pracma/src/R/polyarea.R

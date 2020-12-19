@@ -1,5 +1,8 @@
 ## This modelue contains 'common' and helper functions
 
+# 180/π
+# https://keisan.casio.com/calculator (34 digits precision)
+RAD.TO.GRAD <- 57.29577951308232087679815481410517
 
 #check 'empty' values in a vector
 is_nothing <- function(x) {
@@ -60,13 +63,13 @@ lonlat.ellipsoid <- data.frame(
 # transforms: t in metres, s in ppm, r in arcseconds
 lonlat.datum <- data.frame(datum=c("OSGB36", "WGS84", "ETRS89"),
                            ellipsoid=c("Airy1830","WGS84", "GRS80"),
-                           tx=c(-446.448, 0L, 0L),
-                           ty=c(125.157, 0L, 0L),
-                           tz=c(-542.060, 0L, 0L),
-                           s=c(0.0000204894, 0L, 0L),
-                           rx=c(-0.1502, 0L, 0L),
-                           ry=c(-0.2470, 0L, 0L),
-                           rz=c(-0.8421, 0L, 0L),
+                           tx=c(-446.448, 0, 0),
+                           ty=c(125.157, 0, 0),
+                           tz=c(-542.060, 0, 0),
+                           s=c(0.0000204894, 0, 0),
+                           rx=c(-0.1502, 0, 0),
+                           ry=c(-0.2470, 0, 0),
+                           rz=c(-0.8421, 0, 0),
                            stringsAsFactors = FALSE)
 
 

@@ -129,9 +129,9 @@ lonlat_to_cartesian <- function(points) {
   datum <- points$datum
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
 
-  phi <- points$y / 57.29577951308232087679815481410517
-  lambda <- points$x / 57.29577951308232087679815481410517
-  H <- if (points$dimension=="XYZ") points$z else 0L # height above ellipsoid
+  phi <- points$y / RAD.TO.GRAD
+  lambda <- points$x / RAD.TO.GRAD
+  H <- if (points$dimension=="XYZ") points$z else 0 # height above ellipsoid
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
   e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"]
 
@@ -140,11 +140,11 @@ lonlat_to_cartesian <- function(points) {
   sin.lambda <- sin(lambda)
   cos.lambda <- cos(lambda)
 
-  nu <- a / sqrt(1L - e2 * sin.phi * sin.phi) #r of curvature in prime vertical
+  nu <- a / sqrt(1 - e2 * sin.phi * sin.phi) #r of curvature in prime vertical
 
   x <- (nu + H) * cos.phi * cos.lambda
   y <- (nu + H) * cos.phi * sin.lambda
-  z <- (nu * (1L - e2) + H) * sin.phi
+  z <- (nu * (1 - e2) + H) * sin.phi
 
   list(x=x, y=y, z=z)
 
@@ -161,11 +161,11 @@ apply_transform <- function(points, t)   {
   tx <- t$tx                  # x-shift
   ty <- t$ty                  # y-shift
   tz <- t$tz                  # z-shift
-  s1 <- t$s + 1L              # scale: normalise parts-per-million to (s+1)
+  s1 <- t$s + 1               # scale: normalise parts-per-million to (s+1)
   # x, y, z rotations: normalise arcseconds to radians
-  rx <- (t$rx/3600L) / 57.29577951308232087679815481410517
-  ry <- (t$ry/3600L) / 57.29577951308232087679815481410517
-  rz <- (t$rz/3600L) / 57.29577951308232087679815481410517
+  rx <- (t$rx/3600) / RAD.TO.GRAD
+  ry <- (t$ry/3600) / RAD.TO.GRAD
+  rz <- (t$rz/3600) / RAD.TO.GRAD
 
   # apply transform
   x2 <- tx + x1*s1 - y1*rz + z1*ry
@@ -194,21 +194,21 @@ cartesian_to_lonlat <- function(points, epsg) {
 
   p <- sqrt(x*x + y*y)  # distance from minor axis
   lambda <- atan2(y, x) # longitude
-  phi <- atan2(z, p * (1L - e2))
+  phi <- atan2(z, p * (1 - e2))
 
   nu <- NA
   old.phi <- NA
   sin.phi <- NA
   repeat {
     sin.phi <- sin(phi)
-    nu <- a / sqrt(1L - e2 * sin.phi * sin.phi)
+    nu <- a / sqrt(1 - e2 * sin.phi * sin.phi)
     old.phi <- phi
     phi <- atan2(z + e2 * nu * sin.phi, p)
     if ( max(abs(old.phi - phi)) < 1e-12 ) { break }
   }
 
-  lat <- phi * 57.29577951308232087679815481410517
-  lon <- lambda * 57.29577951308232087679815481410517
+  lat <- phi * RAD.TO.GRAD
+  lon <- lambda * RAD.TO.GRAD
   # height above ellipsoid
   H <- unname(p / cos(phi) - nu)
 

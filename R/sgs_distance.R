@@ -8,6 +8,7 @@
 #' @name sgs_distance
 #' @usage sgs_distance(x, y, by.element = FALSE,
 #'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+#'   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
 #'   iterations = 20)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
@@ -18,10 +19,12 @@
 #' @param which Character vector. For geodetic coordinates one of
 #' \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
 #' coordinates it defaults to \code{BNG}.
+#' @param grid.distance Logical variable. Currently only used for BNG
+#' coordinates. If TRUE it returns the true (geodesic) distance.
 #' @param iterations Numeric variable. Maximum number of iterations used in the
 #' Vicenty method.
 #' @details
-#' TODO.
+#' TODO. fro grid.distance explain how corrrection factors work
 #' @return
 #' If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
@@ -32,12 +35,14 @@
 #' @export
 sgs_distance <- function (x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
   iterations = 20)
     UseMethod("sgs_distance")
 
 #' @export
 sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
   iterations = 20) {
 
   if (missing(y))
@@ -56,7 +61,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     p2 <- as.matrix(y[, coords, drop=TRUE])
 
     if (by.element) {
-      bng.distance(p1, p2, dist.simpson=20L) #20km
+      bng.distance(p1, p2, grid.distance, 20) #20km
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
@@ -67,15 +72,13 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
 
-      matrix(bng.distance(m1, m2, dist.simpson=20L), rows.p1, rows.p2)
+      matrix(bng.distance(m1, m2, grid.distance, 20), rows.p1, rows.p2)
     }
 
   } else {
 
-    p1 <- as.matrix(x[, coords, drop=TRUE] /
-                      57.29577951308232087679815481410517)
-    p2 <- as.matrix(y[, coords, drop=TRUE] /
-                      57.29577951308232087679815481410517)
+    p1 <- as.matrix(x[, coords, drop=TRUE] / RAD.TO.GRAD)
+    p2 <- as.matrix(y[, coords, drop=TRUE] / RAD.TO.GRAD)
 
     if (by.element) {
 
@@ -104,17 +107,20 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 }
 
 # parametres:
-# dist.simpson: with distances (km) greater than those will apply simpson rule
-bng.distance <- function(p1, p2, dist.simpson = 20L) {
+# dist.simpson: with distances (in km) greater than those will apply simpson rule when caclulating true (geodesic) distances
+bng.distance <- function(p1, p2, grid.distance = TRUE, dist.simpson = 20L) {
 
   E1 <- p1[, 1]; E2 <- p2[, 1]
   N1 <- p1[, 2]; N2 <- p2[, 2]
-  Em <- E1 + (E2 - E1) / 2L # E at midpoint
-  Nm <- N1 + (N2 - N1) / 2L # N at midpoint
+  Em <- E1 + (E2 - E1) / 2 # E at midpoint
+  Nm <- N1 + (N2 - N1) / 2 # N at midpoint
 
   dE <- E2 - E1
   dN <- N2 - N1
   s <- sqrt(dE * dE + dN * dN)
+
+  if (grid.distance)
+    return(round(s, 3)) # round to mm
 
   if (any(s >= dist.simpson)) {
     Ft <- local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
@@ -122,13 +128,13 @@ bng.distance <- function(p1, p2, dist.simpson = 20L) {
     F1 <- Ft[(1:len.E1)]
     F2 <- Ft[length(Ft) - (len.E1:0)]
     Fm <- Ft[((len.E1 + 1):(len.E1 * 2))]
-    F <- (F1 + 4L * Fm + F2) / 6L
+    F <- (F1 + 4 * Fm + F2) / 6
   } else {
     #F for mid point only
     F <- local.scale.factor(Em, Nm)
   }
 
-  round(s / F, 2) # S (true distance)
+  round(s / F, 3) # S (true distance)
 
 }
 
@@ -144,8 +150,8 @@ local.scale.factor <- function(E, N) {
   aF0 <- a * F0
   bF0 <- b * F0
   n <- (a-b) / (a+b)
-  N0 <- -100000L; E0 <- 400000L # True origin
-  phi0 <- 49L / 57.29577951308232087679815481410517
+  N0 <- -100000; E0 <- 400000 # True origin
+  phi0 <- 49 / RAD.TO.GRAD
 
   # Initial latitude φ'
   dN <- N - N0
@@ -159,10 +165,10 @@ local.scale.factor <- function(E, N) {
     phi.plus <- phi + phi0
 
     M <- bF0 * (
-      (1L + n * (1L + 5L/4L * n * (1L + n))) * phi.minus
-      - 3L * n * (1L + n * (1L + 7L / 8L * n)) * sin(phi.minus) * cos(phi.plus)
-      + (15L / 8L * n * (n * (1L + n))) * sin(2L * phi.minus) * cos(2L * phi.plus)
-      - 35L / 24L * n^3 * sin(3L * phi.minus) * cos(3L * phi.plus)
+      (1 + n * (1 + 5/4 * n * (1 + n))) * phi.minus
+      - 3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus)
+      + (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
+      - 35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
     ) # meridional arc
 
     if ( max(abs(dN - M)) < 0.00001 ) { break } # ie until < 0.01mm
@@ -172,18 +178,18 @@ local.scale.factor <- function(E, N) {
   cos.phi <- cos(phi)
   sin.phi <- sin(phi)
 
-  splat <- 1L - e2 * sin.phi * sin.phi
+  splat <- 1 - e2 * sin.phi * sin.phi
   sqrtsplat <- sqrt(splat)
 
   # radius of curvature at latitude φ perpendicular to a meridian
   nu <- aF0 / sqrtsplat
   # radius of curvature of a meridian at latitude φ
-  rho <- aF0 * (1L - e2) / (splat * sqrtsplat)
+  rho <- aF0 * (1 - e2) / (splat * sqrtsplat)
   # East - west component of the deviation of the vertical, squared
-  eta2 <- nu / rho - 1L
+  eta2 <- nu / rho - 1
 
-  XXI <- 1L / (2L * rho * nu)
-  XXII <- (1L + 4L * eta2 * eta2) / (24 * rho * rho * nu * nu)
+  XXI <- 1 / (2 * rho * nu)
+  XXII <- (1 + 4 * eta2 * eta2) / (24 * rho * rho * nu * nu)
 
   dE <- E - E0
   dE2 <- dE * dE
@@ -197,8 +203,8 @@ local.scale.factor <- function(E, N) {
 # p1 & p2 in rad
 great.circle.harvesine <- function(p1, p2, R=6371008) {
 
-  hav.dlat <- sin((p2[, 2] - p1[, 2]) / 2L)
-  hav.dlon <- sin((p2[, 1] - p1[, 1]) / 2L)
+  hav.dlat <- sin((p2[, 2] - p1[, 2]) / 2)
+  hav.dlon <- sin((p2[, 1] - p1[, 1]) / 2)
   h <- hav.dlat * hav.dlat + cos(p1[, 2]) * cos(p2[, 2]) * hav.dlon * hav.dlon
 
   # https://en.wikipedia.org/wiki/Haversine_formula:
@@ -207,8 +213,8 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
   # for antipodal points (on opposite sides of the sphere)—in this region,
   # relatively large numerical errors tend to arise in the formula when finite
   # precision is used.
-  h <- pmin(h, 1L)
-  d <- 2L * R * asin(sqrt(h))
+  h <- pmin(h, 1)
+  d <- 2 * R * asin(sqrt(h))
   round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
 
 }
@@ -228,7 +234,7 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 # It is accurate to within 0.5mm on the Earth ellipsoid.
 # https://en.wikipedia.org/wiki/Vincenty's_formulae
 # p1 & p2 in rad
-vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
+vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20) {
 
   #check first for NA points and co-incident points?
 
@@ -242,9 +248,9 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
   a2 <- params$a * params$a
   b <- params$b
   b2 <- b * b
-  f <- 1L / params$f
+  f <- 1 / params$f
 
-  one.f <- 1L - f
+  one.f <- 1 - f
   dlon <- (p2[, 1] - p1[, 1])     # difference of longitudes
   U1 <- atan(one.f * tan(p1[, 2])) # reduced latitude
   U2 <- atan(one.f * tan(p2[, 2]))
@@ -267,18 +273,18 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
     sigma <- atan2(sin.sigma, cos.sigma)
 
     sin.alpha <- cos.U1.U2 * sin.lambda / sin.sigma
-    cos2.alpha <- 1L - sin.alpha * sin.alpha
+    cos2.alpha <- 1 - sin.alpha * sin.alpha
     cos.2sigma.m <- cos.sigma - 2 * sin.U1.U2 / cos2.alpha
     cos.2sigma.m[is.nan(cos.2sigma.m)] <- 0  # cos2.alpha = 0 (equatorial line)
     cos2.2sigma.m <- cos.2sigma.m * cos.2sigma.m
 
-    C <- f / 16L * cos2.alpha * (4L + f * (4L - 3L * cos2.alpha))
+    C <- f / 16 * cos2.alpha * (4 + f * (4 - 3 * cos2.alpha))
     lambda.tmp <- lambda
-    lambda <- dlon + (1L - C) * f * sin.alpha *
+    lambda <- dlon + (1 - C) * f * sin.alpha *
       (sigma + C * sin.sigma * (cos.2sigma.m + C * cos.sigma *
-                                  (-1L + 2L * cos2.2sigma.m)))
+                                  (-1 + 2 * cos2.2sigma.m)))
 
-    iterations <- iterations - 1L
+    iterations <- iterations - 1
     if ( max(abs(lambda - lambda.tmp)) <= 1e-12 || iterations == 0) {
       break # ie until <= 0.06mm
     }
@@ -287,12 +293,12 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
     return(s)
 
   u2 <- cos2.alpha * (a2 - b2) / b2
-  A <- 1L + u2 / 16384L * (4096L + u2 * (-768L + u2 * (320L - 175L * u2)))
-  B <- u2 / 1024 * (256L + u2 * (-128L + u2 *(74L - 47L * u2)))
+  A <- 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
+  B <- u2 / 1024 * (256 + u2 * (-128 + u2 *(74 - 47 * u2)))
   delta.sigma <- B * sin.sigma * (cos.2sigma.m +
-                    B/4L * (cos.sigma * (-1L + 2L * cos2.2sigma.m) -
-                    B/6L * cos.2sigma.m * (-3L + 4L * sin.sigma * sin.sigma) *
-                      (-3L + 4L * cos2.2sigma.m)))
+                    B/4 * (cos.sigma * (-1 + 2 * cos2.2sigma.m) -
+                    B/6 * cos.2sigma.m * (-3 + 4 * sin.sigma * sin.sigma) *
+                      (-3 + 4 * cos2.2sigma.m)))
 
   s <- unname(b * A * (sigma - delta.sigma)) #round to mm
   round(s, 3) #round to mm
@@ -300,6 +306,8 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
 }
 
 #Areas:
+# compute planar area for BNG and LAEA projections (shoelace) - althoufg BNG would be 'ncorrect'
+# compute geodetic area from lon/lat cordinates projecting to equal-area mapping (pdf's)
 #https://support.esri.com/en/technical-article/000006109
 #https://en.wikipedia.org/wiki/Shoelace_formula
 #https://www.johndcook.com/blog/2018/09/26/polygon-area/

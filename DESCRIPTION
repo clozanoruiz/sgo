@@ -23,6 +23,7 @@ Collate:
     'common.R'
     'sgs-deprecated.R'
     'sgs.R'
+    'sgs_area.R'
     'sgs_bng.R'
     'sgs_distance.R'
     'sgs_ngr.R'

@@ -342,17 +342,17 @@ unproject.onto.ellipsoid <- function(E, N, datum) {
   b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
   e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
 
-  f0 <- 0.9996012717                # Converge factor
+  f0 <- 0.9996012717              # Converge factor
   af <- a * f0
   bf <- b * f0
   n <- (a-b) / (a+b)
-  N0 <- (-100000L); E0 <- (400000L) # northing & easting of true origin, metres
+  N0 <- (-100000); E0 <- (400000) # northing & easting of true origin, metres
 
   dN <- N - N0
   dE <- E - E0
   # NatGrid true origin is 49°N 2°W:
-  phi0 <- 49L / 57.29577951308232087679815481410517
-  lambda0 <- -2L / 57.29577951308232087679815481410517
+  phi0 <- 49 / RAD.TO.GRAD
+  lambda0 <- -2 / RAD.TO.GRAD
 
   phi <- phi0 + dN/af
   lambda <- lambda0
@@ -366,10 +366,10 @@ unproject.onto.ellipsoid <- function(E, N, datum) {
     phi.plus <- phi + phi0
 
     M <- bf * (
-    (1L + n * (1L + 5L/4L * n * (1L + n))) * phi.minus
-    - 3L * n * (1L + n * (1L + 7L / 8L * n)) * sin(phi.minus) * cos(phi.plus)
-    + (15L / 8L * n * (n * (1L + n))) * sin(2L * phi.minus) * cos(2L * phi.plus)
-    - 35L / 24L * n^3 * sin(3L * phi.minus) * cos(3L * phi.plus)
+    (1 + n * (1 + 5/4 * n * (1L + n))) * phi.minus
+    - 3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus)
+    + (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
+    - 35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
     ) # meridional arc
 
     if ( max(abs(dN - M)) < 0.00001 ) { break } # ie until < 0.01mm
@@ -380,45 +380,44 @@ unproject.onto.ellipsoid <- function(E, N, datum) {
   sin.phi <- sin(phi)
   tan.phi <- sin.phi / cos.phi
 
-  splat <- 1L - e2 * sin.phi * sin.phi
+  splat <- 1 - e2 * sin.phi * sin.phi
   sqrtsplat <- sqrt(splat)
 
   # radius of curvature at latitude φ perpendicular to a meridian
   nu <- af / sqrtsplat
   # radius of curvature of a meridian at latitude φ
-  rho <- af * (1L - e2) / (splat * sqrtsplat)
+  rho <- af * (1 - e2) / (splat * sqrtsplat)
   # East - west component of the deviation of the vertical, squared
-  eta2 <- nu / rho - 1L
+  eta2 <- nu / rho - 1
 
   tan2.phi <- tan.phi * tan.phi
-  VII <- tan.phi / (2L * rho * nu)
-  VIII <- tan.phi / (24L * rho * nu^3) *
-    (5L + eta2 + ( 3L - 9L * eta2 ) * tan2.phi)
-  IX <- tan.phi / (720L * rho * nu^5) *
-    (61L + ( 90L + 45L * tan2.phi ) * tan2.phi)
+  VII <- tan.phi / (2 * rho * nu)
+  VIII <- tan.phi / (24 * rho * nu^3) *
+    (5 + eta2 + ( 3 - 9 * eta2 ) * tan2.phi)
+  IX <- tan.phi / (720 * rho * nu^5) *
+    (61 + ( 90 + 45 * tan2.phi ) * tan2.phi)
 
-  sec.phi <- 1L / cos.phi
+  sec.phi <- 1 / cos.phi
 
   X <- sec.phi / nu
-  XI <- sec.phi / (6L * nu^3) * (nu / rho + 2L * tan2.phi)
-  XII <- sec.phi / (120L * nu^5) * ( 5L + ( 28L + 24L * tan2.phi ) * tan2.phi)
-  XIIA <- sec.phi / (5040L * nu^7) *
-    ( 61L + ( 662L + (1320L + 720L * tan2.phi) * tan2.phi ) * tan2.phi )
+  XI <- sec.phi / (6 * nu^3) * (nu / rho + 2 * tan2.phi)
+  XII <- sec.phi / (120 * nu^5) * ( 5 + ( 28 + 24 * tan2.phi ) * tan2.phi)
+  XIIA <- sec.phi / (5040 * nu^7) *
+    ( 61 + ( 662 + (1320 + 720 * tan2.phi) * tan2.phi ) * tan2.phi )
 
   dE2 <- dE * dE
   phi <- phi + ( -VII + ( VIII - IX * dE2 ) * dE2) * dE2
   lambda <- lambda + ( X + ( -XI + ( XII - XIIA * dE2 ) * dE2) * dE2) * dE
 
-  unname(cbind(lambda * 57.29577951308232087679815481410517,
-               phi    * 57.29577951308232087679815481410517))
+  unname(cbind(lambda * RAD.TO.GRAD, phi * RAD.TO.GRAD))
 
 }
 
 #Helper function. Project geodetic coordinates onto BNG
 project.onto.grid <- function (lon, lat, datum) {
 
-  phi <- lat / 57.29577951308232087679815481410517
-  lambda <- lon / 57.29577951308232087679815481410517
+  phi <- lat / RAD.TO.GRAD
+  lambda <- lon / RAD.TO.GRAD
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
@@ -428,43 +427,43 @@ project.onto.grid <- function (lon, lat, datum) {
   f0 <- 0.9996012717      # Convergence factor
   af <- a * f0            # NatGrid scale factor on central meridian
   # NatGrid true origin is 49°N 2°W:
-  phi0 <- 49L / 57.29577951308232087679815481410517
-  lambda0 <- -2L / 57.29577951308232087679815481410517
-  n0 <- -100000L; e0 <- 400000L   # northing & easting of true origin, metres
+  phi0 <- 49 / RAD.TO.GRAD
+  lambda0 <- -2 / RAD.TO.GRAD
+  n0 <- -100000; e0 <- 400000   # northing & easting of true origin, metres
   n <- (a-b)/(a+b)
 
   cos.phi <- cos(phi)
   sin.phi <- sin(phi)
   sin2.phi <- sin(phi) * sin(phi)
-  tan.phi <- sin.phi / cos.phi                # cos(phi) cannot be zero in GB
+  tan.phi <- sin.phi / cos.phi               # cos(phi) cannot be zero in GB
   tan2.phi <- tan.phi * tan.phi
   tan4.phi <- tan2.phi * tan2.phi
 
-  splat <- 1L - e2 * sin2.phi
+  splat <- 1 - e2 * sin2.phi
   sqrtsplat <- sqrt(splat)
-  nu <- af / sqrtsplat                        # nu = transverse r of curvature
-  rho <- af * (1L-e2) / (splat * sqrtsplat)   # rho = meridional r of curvature
-  eta2 <- nu / rho - 1L                       # eta = ?
+  nu <- af / sqrtsplat                       # nu = transverse r of curvature
+  rho <- af * (1-e2) / (splat * sqrtsplat)   # rho = meridional r of curvature
+  eta2 <- nu / rho - 1                       # eta = ?
 
   phi.minus <- phi - phi0
   phi.plus <- phi + phi0
 
   # meridional arc
-  M <- b * f0 * ((1L + n * (1L + 5L/4L * n * (1L + n)))* phi.minus
-      - 3L * n * (1L + n * (1L + 7L/8L * n))  * sin(phi.minus) * cos(phi.plus)
-      + (15L/8L * n * (n * (1L + n))) * sin(2L * phi.minus) * cos(2L * phi.plus)
-      - 35L/24L * n^3 * sin(3L * phi.minus) * cos(3L * phi.plus)
+  M <- b * f0 * ((1 + n * (1 + 5/4 * n * (1 + n)))* phi.minus
+      - 3 * n * (1 + n * (1 + 7/8 * n))  * sin(phi.minus) * cos(phi.plus)
+      + (15/8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
+      - 35/24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
   )
 
   I <- M + n0
-  II <- (nu/2L) *sin.phi * cos.phi
-  III <- (nu/24L) * sin.phi * cos.phi^3 * (5L - tan2.phi + 9L * eta2)
-  IIIA <- (nu/720L) * sin.phi * cos.phi^5 * (61L-58L * tan2.phi + tan4.phi)
+  II <- (nu/2) *sin.phi * cos.phi
+  III <- (nu/24) * sin.phi * cos.phi^3 * (5 - tan2.phi + 9 * eta2)
+  IIIA <- (nu/720) * sin.phi * cos.phi^5 * (61-58 * tan2.phi + tan4.phi)
 
   IV <- nu * cos.phi
-  V <- nu/6L * cos.phi^3 * (nu/rho - tan2.phi)
-  VI <- (nu/120L) * cos.phi^5 *
-    (5L - 18L * tan2.phi + tan4.phi + 14L * eta2 - 58L * tan2.phi * eta2)
+  V <- nu/6 * cos.phi^3 * (nu/rho - tan2.phi)
+  VI <- (nu/120) * cos.phi^5 *
+    (5 - 18 * tan2.phi + tan4.phi + 14 * eta2 - 58 * tan2.phi * eta2)
 
   dlambda <- lambda-lambda0
   dlambda2 <- dlambda * dlambda
@@ -488,31 +487,31 @@ find.OSTN.shifts.at <- function(e, n, z=FALSE) {
   if (all(is.na(e))) { return (shifts) }
 
   # OSTN15 covers grid point (0, 0) to (700000, 1250000)
-  out.of.bounds <- (e < 0L | e > 700000L) |
-                   (n < 0L | n > 1250000L) #| (is.na(e) | is.na(n))
+  out.of.bounds <- (e < 0 | e > 700000) |
+                   (n < 0 | n > 1250000) #| (is.na(e) | is.na(n))
   shifts$out <- out.of.bounds
 
 
   if (!all(out.of.bounds)) {
 
     # set coordinates to km
-    os.e <- e[!out.of.bounds] / 1000L
-    os.n <- n[!out.of.bounds] / 1000L
+    os.e <- e[!out.of.bounds] / 1000
+    os.n <- n[!out.of.bounds] / 1000
 
     east.km <- trunc(os.e)
     north.km <- trunc(os.n)
 
     # R 'lists' are 1-based (find which data records to use)
-    ll <- ostn_shifts[east.km + north.km * 701L + 1L, , drop=FALSE]
-    lr <- ostn_shifts[east.km + north.km * 701L + 2L, , drop=FALSE]
-    ul <- ostn_shifts[east.km + north.km * 701L + 702L, , drop=FALSE]
-    ur <- ostn_shifts[east.km + north.km * 701L + 703L, , drop=FALSE]
+    ll <- ostn_shifts[east.km + north.km * 701 + 1, , drop=FALSE]
+    lr <- ostn_shifts[east.km + north.km * 701 + 2, , drop=FALSE]
+    ul <- ostn_shifts[east.km + north.km * 701 + 702, , drop=FALSE]
+    ur <- ostn_shifts[east.km + north.km * 701 + 703, , drop=FALSE]
 
     t <- os.e - east.km
     u <- os.n - north.km
 
-    one.t <- 1L - t
-    one.u <- 1L - u
+    one.t <- 1 - t
+    one.u <- 1 - u
     dx <- (one.t * one.u * ll[, "e"]
            + t * one.u * lr[, "e"]
            + one.t * u * ul[, "e"]

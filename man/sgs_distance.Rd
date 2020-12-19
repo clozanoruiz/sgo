@@ -7,6 +7,7 @@
 \usage{
 sgs_distance(x, y, by.element = FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
+  grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
   iterations = 20)
 }
 \arguments{
@@ -23,6 +24,9 @@ etc. If \code{FALSE}, return the dense matrix with all pairwise distances.}
 \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
 coordinates it defaults to \code{BNG}.}
 
+\item{grid.distance}{Logical variable. Currently only used for BNG
+coordinates. If TRUE it returns the true (geodesic) distance.}
+
 \item{iterations}{Numeric variable. Maximum number of iterations used in the
 Vicenty method.}
 }
@@ -37,7 +41,7 @@ Calculates the distance between OS National Grid Reference points or using
 the Harvesine or Vicenty formulae for points with angular coordinates.
 }
 \details{
-TODO.
+TODO. fro grid.distance explain how corrrection factors work
 }
 \examples{
 #TODO

@@ -156,7 +156,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   dimension <- if(num.coords == 2) "XY" else "XYZ"
 
-  #correct 3D EPSG 4258, 4326, 27700 if needed
+  # correct 3D EPSG 4258, 4326, 27700 if needed
   if (epsg %in% epsgs[epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
     if (epsg == 4258) {
       epsg <- 4937
