@@ -29,16 +29,54 @@ sgs_area.sgs_points <- function(x, ...) {
   coords <- c("x", "y")
 
   if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
+
     # Planar area (27700, 7405, 3035)
-    # Translate to 0,0 to minimise losing floating point precision
+    planar.area(as.matrix(x[, coords, drop=TRUE]))
+
   } else {
     # Geodetic area
+    #1-transform to BNG
+    #2-calculate planar.area and centroid from BNG points
+    #3-trnasform the centroid coordinates back to lonlat
+    #4-continue with area calculation
   }
 
 }
 
+#p: matrix of points
+planar.area <- function(p) {
+
+  # Translate to 0,0 to minimise losing floating point precision
+  p.x <- p[, 1] - min(p[, 1])
+  p.y <- p[, 2] - min(p[, 2])
+
+  n <- nrow(p)
+
+  # Gauss formula
+  area <- 0
+  # Loop through vertices 2 to n-1
+  for (i in 2:(n-1)) {
+    diff <- p.y[i + 1] - p.y[i - 1]
+    area <- area + p.x[i] * diff
+  }
+
+  # Vertices 1 and n
+  diff <- p.y[2] - p.y[n]
+  area <- area + p.x[1] * diff
+
+  diff <- p.y[1] - p.y[n-1]
+  area <- area + p.x[n] * diff
+
+  area <- 0.5 * abs(area)
+
+}
+
+moment.centroid <- function () {
+  #TODO
+}
+
 #Areas:
-# compute planar area for BNG and LAEA projections (shoelace) - althoufg BNG would be 'ncorrect'
+# compute planar area for BNG and LAEA projections (shoelace) - although BNG would be 'incorrect'
 # compute geodetic area from lon/lat cordinates projecting to equal-area mapping (pdf's)
 #translate points by substraction MinX and MinY (https://www.johndcook.com/blog/2018/09/26/polygon-area/)
 #https://support.esri.com/en/technical-article/000006109

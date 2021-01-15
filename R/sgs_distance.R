@@ -9,7 +9,7 @@
 #' @usage sgs_distance(x, y, by.element = FALSE,
 #'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
 #'   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-#'   iterations = 20)
+#'   iterations = 20L)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param y A \code{sgs_points} object, defaults to \code{x}.
@@ -36,14 +36,14 @@
 sgs_distance <- function (x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-  iterations = 20)
+  iterations = 20L)
     UseMethod("sgs_distance")
 
 #' @export
 sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-  iterations = 20) {
+  iterations = 20L) {
 
   if (missing(y))
     y <- x
@@ -54,6 +54,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   if (isTRUE(x$epsg %in% c(4936, 3035, 4978, 3857)))
     stop("This function doesn't support the input's EPSG")
 
+  default.simpson <- 20 #20 km
   coords <- c("x", "y")
   if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
 
@@ -61,18 +62,19 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     p2 <- as.matrix(y[, coords, drop=TRUE])
 
     if (by.element) {
-      bng.distance(p1, p2, grid.distance, 20) #20km
+      bng.distance(p1, p2, grid.distance, default.simpson)
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
 
-      # Kronecker product of mathe matrices with vectors of 1's:
+      # Kronecker product of our matrices with vectors of 1's:
       # rep(1, nTimes) %x% mt would be 'similar' to rep(mt, times = nTimes)
       # mt %x% rep(1, nTimes) would be 'similar' to rep(mt, each = nTimes)
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
 
-      matrix(bng.distance(m1, m2, grid.distance, 20), rows.p1, rows.p2)
+      matrix(bng.distance(m1, m2, grid.distance, default.simpson),
+             rows.p1, rows.p2)
     }
 
   } else {
@@ -108,7 +110,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 
 # parametres:
 # dist.simpson: with distances (in km) greater than those will apply simpson rule when caclulating true (geodesic) distances
-bng.distance <- function(p1, p2, grid.distance = TRUE, dist.simpson = 20L) {
+bng.distance <- function(p1, p2, grid.distance = TRUE, dist.simpson = 20) {
 
   E1 <- p1[, 1]; E2 <- p2[, 1]
   N1 <- p1[, 2]; N2 <- p2[, 2]
@@ -122,7 +124,7 @@ bng.distance <- function(p1, p2, grid.distance = TRUE, dist.simpson = 20L) {
   if (grid.distance)
     return(round(s, 3)) # round to mm
 
-  if (any(s >= dist.simpson)) {
+  if (any(s >= (dist.simpson * 1000))) {
     Ft <- local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
     len.E1 <- length(E1) # E1, E2, Em have the same length
     F1 <- Ft[(1:len.E1)]
@@ -234,7 +236,7 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 # It is accurate to within 0.5mm on the Earth ellipsoid.
 # https://en.wikipedia.org/wiki/Vincenty's_formulae
 # p1 & p2 in rad
-vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20) {
+vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
 
   #check first for NA points and co-incident points?
 
@@ -284,12 +286,12 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20) {
       (sigma + C * sin.sigma * (cos.2sigma.m + C * cos.sigma *
                                   (-1 + 2 * cos2.2sigma.m)))
 
-    iterations <- iterations - 1
-    if ( max(abs(lambda - lambda.tmp)) <= 1e-12 || iterations == 0) {
+    iterations <- iterations - 1L
+    if ( max(abs(lambda - lambda.tmp)) <= 1e-12 || iterations == 0L) {
       break # ie until <= 0.06mm
     }
   }
-  if (iterations == 0)
+  if (iterations == 0L)
     return(s)
 
   u2 <- cos2.alpha * (a2 - b2) / b2
@@ -304,12 +306,3 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20) {
   round(s, 3) #round to mm
 
 }
-
-#Areas:
-# compute planar area for BNG and LAEA projections (shoelace) - althoufg BNG would be 'ncorrect'
-# compute geodetic area from lon/lat cordinates projecting to equal-area mapping (pdf's)
-#https://support.esri.com/en/technical-article/000006109
-#https://en.wikipedia.org/wiki/Shoelace_formula
-#https://www.johndcook.com/blog/2018/09/26/polygon-area/
-#https://github.com/rspatial/raster/blob/19db58371dc37562a74f23830174da47c1e8b9b4/src/area.cpp#L58
-#https://rdrr.io/cran/pracma/src/R/polyarea.R
