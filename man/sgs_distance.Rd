@@ -3,12 +3,12 @@
 \encoding{UTF-8}
 \name{sgs_distance}
 \alias{sgs_distance}
-\title{Calculate distances between a set of points}
+\title{Calculate distance(s) between points}
 \usage{
 sgs_distance(x, y, by.element = FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-  iterations = 20)
+  iterations = 20L)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object describing a set of points in a geodetic

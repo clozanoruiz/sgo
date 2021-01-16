@@ -7,12 +7,18 @@
 \title{sgs: Simple GIS (with OSGB).}
 \description{
 The sgs package aims to provide a set of functions to perform spatial or
-geographic analysis in R, 'TIBCO Spotfire' and 'TERR'. Currently it
-mainly permforms OSGB36/ETRS89 transformations using the Ordnance Survey's
+geographic analysis in R, 'TIBCO Spotfire' and 'TERR'. Its main purpose is
+to permform OSGB36/ETRS89 transformations using the Ordnance Survey's
 OSTN15 transformation model for Great Britain and the Isle of Man. It also
 transforms GPS ellipsoid heights to orthometric (mean sea level)
 heights on the relevant Ordnance Survey mapping datum, using the National
 Geoid Model OSGM15.
+}
+\details{
+Most of the functions available in this package will become much less
+accurate if used outside the coverage of OSTN, thus it is adviced to apply
+those functions on coordinates within Great Britain, the Isle of Man and any
+areas of sea less than a few miles off shore.
 }
 \section{Object constructors}{
 
@@ -39,6 +45,14 @@ Cartesian coordinates and polar coordinates
 \item\code{\link{sgs_transform}}: Wrapper for all the transformations above
 \item\code{\link{sgs_coordinates}}: Extract coordinates from a
 \code{sgs_points} object
+}
+}
+
+\section{Geometric measurements}{
+
+\itemize{
+\item\code{\link{sgs_area}}: Calculate area from an ordered set of points
+\item\code{\link{sgs_distance}}: Calculate distance(s) between points
 }
 }
 

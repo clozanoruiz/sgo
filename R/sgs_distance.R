@@ -1,5 +1,5 @@
 #' @encoding UTF-8
-#' @title Calculate distances between a set of points
+#' @title Calculate distance(s) between points
 #'
 #' @description
 #' Calculates the distance between OS National Grid Reference points or using

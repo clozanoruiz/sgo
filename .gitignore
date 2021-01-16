@@ -1,3 +1,6 @@
+#Custom folders
+**/dev/geom-area/
+
 # History files
 .Rhistory
 .Rapp.history

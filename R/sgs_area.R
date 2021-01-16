@@ -1,5 +1,5 @@
 #' @encoding UTF-8
-#' @title Calculate areas from a set of points
+#' @title Calculate area from an ordered set of points
 #'
 #' @description
 #' Calculates the planar area for a set of points defined in the OS NGR or
@@ -35,10 +35,12 @@ sgs_area.sgs_points <- function(x, ...) {
 
   } else {
     # Geodetic area
-    #1-transform to BNG
+    #1-transform to BNG (which is conformal: keeps angles - and shapes)
     #2-calculate planar.area and centroid from BNG points
     #3-trnasform the centroid coordinates back to lonlat
     #4-continue with area calculation
+
+    #this is similar to what 'centroid' in geosphere does: https://github.com/rspatial/geosphere/blob/master/R/centroid.R
   }
 
 }

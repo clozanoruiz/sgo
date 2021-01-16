@@ -3,12 +3,14 @@
 \encoding{UTF-8}
 \name{sgs_area}
 \alias{sgs_area}
-\title{Calculate areas from a set of points}
+\title{Calculate area from an ordered set of points}
 \usage{
-sgs_distance(x, ...)
+sgs_area(x, ...)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object describing a set of points (clockwise, countercockwise?)}
+
+\item{...}{Currently ignored}
 }
 \value{
 Value of the are in squared metres.
