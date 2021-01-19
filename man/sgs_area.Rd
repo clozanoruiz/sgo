@@ -17,12 +17,21 @@ Value of the are in squared metres.
 }
 \description{
 Calculates the planar area for a set of points defined in the OS NGR or
-ETRS89-LAEA. The geodetic area is calculated when the entered points are
+ETRS89-LAEA. The geodetic area is calculated when entered points are
 expressed in angular coordinates.
 }
 \details{
-TODO.
+Calculate areas using the Gauss's area formula (https://en.wikipedia.org/wiki/Shoelace_formula)
 }
 \examples{
 #TODO
+}
+\references{
+Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the
+cadaster: case study of Slovenia}. Cartography and Geographic Information
+Science, 45:1, 1-17. DOI: 10.1080/15230406.2016.1217789
+
+Snyder, J.P. 1987. \emph{Map Projections — A Working Manual}. US Geological
+Survey Professional Paper, no. 1395. Washington, DC: US Government Printing
+Office. DOI: 10.3133/pp1395
 }

@@ -2,7 +2,7 @@
 NULL
 
 #' @encoding UTF-8
-#' @title Coordinates transformation of a set of points
+#' @title Coordinate transformation of a set of points
 #'
 #' @description
 #' Transforms the coordinate system of a set of points to any supported
@@ -11,10 +11,10 @@ NULL
 #' @name sgs_transform
 #' @usage sgs_transform(x, to = NULL, ...)
 #' @param x A \code{sgs_points} object.
-#' @param to Specifies the EPSG code to convert the coordinates to. Currently it
-#' can take any of the following values: \code{4326}, \code{3857}, \code{4277},
-#' \code{27700} or \code{4258}.
-#' @param ... Additional parameters passed to internal functions.
+#' @param to Specifies the EPSG code to convert the coordinates to. See
+#' \code{\link{sgs_points}} for a list of supported EPSG codes.
+#' @param ... Additional parameters passed to internal functions. #TODO: improve
+#' this description and which parameters may admit...
 #' @details
 #' This function is a wrapper of specific transformation functions
 #' (\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
@@ -22,6 +22,7 @@ NULL
 #' \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_lonlat_bng}}) that transforms
 #' the coordinate system of a set of points to any of the supported coordinate
 #' systems.
+#' #TODO warning about wgs84/etrs89 transformation
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
@@ -83,16 +84,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 }
 
 #Dataframes of operations and their arguments
-#from: 4326  to:    -, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405
-#from: 3857  to: 4326,    -, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405
-#from: 4277  to: 4326, 3857,    -, 27700, 4258, 4979, 4978, 4937, 4936, 7405
-#from: 27700 to: 4326, 3857, 4277,     -, 4258, 4979, 4978, 4937, 4936, 7405
-#from: 4258  to: 4326, 3857, 4277, 27700,    -, 4979, 4978, 4937, 4936, 7405
-#from: 4979  to: 4326, 3857, 4277, 27700, 4258,    -, 4978, 4937, 4936, 7405
-#from: 4978  to: 4326, 3857, 4277, 27700, 4258, 4979,    -, 4937, 4936, 7405
-#from: 4937  to: 4326, 3857, 4277, 27700, 4258, 4979, 4978,    -, 4936, 7405
-#from: 4936  to: 4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937,    -, 7405
-#from: 7405  to: 4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936,    -
+#from:4326  to:   -, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405, 3035
+#from:3857  to:4326,    -, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405, 3035
+#from:4277  to:4326, 3857,    -, 27700, 4258, 4979, 4978, 4937, 4936, 7405, 3035
+#from:27700 to:4326, 3857, 4277,     -, 4258, 4979, 4978, 4937, 4936, 7405, 3035
+#from:4258  to:4326, 3857, 4277, 27700,    -, 4979, 4978, 4937, 4936, 7405, 3035
+#from:4979  to:4326, 3857, 4277, 27700, 4258,    -, 4978, 4937, 4936, 7405, 3035
+#from:4978  to:4326, 3857, 4277, 27700, 4258, 4979,    -, 4937, 4936, 7405, 3035
+#from:4937  to:4326, 3857, 4277, 27700, 4258, 4979, 4978,    -, 4936, 7405, 3035
+#from:4936  to:4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937,    -, 7405, 3035
+#from:7405  to:4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936,    -, 3035
+#from:3035  to:4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405,    -
 
 FROM <-          list(4326, 3857, 4277, 27700, 4258,
                       4979 ,4978, 4937, 4936, 7405)

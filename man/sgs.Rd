@@ -7,7 +7,7 @@
 \title{sgs: Simple GIS (with OSGB).}
 \description{
 The sgs package aims to provide a set of functions to perform spatial or
-geographic analysis in R, 'TIBCO Spotfire' and 'TERR'. Its main purpose is
+geographic analysis in Open Source R and derivatives. Its main purpose is
 to permform OSGB36/ETRS89 transformations using the Ordnance Survey's
 OSTN15 transformation model for Great Britain and the Isle of Man. It also
 transforms GPS ellipsoid heights to orthometric (mean sea level)
@@ -19,6 +19,12 @@ Most of the functions available in this package will become much less
 accurate if used outside the coverage of OSTN, thus it is adviced to apply
 those functions on coordinates within Great Britain, the Isle of Man and any
 areas of sea less than a few miles off shore.
+
+This package assumes that the Coordinate Reference Systems (CRS) ETRS89 and
+WGS84 are the same within the UK, but this shouldn't be a problem for most
+civilian use of GPS satellites. If a high-precision transformation between
+WGS84 and ETRS89 is required then it is recommended to use a different
+package to do the conversion.
 }
 \section{Object constructors}{
 

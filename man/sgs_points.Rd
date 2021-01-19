@@ -26,7 +26,7 @@ the X (easting or longitude), Y (northing or latitude) and optionally Z
 of the following values:
 \itemize{
 \item when working with (2D/3D) ETRS89 Datum: \code{4258}, \code{4937},
-\code{4936}
+\code{4936}, \code{3035}
 \item when working with (2D/3D) WGS84 Datum:\code{4326}, \code{4979},
 \code{4978}
 \item when working with (2D/3D) OSGB36 Datum:\code{4277}, \code{27700},
@@ -69,6 +69,10 @@ respectively. The defined datum for this set of coordinates is ETRS89
 \item\code{4936}: ETRS89, geodetic coordinate system. The columns in
 \code{x} must be defined as cartesian coordinates x, y and z. The defined
 datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
+
+\item\code{3035}: ETRS-LAEA, projected coordinate system. The
+columns in \code{x} must be defined as Easting and Northing. The defined
+datum for this set of coordinates is WGS84 (https://epsg.io/3035)
 
 \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
 must be defined as Longitude and Latitude (\code{sgs} also accepts a

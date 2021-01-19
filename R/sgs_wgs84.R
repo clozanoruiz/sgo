@@ -57,11 +57,8 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   FE <- 0; FN <- 0  # False Easting, Northing
   lambda0 <- 0      # True origin
 
-  e <- FE + a * (lambda - lambda0)
-  n <- FN + a * log(tan(pi/4 + phi/2))
-  # Round up to 0.001 m
-  e <- round(e, 3)
-  n <- round(n, 3)
+  e <- round(FE + a * (lambda - lambda0), 2) #round to cm
+  n <- round(FN + a * log(tan(pi/4 + phi/2)), 2)
 
   # Return values
   en <- list(x=e, y=n)
@@ -126,8 +123,8 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   lambda <- ((E - FE)/a) + lambda0
 
   # Round and Return
-  xy <- list(x=round(lambda * RAD.TO.GRAD, 8),
-             y=round(phi * RAD.TO.GRAD, 8))
+  xy <- list(x=round(lambda * RAD.TO.GRAD, 7),
+             y=round(phi * RAD.TO.GRAD, 7))
   if (num.elements > 0) xy <- c(x[, additional.elements, drop=TRUE],xy)
 
   sgs_points(xy, coords=c("x", "y"), epsg=to)

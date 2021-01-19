@@ -3,7 +3,7 @@
 #'
 #' @description
 #' Calculates the planar area for a set of points defined in the OS NGR or
-#' ETRS89-LAEA. The geodetic area is calculated when the entered points are
+#' ETRS89-LAEA. The geodetic area is calculated when entered points are
 #' expressed in angular coordinates.
 #'
 #' @name sgs_area
@@ -11,9 +11,17 @@
 #' @param x A \code{sgs_points} object describing a set of points (clockwise, countercockwise?)
 #' @param ... Currently ignored
 #' @details
-#' TODO.
+#' Calculate areas using the Gauss's area formula (https://en.wikipedia.org/wiki/Shoelace_formula)
 #' @return
 #' Value of the are in squared metres.
+#' @references
+#' Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the
+#' cadaster: case study of Slovenia}. Cartography and Geographic Information
+#' Science, 45:1, 1-17. DOI: 10.1080/15230406.2016.1217789
+#'
+#' Snyder, J.P. 1987. \emph{Map Projections — A Working Manual}. US Geological
+#' Survey Professional Paper, no. 1395. Washington, DC: US Government Printing
+#' Office. DOI: 10.3133/pp1395
 #' @examples
 #' #TODO
 #' @export
@@ -34,13 +42,59 @@ sgs_area.sgs_points <- function(x, ...) {
     planar.area(as.matrix(x[, coords, drop=TRUE]))
 
   } else {
-    # Geodetic area
-    #1-transform to BNG (which is conformal: keeps angles - and shapes)
-    #2-calculate planar.area and centroid from BNG points
-    #3-trnasform the centroid coordinates back to lonlat
-    #4-continue with area calculation
 
-    #this is similar to what 'centroid' in geosphere does: https://github.com/rspatial/geosphere/blob/master/R/centroid.R
+    # Geodetic area
+    # 1- transform to BNG (which is conformal: keeps angles - and shapes)
+    # we could also just use a mercator transformation
+    x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
+
+    # 2- calculate centroid from BNG points and convert back to lonlat
+    c <- moment.centroid(as.matrix(x.bng[, coords, drop=TRUE]))
+    c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
+                                   epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
+
+    # 3- area calculation using a region-adapted equal area projection as
+    # described in Berk and Ferlan, 2018. Albers Equal-Area Conic projection
+
+    # ellipsoid parameters
+    ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
+    params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
+                               c("a","e2")]
+    a <- params$a
+    e2 <- params$e2
+    e <- sqrt(e2)
+
+    lambda <- x$x / RAD.TO.GRAD
+    phi <- x$y / RAD.TO.GRAD
+    lambda.c <- c$x / RAD.TO.GRAD
+    phi.c <- c$y / RAD.TO.GRAD
+
+    sin.phi <- sin(phi)
+    sin.phi.c <- sin(phi.c)
+    cos.phi.c <- cos(phi.c)
+    sin2.phi <- sin.phi * sin.phi
+    splat <- 1 - e2 * sin2.phi
+    splat.c <- 1 - e2 * sin.phi.c * sin.phi.c
+
+    # Follow methodology from Berk and Ferlan, 2018: Here the standard parallel
+    # and the projection origin are tied to the moment centroid (phi0, lambda0).
+    # Since only one standard parallel (which has same φ as the centroid here)
+    # is used, then n in q.phi (Snyder 1987) is sin(phi0)
+    q.phi <- (1 - e2) * (sin.phi / splat - 1/(2 * e) *
+                           log((1 - e * sin.phi) / (1 + e * sin.phi)))
+    q.phi.c <- (1 - e2) * (sin.phi.c / splat.c - 1/(2 * e) *
+                             log((1 - e * sin.phi.c) / (1 + e * sin.phi.c)))
+
+    theta <- sin.phi.c * (lambda - lambda.c)
+    C <- cos.phi.c * cos.phi.c / splat.c + sin.phi.c * q.phi.c
+    rho <- a * sqrt(C - q.phi * sin.phi.c) / sin.phi.c
+    rho.c <- a * sqrt(C - q.phi.c * sin.phi.c) / sin.phi.c
+
+    e <- rho * sin(theta)
+    n <- rho.c - rho * cos(theta)
+
+    area <- planar.area(cbind(e, n))
+
   }
 
 }
@@ -49,40 +103,47 @@ sgs_area.sgs_points <- function(x, ...) {
 planar.area <- function(p) {
 
   # Translate to 0,0 to minimise losing floating point precision
-  p.x <- p[, 1] - min(p[, 1])
-  p.y <- p[, 2] - min(p[, 2])
-
-  n <- nrow(p)
+  p[, 1] <- p[, 1] - min(p[, 1])
+  p[, 2] <- p[, 2] - min(p[, 2])
 
   # Gauss formula
-  area <- 0
-  # Loop through vertices 2 to n-1
-  for (i in 2:(n-1)) {
-    diff <- p.y[i + 1] - p.y[i - 1]
-    area <- area + p.x[i] * diff
-  }
+  # Ap = 1/2 * abs(sum(xi * yi+1 - xi+1 * yi))
 
-  # Vertices 1 and n
-  diff <- p.y[2] - p.y[n]
-  area <- area + p.x[1] * diff
+  # Create the 'i+1' set of terms:
+  p.plus.one <- rbind(p[-1, ], p[1, ])
 
-  diff <- p.y[1] - p.y[n-1]
-  area <- area + p.x[n] * diff
+  # (xi * yi+1 - xi+1 * yi)
+  term <- p[, 1] * p.plus.one[, 2] - p.plus.one[, 1] * p[, 2]
 
-  area <- 0.5 * abs(area)
+  area <- 0.5 * abs(sum(term))
+  round(area, 3)
 
 }
 
-moment.centroid <- function () {
-  #TODO
+#p: matrix of points
+moment.centroid <- function (p) {
+
+  # Translate to 0,0 to minimise losing floating point precision
+  min.x <- min(p[, 1])
+  min.y <- min(p[, 2])
+  p[, 1] <- p[, 1] - min.x
+  p[, 2] <- p[, 2] - min.y
+
+  # Create the 'i+1' set of terms:
+  p.plus.one <- rbind(p[-1, ], p[1, ])
+
+  # (xi * yi+1 - xi+1 * yi)
+  term <- p[, 1] * p.plus.one[, 2] - p.plus.one[, 1] * p[, 2]
+
+  area.div <- 3 * abs(sum(term)) # 3 -> 0.5 * 6
+
+  x <- abs(sum((p[, 1] + p.plus.one[, 1]) * term))
+  y <- abs(sum((p[, 2] + p.plus.one[, 2]) * term))
+
+  centroid <- cbind(x,y) / area.div
+
+  centroid[, 1] <- centroid[, 1] + min.x
+  centroid[, 2] <- centroid[, 2] + min.y
+  round(centroid, 3)
+
 }
-
-#Areas:
-# compute planar area for BNG and LAEA projections (shoelace) - although BNG would be 'incorrect'
-# compute geodetic area from lon/lat cordinates projecting to equal-area mapping (pdf's)
-#translate points by substraction MinX and MinY (https://www.johndcook.com/blog/2018/09/26/polygon-area/)
-#https://support.esri.com/en/technical-article/000006109
-#https://en.wikipedia.org/wiki/Shoelace_formula
-
-#https://github.com/rspatial/raster/blob/19db58371dc37562a74f23830174da47c1e8b9b4/src/area.cpp#L58
-#https://rdrr.io/cran/pracma/src/R/polyarea.R

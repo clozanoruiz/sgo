@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{sgs_transform}
 \alias{sgs_transform}
-\title{Coordinates transformation of a set of points}
+\title{Coordinate transformation of a set of points}
 \usage{
 sgs_transform(x, to = NULL, ...)
 }
@@ -14,7 +14,8 @@ sgs_transform(x, to = NULL, ...)
 can take any of the following values: \code{4326}, \code{3857}, \code{4277},
 \code{27700} or \code{4258}.}
 
-\item{...}{Additional parameters passed to internal functions.}
+\item{...}{Additional parameters passed to internal functions. #TODO: improve
+this description and which parameters may admit...}
 }
 \value{
 An object of class 'sgs_points'.
@@ -30,6 +31,7 @@ This function is a wrapper of specific transformation functions
 \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_lonlat_bng}}) that transforms
 the coordinate system of a set of points to any of the supported coordinate
 systems.
+#TODO warning about wgs84/etrs89 transformation
 }
 \examples{
 ln <- c(-4.22472, -2.09908)

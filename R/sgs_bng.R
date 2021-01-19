@@ -434,7 +434,7 @@ project.onto.grid <- function (lon, lat, datum) {
 
   cos.phi <- cos(phi)
   sin.phi <- sin(phi)
-  sin2.phi <- sin(phi) * sin(phi)
+  sin2.phi <- sin.phi * sin.phi
   tan.phi <- sin.phi / cos.phi               # cos(phi) cannot be zero in GB
   tan2.phi <- tan.phi * tan.phi
   tan4.phi <- tan2.phi * tan2.phi
@@ -442,8 +442,8 @@ project.onto.grid <- function (lon, lat, datum) {
   splat <- 1 - e2 * sin2.phi
   sqrtsplat <- sqrt(splat)
   nu <- af / sqrtsplat                       # nu = transverse r of curvature
-  rho <- af * (1-e2) / (splat * sqrtsplat)   # rho = meridional r of curvature
-  eta2 <- nu / rho - 1                       # eta = ?
+  rho <- af * (1-e2) / (splat * sqrtsplat)
+  eta2 <- nu / rho - 1
 
   phi.minus <- phi - phi0
   phi.plus <- phi + phi0

@@ -243,7 +243,7 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
   # initialise distances
   s <- rep(NA, nrow(p1))
 
-  # ellipsooid parameters
+  # ellipsoid parameters
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
                              c("a","b","f")]

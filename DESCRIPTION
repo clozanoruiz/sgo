@@ -10,7 +10,7 @@ Description: A set of functions to perform mainly the OSGB36/ETRS89
   transformation by using the Ordnance Survey's OSTN15 transformation model
   without any other package dependency.
 Depends: R (>= 3.4.0)
-Suggests: sf, testthat, goodpractice
+Suggests: sf, testthat
 License: BSD_2_clause + file LICENSE
 Copyright: OSTN transformation data included in this module is freely available
   from the Ordnance Survey but remains Crown Copyright (C) 2016 under the terms
@@ -26,6 +26,7 @@ Collate:
     'sgs_area.R'
     'sgs_bng.R'
     'sgs_distance.R'
+    'sgs_laea.R'
     'sgs_ngr.R'
     'sgs_points.R'
     'sgs_set_gcs.R'
