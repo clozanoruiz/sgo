@@ -30,6 +30,5 @@ Collate:
     'sgs_ngr.R'
     'sgs_points.R'
     'sgs_set_gcs.R'
-    'sgs_sf.R'
     'sgs_wgs84.R'
     'sgs_transform.R'

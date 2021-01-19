@@ -40,6 +40,8 @@ test_that("sgs_points constructors", {
 # are always (and only): x, y, epsg and datum
 # 3) Test all the extended operators '['. Check they do what is required from
 # them and they keep all attributes/class of sgs
+# 4) test taht the transformations, besides being correct keep all the additional
+# columns
 
 #test all the options that use sf (like converting from sgs to sf!)
 

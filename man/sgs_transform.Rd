@@ -10,9 +10,8 @@ sgs_transform(x, to = NULL, ...)
 \arguments{
 \item{x}{A \code{sgs_points} object.}
 
-\item{to}{Specifies the EPSG code to convert the coordinates to. Currently it
-can take any of the following values: \code{4326}, \code{3857}, \code{4277},
-\code{27700} or \code{4258}.}
+\item{to}{Specifies the EPSG code to convert the coordinates to. See
+\code{\link{sgs_points}} for a list of supported EPSG codes.}
 
 \item{...}{Additional parameters passed to internal functions. #TODO: improve
 this description and which parameters may admit...}

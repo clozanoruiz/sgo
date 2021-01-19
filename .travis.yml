@@ -24,15 +24,15 @@ cache:
 
 latex: false
 
-dist: bionic
-addons:
-  apt:
-    sources:
-      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
-    packages:
-      - libudunits2-dev
-      - libgeos-dev
-      - libgdal-dev
+dist: focal
+#addons:
+#  apt:
+#    sources:
+#      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
+#    packages:
+#      - libudunits2-dev
+#      - libgeos-dev
+#      - libgdal-dev
 
 r_packages:
   - covr

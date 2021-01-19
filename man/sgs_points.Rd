@@ -34,7 +34,7 @@ of the following values:
 \item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
 }}
 
-\item{i}{Record selection, see \link{[.data.frame}}
+\item{i}{Record selection, see \link[base]{Extract}}
 
 \item{j}{Variable selection, see \link{[.data.frame}}
 

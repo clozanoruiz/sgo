@@ -97,7 +97,8 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 #from:3035  to:4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405,    -
 
 FROM <-          list(4326, 3857, 4277, 27700, 4258,
-                      4979 ,4978, 4937, 4936, 7405)
+                      4979 ,4978, 4937, 4936, 7405,
+                      3035)
 
                                                            #FROM:
 FUN_TO_4326 <-   list(NULL,                                 #4326
@@ -109,7 +110,8 @@ FUN_TO_4326 <-   list(NULL,                                 #4326
                       list(sgs_cart_lonlat, sgs_set_gcs),   #4978
                       list(sgs_set_gcs),                    #4937
                       list(sgs_cart_lonlat, sgs_set_gcs),   #4936
-                      list(sgs_bng_lonlat)                  #7405
+                      list(sgs_bng_lonlat),                 #7405
+                      list(sgs_laea_etrs, sgs_set_gcs)      #3035
 )
 ARGS_TO_4326 <-  list(NULL,                                 #4326
                       list(to=4326),                        #3857
@@ -120,7 +122,8 @@ ARGS_TO_4326 <-  list(NULL,                                 #4326
                       list(list(), list(to=4326)),          #4978
                       list(to=4326),                        #4937
                       list(list(), list(to=4326)),          #4936
-                      list(to=4326)                         #7405
+                      list(to=4326),                        #7405
+                      list(list(), list(to=4326))           #3035
 )
 
                                                                          #FROM:
@@ -128,47 +131,51 @@ FUN_TO_3857 <-   list(list(sgs_wgs84_en),                                 #4326
                       NULL,                                               #3857
                       list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_wgs84_en), #4277
                       list(sgs_bng_lonlat, sgs_wgs84_en),
-                      list(sgs_set_gcs, sgs_wgs84_en),                    #4258
+                      list(sgs_wgs84_en),                                 #4258
                       list(sgs_wgs84_en),                                 #4979
                       list(sgs_cart_lonlat, sgs_wgs84_en),                #4978
-                      list(sgs_set_gcs, sgs_wgs84_en),                    #4937
-                      list(sgs_cart_lonlat, sgs_set_gcs, sgs_wgs84_en),   #4936
-                      list(sgs_bng_lonlat, sgs_wgs84_en)                  #7405
+                      list(sgs_wgs84_en),                                 #4937
+                      list(sgs_cart_lonlat, sgs_wgs84_en),                #4936
+                      list(sgs_bng_lonlat, sgs_wgs84_en),                 #7405
+                      list(sgs_laea_etrs, sgs_wgs84_en)                   #3035
 )
 ARGS_TO_3857 <-  list(list(to=3857),
                       NULL,
                       list(list(), list(to=4326), list(to=3857)),
                       list(list(to=4326), list(to=3857)),
-                      list(list(to=4326), list(to=3857)),
+                      list(list(to=3857)),                                #4258
                       list(to=3857),                                      #4979
                       list(list(), to=3857),                              #4978
-                      list(list(to=4326), list(to=3857)),                 #4937
-                      list(list(), list(to=4326), list(to=3857)),         #4936
-                      list(list(to=4326), list(to=3857))                  #7405
+                      list(list(to=3857)),                                #4937
+                      list(list(), list(to=3857)),                        #4936
+                      list(list(to=4326), list(to=3857)),                 #7405
+                      list(list(), list(to=3857))                         #3035
 )
 
                                                                          #FROM:
 FUN_TO_4277 <-   list(list(sgs_lonlat_bng, sgs_bng_lonlat),               #4326
-                      list(sgs_en_wgs84, sgs_lonlat_bng, sgs_bng_lonlat),
-                      NULL,
+                      list(sgs_en_wgs84, sgs_lonlat_bng, sgs_bng_lonlat), #3857
+                      NULL,                                               #4277
                       list(sgs_bng_lonlat),                              #27700
                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4258
                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4979
                       list(sgs_cart_lonlat, sgs_lonlat_bng, sgs_bng_lonlat),
                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4937
                       list(sgs_cart_lonlat, sgs_lonlat_bng, sgs_bng_lonlat),
-                      list(sgs_bng_lonlat)                                #7405
+                      list(sgs_bng_lonlat),                               #7405
+                      list(sgs_laea_etrs, sgs_lonlat_bng, sgs_bng_lonlat) #3035
 )
-ARGS_TO_4277 <-  list(list(list(),list(to=4277)),
-                      list(list(to=4326), list(), list(to=4277)),
-                      NULL,
-                      list(to=4277),
-                      list(list(), list(to=4277)),
+ARGS_TO_4277 <-  list(list(list(),list(to=4277)),                         #4326
+                      list(list(to=4326), list(), list(to=4277)),         #3857
+                      NULL,                                               #4277
+                      list(to=4277),                                     #27700
+                      list(list(), list(to=4277)),                        #4258
                       list(list(), list(to=4277)),                        #4979
                       list(list(), list(), list(to=4277)),                #4978
                       list(list(), list(to=4277)),                        #4937
                       list(list(), list(), list(to=4277)),                #4936
-                      list(to=4277)                                       #7405
+                      list(to=4277),                                      #7405
+                      list(list(), list(), list(to=4277))                 #3035
 )
 
 
@@ -176,36 +183,39 @@ FUN_TO_27700 <-  list(list(sgs_lonlat_bng),                               #4326
                       list(sgs_en_wgs84, sgs_lonlat_bng),                 #3857
                       list(sgs_lonlat_bng),
                       NULL,                                              #27700
-                      list(sgs_lonlat_bng),
+                      list(sgs_lonlat_bng),                               #4258
                       list(sgs_lonlat_bng),                               #4979
                       list(sgs_cart_lonlat, sgs_lonlat_bng),              #4978
                       list(sgs_lonlat_bng),                               #4937
                       list(sgs_cart_lonlat, sgs_lonlat_bng),              #4936
-                      list(.remove.z)                                     #7405
+                      list(.remove.z),                                    #7405
+                      list(sgs_laea_etrs, sgs_lonlat_bng)                 #3035
 )
 ARGS_TO_27700 <- list(list(),
                       list(list(to=4326), list()),
                       list(),
                       NULL,
-                      list(),
+                      list(),                                             #4258
                       list(),                                             #4979
                       list(list(), list()),                               #4978
                       list(),                                             #4937
                       list(list(), list()),                               #4936
-                      list()                                              #7405
+                      list(),                                             #7405
+                      list(list(), list())                                #3035
 )
 
 
 FUN_TO_4258 <-   list(list(sgs_set_gcs),
-                      list(sgs_en_wgs84, sgs_set_gcs),
-                      list(sgs_lonlat_bng, sgs_bng_lonlat),
+                      list(sgs_en_wgs84, sgs_set_gcs),                    #3857
+                      list(sgs_lonlat_bng, sgs_bng_lonlat),               #4277
                       list(sgs_bng_lonlat),
-                      NULL,
+                      NULL,                                               #4258
                       list(sgs_set_gcs),                                  #4979
                       list(sgs_cart_lonlat, sgs_set_gcs),                 #4978
                       list(sgs_set_gcs),                                  #4937
                       list(sgs_cart_lonlat, sgs_set_gcs),                 #4936
-                      list(sgs_bng_lonlat)                                #7405
+                      list(sgs_bng_lonlat),                               #7405
+                      list(sgs_laea_etrs)                                 #3035
 )
 ARGS_TO_4258 <-  list(list(to=4258),                                      #4326
                       list(list(to=4326), list(to=4258)),                 #3857
@@ -216,7 +226,8 @@ ARGS_TO_4258 <-  list(list(to=4258),                                      #4326
                       list(list(), list(to=4258)),                        #4978
                       list(to=4258),                                      #4937
                       list(list(), list(to=4258)),                        #4936
-                      list(to=4258)                                       #7405
+                      list(to=4258),                                      #7405
+                      list(list())                                        #3035
 )
 
                                                                          #FROM:
@@ -229,7 +240,8 @@ FUN_TO_4979 <- list(list(sgs_set_gcs),                                    #4326
                     list(sgs_cart_lonlat),                                #4978
                     list(sgs_set_gcs),                                    #4937
                     list(sgs_cart_lonlat, sgs_set_gcs),                   #4936
-                    list(sgs_bng_lonlat)                                  #7405
+                    list(sgs_bng_lonlat),                                 #7405
+                    list(sgs_laea_etrs, sgs_set_gcs)                      #3035
 
 )
 ARGS_TO_4979 <- list(list(to=4979),                                       #4326
@@ -241,7 +253,8 @@ ARGS_TO_4979 <- list(list(to=4979),                                       #4326
                      list(),                                              #4978
                      list(to=4979),                                       #4937
                      list(list(), list(to=4979)),                         #4936
-                     list(to=4979)                                        #7405
+                     list(to=4979),                                       #7405
+                     list(list(), list(to=4979))                          #3035
 )
 
                                                                          #FROM:
@@ -254,7 +267,8 @@ FUN_TO_4978 <- list(list(sgs_lonlat_cart),                                #4326
                     NULL,                                                 #4978
                     list(sgs_set_gcs, sgs_lonlat_cart),                   #4937
                     list(sgs_cart_lonlat, sgs_set_gcs, sgs_lonlat_cart),  #4936
-                    list(sgs_bng_lonlat, sgs_lonlat_cart)                 #7405
+                    list(sgs_bng_lonlat, sgs_lonlat_cart),                #7405
+                    list(sgs_laea_etrs, sgs_set_gcs, sgs_lonlat_cart)     #3035
 )
 ARGS_TO_4978 <- list(list(to=4978),                                       #4326
                      list(list(to=4326), list()),                         #3857
@@ -265,7 +279,8 @@ ARGS_TO_4978 <- list(list(to=4978),                                       #4326
                      NULL,
                      list(list(to=4979), list()),                         #4937
                      list(list(), list(to=4979), list()),                 #4936
-                     list(list(to=4979), list())                          #7405
+                     list(list(to=4979), list()),                         #7405
+                     list(list(), list(to=4326), list())                  #3035
 )
 
 
@@ -274,11 +289,12 @@ FUN_TO_4937 <- list(list(sgs_set_gcs),
                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_set_gcs),
                     list(sgs_bng_lonlat, sgs_set_gcs),                   #27700
                     list(sgs_set_gcs),                                    #4258
-                    list(sgs_set_gcs),
-                    list(sgs_cart_lonlat, sgs_set_gcs),
+                    list(sgs_set_gcs),                                    #4979
+                    list(sgs_cart_lonlat, sgs_set_gcs),                   #4978
                     NULL,
                     list(sgs_cart_lonlat),
-                    list(sgs_bng_lonlat)
+                    list(sgs_bng_lonlat),                                 #7405
+                    list(sgs_laea_etrs, sgs_set_gcs)                      #3035
 )
 ARGS_TO_4937 <- list(list(to=4937),                                       #4326
                      list(list(to=4326), list(to=4937)),                  #3857
@@ -289,56 +305,88 @@ ARGS_TO_4937 <- list(list(to=4937),                                       #4326
                      list(list(), list(to=4937)),                         #4978
                      NULL,                                                #4937
                      list(to=4937),                                       #4936
-                     list(to=4937)                                        #7405
+                     list(to=4937),                                       #7405
+                     list(list(), list(to=4937))                          #3035
 )
 
 
 FUN_TO_4936 <- list(list(sgs_set_gcs, sgs_lonlat_cart),
                     list(sgs_en_wgs84, sgs_set_gcs, sgs_lonlat_cart),
-                    list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_lonlat_cart),
+                    list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_lonlat_cart),#4277
                     list(sgs_bng_lonlat, sgs_lonlat_cart),
-                    list(sgs_lonlat_cart),
-                    list(sgs_set_gcs, sgs_lonlat_cart),
-                    list(sgs_cart_lonlat, sgs_set_gcs, sgs_lonlat_cart),
+                    list(sgs_lonlat_cart),                                #4258
+                    list(sgs_set_gcs, sgs_lonlat_cart),                   #4979
+                    list(sgs_cart_lonlat, sgs_set_gcs, sgs_lonlat_cart),  #4978
                     list(sgs_lonlat_cart),
                     NULL,
-                    list(sgs_bng_lonlat,sgs_lonlat_cart)
+                    list(sgs_bng_lonlat,sgs_lonlat_cart),                 #7405
+                    list(sgs_laea_etrs, sgs_lonlat_cart)                  #3035
 )
 ARGS_TO_4936 <- list(list(list(to=4258), list()),
                      list(list(to=4326), list(to=4258), list()),
                      list(list(), list(to=4258), list()),
                      list(list(to=4258), list()),
-                     list(),
+                     list(),                                              #4258
                      list(list(to=4937), list()),
                      list(list(), list(to=4937), list()),
                      list(),
                      NULL,
-                     list(list(to=4937), list())
+                     list(list(to=4937), list()),                         #7405
+                     list(list(), list())                                 #3035
 )
 
 
-FUN_TO_7405 <- list(list(sgs_lonlat_bng, .add.z),
-                    list(sgs_en_wgs84, sgs_lonlat_bng, .add.z),
-                    list(sgs_lonlat_bng, .add.z),
-                    list(.add.z),
-                    list(sgs_lonlat_bng, .add.z),
-                    list(sgs_lonlat_bng, .add.z),
-                    list(sgs_cart_lonlat, sgs_lonlat_bng, .add.z),
-                    list(sgs_lonlat_bng, .add.z),
-                    list(sgs_cart_lonlat, sgs_lonlat_bng, .add.z),
-                    NULL
+FUN_TO_7405 <- list(list(sgs_lonlat_bng, .add.z),                         #4326
+                    list(sgs_en_wgs84, sgs_lonlat_bng, .add.z),           #3857
+                    list(sgs_lonlat_bng, .add.z),                         #4277
+                    list(.add.z),                                        #27700
+                    list(sgs_lonlat_bng, .add.z),                         #4258
+                    list(sgs_lonlat_bng),                                 #4979
+                    list(sgs_cart_lonlat, sgs_lonlat_bng),                #4978
+                    list(sgs_lonlat_bng),                                 #4937
+                    list(sgs_cart_lonlat, sgs_lonlat_bng),                #4936
+                    NULL,                                                 #7405
+                    list(sgs_laea_etrs, sgs_lonlat_bng, .add.z)           #3035
 )
-ARGS_TO_7405 <- list(list(list(), list()),
+ARGS_TO_7405 <- list(list(list(), list()),                                #4326
                      list(list(to=4326), list(), list()),
-                     list(list(), list()),
-                     list(),
-                     list(list(), list()),
-                     list(list(), list()),
-                     list(list(), list(), list()),
-                     list(list(), list()),
-                     list(list(), list(), list()),
-                     NULL
+                     list(list(), list()),                                #4277
+                     list(),                                             #27700
+                     list(list(), list()),                                #4258
+                     list(),                                              #4979
+                     list(list(), list()),                                #4978
+                     list(),                                              #4937
+                     list(list(), list()),                                #4936
+                     NULL,                                                #7405
+                     list(list(), list(), list())                         #3035
 )
+
+
+FUN_TO_3035 <- list(list(sgs_set_gcs, sgs_etrs_laea),                     #4326
+                    list(sgs_en_wgs84, sgs_set_gcs, sgs_etrs_laea),       #3857
+                    list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_etrs_laea),  #4277
+                    list(sgs_bng_lonlat, sgs_etrs_laea),                 #27700
+                    list(sgs_etrs_laea),                                  #4258
+                    list(sgs_set_gcs, sgs_etrs_laea),                     #4979
+                    list(sgs_cart_lonlat, sgs_set_gcs, sgs_etrs_laea),    #4978
+                    list(sgs_etrs_laea),                                  #4937
+                    list(sgs_etrs_laea),                                  #4936
+                    list(sgs_bng_lonlat, sgs_etrs_laea),                  #7405
+                    NULL                                                  #3035
+)
+ARGS_TO_3035 <- list(list(list(to=4258), list()),                         #4326
+                     list(list(to=4326), list(to=4258), list()),          #3857
+                     list(list(), list(to=4258), list()),                 #4277
+                     list(list(to=4258), list()),                        #27700
+                     list(),                                              #4258
+                     list(list(to=4937), list()),                         #4979
+                     list(list(), list(to=4937), list()),                 #4978
+                     list(),                                              #4937
+                     list(),                                              #4936
+                     list(list(to=4937), list()),                         #7405
+                     NULL                                                 #3035
+)
+
 
 # Two dataframes containing those funtions and arguments respectively
 FUNCS <- as.data.frame(cbind("FROM"=FROM,
@@ -351,7 +399,8 @@ FUNCS <- as.data.frame(cbind("FROM"=FROM,
                              "4978"=FUN_TO_4978,
                              "4937"=FUN_TO_4937,
                              "4936"=FUN_TO_4936,
-                             "7405"=FUN_TO_7405
+                             "7405"=FUN_TO_7405,
+                             "3035"=FUN_TO_3035
 ))
 
 ARGS <- as.data.frame(cbind("FROM"=FROM,
@@ -364,5 +413,6 @@ ARGS <- as.data.frame(cbind("FROM"=FROM,
                             "4978"=ARGS_TO_4978,
                             "4937"=ARGS_TO_4937,
                             "4936"=ARGS_TO_4936,
-                            "7405"=ARGS_TO_7405
+                            "7405"=ARGS_TO_7405,
+                            "3035"=ARGS_TO_3035
 ))

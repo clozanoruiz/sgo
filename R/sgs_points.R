@@ -237,77 +237,6 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
 
 }
 
-## @export
-#sgs_points.sf <- function (x, coords=NULL, epsg=NULL) {
-#
-#  epsg <- sf_checks(x, epsg)
-#
-#  coordinates <- sf::st_coordinates(x)
-#  coords <- colnames(coordinates)
-#  rownames(coordinates) <- NULL
-#
-#  sf::st_geometry(x) <- NULL
-#  sgs_points(as.list(cbind(x, coordinates)), coords=coords, epsg=epsg)
-#
-#}
-
-## @export
-#sgs_points.sfc <- function (x, coords=NULL, epsg=NULL) {
-#
-#  epsg <- sf_checks(x, epsg)
-#
-#  coordinates <- sf::st_coordinates(x)
-#  coords <- colnames(coordinates)
-#  rownames(coordinates) <- NULL
-#
-#  lst <- list(coordinates[, 1], coordinates[, 2])
-#  names(lst) <- coords
-#  sgs_points(lst, coords=coords, epsg=epsg)
-#
-#}
-
-
-## @encoding UTF-8
-## @title Convert sgs_points objects to sf objects
-##
-## @description
-## Converts \code{sgs_points} objects to instances of class \code{sf}. \pkg{sf}
-## is a package that allows working with spatial vector data.
-##
-## The reverse conversion (from \code{sf} to \code{sgs_points}) is done
-## automatically by the \code{\link{sgs_points}} constructor.
-##
-## @name sgs_points_sf
-## @usage sgs_points_sf(x)
-## @param x An instance of \code{sgs_points}.
-## @return
-## An object of class \code{sf}.
-## @examples
-## p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
-## sf.p <- sgs_points_sf(p)
-## sf::st_crs(sf.p)
-## @export
-#sgs_points_sf <- function (x) UseMethod("sgs_points_sf")
-
-## @export
-#sgs_points_sf.sgs_points <-function(x) {
-#
-#  x <- unclass(x)
-#  names <- names(x)
-#  columns <- !names %in% c("epsg", "datum")
-#
-#  len.coords <- length(x$x)
-#
-#  # Ensure all extra columns have the same numbers of elements as coordinates
-#  # This means there won't be 'recycling' of elements
-#  x[columns] <- lapply(x[columns], function(col, len) {
-#                                    length(col) <- len; col}, len=len.coords)
-#
-#  sf::st_as_sf(data.frame(x[columns], stringsAsFactors = FALSE),
-#               coords=c("x", "y"), crs =x$epsg, dim="XY")
-#
-#}
-
 #' @encoding UTF-8
 #' @title Extracts coordinates from an \code{sgs_points} object
 #'
@@ -381,7 +310,7 @@ sgs_coordinates.sgs_points <- function(x) {
 # TODO
 # Extending '[' function to support sgs_points:
 #' @name sgs_points
-#' @param i Record selection, see \link{[.data.frame}
+#' @param i Record selection, see \link[base]{Extract}
 #' @param j Variable selection, see \link{[.data.frame}
 #' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
 #' drop the \code{sgs_points} class of the object.
@@ -426,7 +355,7 @@ sgs_coordinates.sgs_points <- function(x) {
 
   if (all(coords %in% selected.columns) && !drop) {
     if(is.matrix(x)){
-      x <- split(x, rep(1:ncol(x), each = nrow(x))) #to list
+      x <- split(x, rep(seq_len(ncol(x)), each = nrow(x))) #to list
       names(x) <- selected.columns
     } else {
       names(x) <- selected.columns
@@ -447,7 +376,7 @@ sgs_coordinates.sgs_points <- function(x) {
 c.sgs_points <- function(...) {
 
   dots <- list(...)
-  classes <- sapply(dots, class)
+  classes <- vapply(dots, class, character(1))
 
   if (all(classes == "sgs_points")) { #merge them
 
@@ -459,7 +388,7 @@ c.sgs_points <- function(...) {
       coords <- do.call(mapply, c(FUN=c, lapply(dots, `[`, coord.cols)))
       coords <- split(coords, col(coords))
 
-      other.columns <- unlist(sapply(dots, function(x, n) {x[!names(x) %in% n]},
+      other.columns <- unlist(sapply(dots, function(x, n) {x[!names(x) %in% n]}, #try to substitute this sapply with vapply (probably not posible as every list would have different size) or lapply: is lapply safer than sapply?
                                      n=sgs_points.core), recursive=FALSE)
 
       r <- structure(c(other.columns,
@@ -468,7 +397,7 @@ c.sgs_points <- function(...) {
                             dimension=dots[[1]]$dimension)),
                      class = "sgs_points")
 
-    } else { #different EPSG's we cannot merge
+    } else { #different EPSG's, we cannot merge
 
       stop("Objects with different EPSG codes cannot be combined")
 
