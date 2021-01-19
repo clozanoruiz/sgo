@@ -6,12 +6,17 @@
 \alias{[.sgs_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
-sgs_points(x, coords=NULL, epsg = NULL)
+sgs_points(x, coords = NULL, epsg = NULL)
 
 \method{[}{sgs_points}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
-\item{x}{Object of class \code{sgs_points}}
+\item{x}{A list or dataframe with at least 2 columns of either
+easting/northing or longitude/latitude coordinates per row. A third column
+with height values is optional.
+\strong{Please note} that the order is important when \code{x} has only 2 or
+3 columns and \code{coords} is not informed: lat/lon or northing/easting
+(and height) will produce wrong results.}
 
 \item{coords}{A vector with the names of the two or three columns containing
 the X (easting or longitude), Y (northing or latitude) and optionally Z
@@ -21,7 +26,7 @@ the X (easting or longitude), Y (northing or latitude) and optionally Z
 of the following values:
 \itemize{
 \item when working with (2D/3D) ETRS89 Datum: \code{4258}, \code{4937},
-\code{4936}
+\code{4936}, \code{3035}
 \item when working with (2D/3D) WGS84 Datum:\code{4326}, \code{4979},
 \code{4978}
 \item when working with (2D/3D) OSGB36 Datum:\code{4277}, \code{27700},
@@ -64,6 +69,10 @@ respectively. The defined datum for this set of coordinates is ETRS89
 \item\code{4936}: ETRS89, geodetic coordinate system. The columns in
 \code{x} must be defined as cartesian coordinates x, y and z. The defined
 datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
+
+\item\code{3035}: ETRS-LAEA, projected coordinate system. The
+columns in \code{x} must be defined as Easting and Northing. The defined
+datum for this set of coordinates is WGS84 (https://epsg.io/3035)
 
 \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
 must be defined as Longitude and Latitude (\code{sgs} also accepts a

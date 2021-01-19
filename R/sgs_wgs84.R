@@ -48,20 +48,17 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  phi <- x$y / 57.29577951308232087679815481410517
-  lambda <- x$x / 57.29577951308232087679815481410517
+  phi <- x$y / RAD.TO.GRAD
+  lambda <- x$x / RAD.TO.GRAD
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
 
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
-  FE <- 0L; FN <- 0L # False Easting, Northing
-  lambda0 <- 0L      # True origin
+  FE <- 0; FN <- 0  # False Easting, Northing
+  lambda0 <- 0      # True origin
 
-  e <- FE + a * (lambda - lambda0)
-  n <- FN + a * log(tan(pi/4L + phi/2L))
-  # Round up to 0.001 m
-  e <- round(e, 3)
-  n <- round(n, 3)
+  e <- round(FE + a * (lambda - lambda0), 2) #round to cm
+  n <- round(FN + a * log(tan(pi/4 + phi/2)), 2)
 
   # Return values
   en <- list(x=e, y=n)
@@ -126,8 +123,8 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   lambda <- ((E - FE)/a) + lambda0
 
   # Round and Return
-  xy <- list(x=round(lambda * 57.29577951308232087679815481410517, 8),
-             y=round(phi * 57.29577951308232087679815481410517, 8))
+  xy <- list(x=round(lambda * RAD.TO.GRAD, 7),
+             y=round(phi * RAD.TO.GRAD, 7))
   if (num.elements > 0) xy <- c(x[, additional.elements, drop=TRUE],xy)
 
   sgs_points(xy, coords=c("x", "y"), epsg=to)

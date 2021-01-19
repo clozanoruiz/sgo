@@ -6,7 +6,7 @@
 #' points
 #'
 #' @name sgs_points
-#' @usage sgs_points(x, coords=NULL, epsg = NULL)
+#' @usage sgs_points(x, coords = NULL, epsg = NULL)
 #' @param x A list or dataframe with at least 2 columns of either
 #' easting/northing or longitude/latitude coordinates per row. A third column
 #' with height values is optional.
@@ -21,7 +21,7 @@
 #' of the following values:
 #' \itemize{
 #' \item when working with (2D/3D) ETRS89 Datum: \code{4258}, \code{4937},
-#' \code{4936}
+#' \code{4936}, \code{3035}
 #' \item when working with (2D/3D) WGS84 Datum:\code{4326}, \code{4979},
 #' \code{4978}
 #' \item when working with (2D/3D) OSGB36 Datum:\code{4277}, \code{27700},
@@ -47,6 +47,10 @@
 #' \item\code{4936}: ETRS89, geodetic coordinate system. The columns in
 #' \code{x} must be defined as cartesian coordinates x, y and z. The defined
 #' datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
+#'
+#' \item\code{3035}: ETRS-LAEA, projected coordinate system. The
+#' columns in \code{x} must be defined as Easting and Northing. The defined
+#' datum for this set of coordinates is WGS84 (https://epsg.io/3035)
 #'
 #' \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
 #' must be defined as Longitude and Latitude (\code{sgs} also accepts a
@@ -156,7 +160,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   dimension <- if(num.coords == 2) "XY" else "XYZ"
 
-  #correct 3D EPSG 4258, 4326, 27700 if needed
+  # correct 3D EPSG 4258, 4326, 27700 if needed
   if (epsg %in% epsgs[epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
     if (epsg == 4258) {
       epsg <- 4937
@@ -377,7 +381,6 @@ sgs_coordinates.sgs_points <- function(x) {
 # TODO
 # Extending '[' function to support sgs_points:
 #' @name sgs_points
-#' @param x Object of class \code{sgs_points}
 #' @param i Record selection, see \link{[.data.frame}
 #' @param j Variable selection, see \link{[.data.frame}
 #' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will

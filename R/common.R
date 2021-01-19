@@ -1,5 +1,8 @@
 ## This modelue contains 'common' and helper functions
 
+# 180/π
+# https://keisan.casio.com/calculator (34 digits precision)
+RAD.TO.GRAD <- 57.29577951308232087679815481410517
 
 #check 'empty' values in a vector
 is_nothing <- function(x) {
@@ -10,21 +13,26 @@ is_nothing <- function(x) {
 # list of EPSG codes and types #,
 # we could admit some epsg which should be XY as XYZ (eg. 4258, 4326, 27700)
 # format is either ll (lon/lat), c (cartesians), en (easting/northing)
-epsgs <- data.frame(epsg=c(4258, 4937, 4936,
+epsgs <- data.frame(epsg=c(4258, 4937, 4936, 3035,
                            4326, 4979, 4978, 3857,
-                           4277, 27700, 7405),
-                    datum=c("ETRS89", "ETRS89", "ETRS89",
+                           4277, 27700, 7405,
+                           3035),
+                    datum=c("ETRS89", "ETRS89", "ETRS89", "ETRS89",
                             "WGS84", "WGS84", "WGS84", "WGS84",
-                            "OSGB36", "OSGB36", "OSGB36"),
-                    type=c("GCS", "GCS", "GCS",
+                            "OSGB36", "OSGB36", "OSGB36",
+                            "ETRS89"),
+                    type=c("GCS", "GCS", "GCS", "PCS",
                            "GCS", "GCS", "GCS", "PCS",
-                           "GCS", "PCS", "PCS"),
-                    dimension=c("XY/Z", "XYZ", "XYZ",
+                           "GCS", "PCS", "PCS",
+                           "PCS"),
+                    dimension=c("XY/Z", "XYZ", "XYZ", "XY",
                                 "XY/Z", "XYZ", "XYZ", "XY",
-                                "XY", "XY/Z", "XYZ"),
-                    format=c("ll", "ll", "c",
+                                "XY", "XY/Z", "XYZ",
+                                "XY"),
+                    format=c("ll", "ll", "c", "en",
                              "ll", "ll", "c", "en",
-                             "ll", "en", "en"),
+                             "ll", "en", "en",
+                             "en"),
                     stringsAsFactors = FALSE)
 
 
@@ -60,13 +68,13 @@ lonlat.ellipsoid <- data.frame(
 # transforms: t in metres, s in ppm, r in arcseconds
 lonlat.datum <- data.frame(datum=c("OSGB36", "WGS84", "ETRS89"),
                            ellipsoid=c("Airy1830","WGS84", "GRS80"),
-                           tx=c(-446.448, 0L, 0L),
-                           ty=c(125.157, 0L, 0L),
-                           tz=c(-542.060, 0L, 0L),
-                           s=c(0.0000204894, 0L, 0L),
-                           rx=c(-0.1502, 0L, 0L),
-                           ry=c(-0.2470, 0L, 0L),
-                           rz=c(-0.8421, 0L, 0L),
+                           tx=c(-446.448, 0, 0),
+                           ty=c(125.157, 0, 0),
+                           tz=c(-542.060, 0, 0),
+                           s=c(0.0000204894, 0, 0),
+                           rx=c(-0.1502, 0, 0),
+                           ry=c(-0.2470, 0, 0),
+                           rz=c(-0.8421, 0, 0),
                            stringsAsFactors = FALSE)
 
 
