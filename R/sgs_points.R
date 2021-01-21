@@ -7,7 +7,7 @@
 #'
 #' @name sgs_points
 #' @usage sgs_points(x, coords = NULL, epsg = NULL)
-#' @param x A list or dataframe with at least 2 columns of either
+#' @param x A matrix, list or dataframe with at least 2 columns of either
 #' easting/northing or longitude/latitude coordinates per row. A third column
 #' with height values is optional.
 #' \strong{Please note} that the order is important when \code{x} has only 2 or
@@ -237,6 +237,30 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
 
 }
 
+#' @export
+sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
+
+  # Checks
+  cols <- ncol(x)
+  if (cols < 2) stop("This method accepts matrices with at least 2 columns")
+
+  if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
+    stop("'epsg' must be entered as one of the accepted numbers")
+  }
+
+  # the names we apply don't matter for the rest of the function
+  # when there are only 2 columns
+  if (cols == 2) {
+    coords <- coordinates.names[1, 1:cols] #just because
+    colnames(x) <- coords
+  }
+
+  lst <- split(x, rep(seq_len(ncol(x)), each = nrow(x)))
+  names(lst) <- colnames(x)
+  sgs_points(lst, coords=coords, epsg=epsg)
+
+}
+
 #' @encoding UTF-8
 #' @title Extracts coordinates from an \code{sgs_points} object
 #'
@@ -311,7 +335,7 @@ sgs_coordinates.sgs_points <- function(x) {
 # Extending '[' function to support sgs_points:
 #' @name sgs_points
 #' @param i Record selection, see \link[base]{Extract}
-#' @param j Variable selection, see \link{[.data.frame}
+#' @param j Variable selection, see \link[base]{Extract}
 #' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
 #' drop the \code{sgs_points} class of the object.
 #' @param ... Not currently used

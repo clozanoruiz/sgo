@@ -39,9 +39,9 @@ epsgs <- data.frame(epsg=c(4258, 4937, 4936, 3035,
 # Vector with all the main elements a sgs_points object contains
 sgs_points.core <- c("x", "y", "z", "epsg", "datum", "dimension")
 
-coordinates.names <- cbind(x=c("x", "lon", "longitude", "easting"),
-                           y=c("y", "lat","latitude", "northing"),
-                           z=c("z", "H", "h","height"))
+coordinates.names <- cbind(x=c("x", "lon", "longitude", "e", "easting"),
+                           y=c("y", "lat", "latitude","n", "northing"),
+                           z=c("z", "h", "height", "h", "height"))
 
 
 # Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f)

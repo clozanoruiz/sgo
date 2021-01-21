@@ -1,7 +1,7 @@
+sgs - Simple GIS (with OSGB)
+================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# sgs - Simple GIS (with OSGB)
 
 <!-- badges: start -->
 
@@ -20,9 +20,9 @@ OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/)
 
 The Coordinate Systems supported by `sgs` are:
 
-  - ETRS89: EPSGs 4258, 4937, 4936 (and 3857)
-  - WGS84: EPSGs 4326, 4979, 4978
-  - OSGB36: EPSGs 27700, 7405, 4277
+  - ETRS89: EPSGs 4258, 4937, 4936 and 3035
+  - WGS84: EPSGs 4326, 4979, 4978 and 3857
+  - OSGB36: EPSGs 27700, 7405 and 4277
 
 ## Installation
 

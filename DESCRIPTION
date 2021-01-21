@@ -28,6 +28,7 @@ Collate:
     'sgs_distance.R'
     'sgs_laea.R'
     'sgs_ngr.R'
+    'sgs_perimeter.R'
     'sgs_points.R'
     'sgs_set_gcs.R'
     'sgs_wgs84.R'

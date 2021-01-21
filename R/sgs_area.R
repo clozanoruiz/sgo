@@ -2,18 +2,36 @@
 #' @title Calculate area from an ordered set of points
 #'
 #' @description
-#' Calculates the planar area for a set of points defined in the OS NGR or
-#' ETRS89-LAEA. The geodetic area is calculated when entered points are
-#' expressed in angular coordinates.
+#' Calculates the planar area for a set of points defined in the OS BNG or
+#' ETRS89-LAEA. An approximation of the geodetic area is calculated when
+#' entered points are expressed in angular coordinates.
 #'
 #' @name sgs_area
 #' @usage sgs_area(x, ...)
-#' @param x A \code{sgs_points} object describing a set of points (clockwise, countercockwise?)
+#' @param x A \code{sgs_points} object describing an ordered set of points. It
+#' also accepts a list of sgs_points objects each of them describing a
+#' different polygon (area).
 #' @param ... Currently ignored
 #' @details
-#' Calculate areas using the Gauss's area formula (https://en.wikipedia.org/wiki/Shoelace_formula)
+#' Calculate areas using the Gauss's area formula
+#' (https://en.wikipedia.org/wiki/Shoelace_formula).
+#'
+#' When using angular coordinates the function performs an approximation of the
+#' geodetic area following the methodology discussed in Berk & Ferlan (2018)
+#' where the area on the ellipsoid is determined by using a region-adapted
+#' equal-area projection (Albers Equal-Area Conic) with one standard parallel.
+#' The standard parallel and the projection origin are tied to the moment
+#' centroid of the polygon.
+#'
+#' To reduce the error introduced by boundary simplification and provide an
+#' even more accurate area computation, the boundary segments can be divided by
+#' interpolating vertices on the projected geodesic.
+#'
+#' #TODO: this is meant to relatively small areas (trying to get the area of Great Britain won't be very accurate...)
 #' @return
-#' Value of the are in squared metres.
+#' When entering a single \code{sgs_points} object it returns the value of the
+#' area in squared metres. For a list of \code{sgs_points} objects, it will
+#' return a list of areas in squared metres.
 #' @references
 #' Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the
 #' cadaster: case study of Slovenia}. Cartography and Geographic Information
@@ -24,6 +42,9 @@
 #' Office. DOI: 10.3133/pp1395
 #' @examples
 #' #TODO
+#' lon = c(-6.43698696, -6.43166843, -6.42706831, -6.42102546, -6.42248238, -6.42639092, -6.42998435, -6.43321409)
+#' lat = c(58.21740316, 58.21930597, 58.22014035, 58.22034112, 58.21849188, 58.21853606, 58.21824033, 58.21748949)
+#' #sgs_area(lon,lat)
 #' @export
 sgs_area <- function (x, ...)
   UseMethod("sgs_area")
@@ -55,47 +76,52 @@ sgs_area.sgs_points <- function(x, ...) {
 
     # 3- area calculation using a region-adapted equal area projection as
     # described in Berk and Ferlan, 2018. Albers Equal-Area Conic projection
-
-    # ellipsoid parameters
-    ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
-    params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
-                               c("a","e2")]
-    a <- params$a
-    e2 <- params$e2
-    e <- sqrt(e2)
-
-    lambda <- x$x / RAD.TO.GRAD
-    phi <- x$y / RAD.TO.GRAD
-    lambda.c <- c$x / RAD.TO.GRAD
-    phi.c <- c$y / RAD.TO.GRAD
-
-    sin.phi <- sin(phi)
-    sin.phi.c <- sin(phi.c)
-    cos.phi.c <- cos(phi.c)
-    sin2.phi <- sin.phi * sin.phi
-    splat <- 1 - e2 * sin2.phi
-    splat.c <- 1 - e2 * sin.phi.c * sin.phi.c
-
-    # Follow methodology from Berk and Ferlan, 2018: Here the standard parallel
-    # and the projection origin are tied to the moment centroid (phi0, lambda0).
-    # Since only one standard parallel (which has same φ as the centroid here)
-    # is used, then n in q.phi (Snyder 1987) is sin(phi0)
-    q.phi <- (1 - e2) * (sin.phi / splat - 1/(2 * e) *
-                           log((1 - e * sin.phi) / (1 + e * sin.phi)))
-    q.phi.c <- (1 - e2) * (sin.phi.c / splat.c - 1/(2 * e) *
-                             log((1 - e * sin.phi.c) / (1 + e * sin.phi.c)))
-
-    theta <- sin.phi.c * (lambda - lambda.c)
-    C <- cos.phi.c * cos.phi.c / splat.c + sin.phi.c * q.phi.c
-    rho <- a * sqrt(C - q.phi * sin.phi.c) / sin.phi.c
-    rho.c <- a * sqrt(C - q.phi.c * sin.phi.c) / sin.phi.c
-
-    e <- rho * sin(theta)
-    n <- rho.c - rho * cos(theta)
-
-    area <- planar.area(cbind(e, n))
+    geod.area(x, c)
 
   }
+
+}
+
+#' @export
+sgs_area.list <- function(x, ...) {
+
+  if (any(unique(lapply(x,class)) != "sgs_points"))
+    stop("All the elements in the list must be of class sgs_points")
+
+  epsg <- unlist(lapply(x, function (x) x$epsg))
+  if (isTRUE(epsg %in% c(4936, 4978, 3857)))
+    stop("This function doesn't support the EPSG:4936, 4978 or 3857")
+
+  coords <- c("x", "y")
+  area <- rep(NA, length(x))
+
+  #Split PCS and GCS if necessary
+  types <- epsgs[match(epsg, epsgs$epsg), "type"]
+  idx.PCS <- which(types == "PCS")
+  idx.GCS <- which(types == "GCS")
+
+  if (length(idx.PCS) > 0) {
+    # Planar area (27700, 7405, 3035)
+    p.area <- function (x) planar.area(as.matrix(x[, coords, drop=TRUE]))
+    area[idx.PCS] <- lapply(x[idx.PCS], p.area)
+  }
+
+  if (length(idx.GCS) > 0) {
+    #Approximate geodetic area
+    g.area <- function (x) {
+      x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
+      c <- moment.centroid(as.matrix(x.bng[, coords, drop=TRUE]))
+      c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
+                                     epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
+      geod.area(x, c)
+    }
+    area[idx.GCS] <- lapply(x[idx.GCS], g.area)
+  }
+
+  if (anyNA(area))
+    warning("Some areas couldn't be calculated and remain NA")
+
+  area
 
 }
 
@@ -110,13 +136,13 @@ planar.area <- function(p) {
   # Ap = 1/2 * abs(sum(xi * yi+1 - xi+1 * yi))
 
   # Create the 'i+1' set of terms:
-  p.plus.one <- rbind(p[-1, ], p[1, ])
+  p.shift.one <- rbind(p[-1, ], p[1, ])
 
   # (xi * yi+1 - xi+1 * yi)
-  term <- p[, 1] * p.plus.one[, 2] - p.plus.one[, 1] * p[, 2]
+  term <- p[, 1] * p.shift.one[, 2] - p.shift.one[, 1] * p[, 2]
 
   area <- 0.5 * abs(sum(term))
-  round(area, 3)
+  round(area, 1)
 
 }
 
@@ -130,20 +156,64 @@ moment.centroid <- function (p) {
   p[, 2] <- p[, 2] - min.y
 
   # Create the 'i+1' set of terms:
-  p.plus.one <- rbind(p[-1, ], p[1, ])
+  p.shift.one <- rbind(p[-1, ], p[1, ])
 
   # (xi * yi+1 - xi+1 * yi)
-  term <- p[, 1] * p.plus.one[, 2] - p.plus.one[, 1] * p[, 2]
+  term <- p[, 1] * p.shift.one[, 2] - p.shift.one[, 1] * p[, 2]
 
   area.div <- 3 * abs(sum(term)) # 3 -> 0.5 * 6
 
-  x <- abs(sum((p[, 1] + p.plus.one[, 1]) * term))
-  y <- abs(sum((p[, 2] + p.plus.one[, 2]) * term))
+  x <- abs(sum((p[, 1] + p.shift.one[, 1]) * term))
+  y <- abs(sum((p[, 2] + p.shift.one[, 2]) * term))
 
   centroid <- cbind(x,y) / area.div
 
   centroid[, 1] <- centroid[, 1] + min.x
   centroid[, 2] <- centroid[, 2] + min.y
   round(centroid, 3)
+
+}
+
+#p: set of points (sgs_points object)
+#c: centroid coordinates (sgs_object)
+geod.area <- function(p, c) {
+
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==p$datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
+                             c("a","e2")]
+  a <- params$a
+  e2 <- params$e2
+  e <- sqrt(e2)
+
+  lambda <- p$x / RAD.TO.GRAD
+  phi <- p$y / RAD.TO.GRAD
+  lambda.c <- c$x / RAD.TO.GRAD
+  phi.c <- c$y / RAD.TO.GRAD
+
+  sin.phi <- sin(phi)
+  sin.phi.c <- sin(phi.c)
+  cos.phi.c <- cos(phi.c)
+  sin2.phi <- sin.phi * sin.phi
+  splat <- 1 - e2 * sin2.phi
+  splat.c <- 1 - e2 * sin.phi.c * sin.phi.c
+
+  # Follow methodology from Berk and Ferlan, 2018: Here the standard parallel
+  # and the projection origin are tied to the moment centroid (phi0, lambda0).
+  # Since only one standard parallel (which has same φ as the centroid here)
+  # is used, then n in q.phi (Snyder 1987) is sin(phi0)
+  q.phi <- (1 - e2) * (sin.phi / splat - 1/(2 * e) *
+                         log((1 - e * sin.phi) / (1 + e * sin.phi)))
+  q.phi.c <- (1 - e2) * (sin.phi.c / splat.c - 1/(2 * e) *
+                           log((1 - e * sin.phi.c) / (1 + e * sin.phi.c)))
+
+  theta <- sin.phi.c * (lambda - lambda.c)
+  C <- cos.phi.c * cos.phi.c / splat.c + sin.phi.c * q.phi.c
+  rho <- a * sqrt(C - q.phi * sin.phi.c) / sin.phi.c
+  rho.c <- a * sqrt(C - q.phi.c * sin.phi.c) / sin.phi.c
+
+  e <- rho * sin(theta)
+  n <- rho.c - rho * cos(theta)
+
+  planar.area(cbind(e, n))
 
 }

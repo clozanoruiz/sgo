@@ -1,4 +1,5 @@
 ---
+title: "sgs - Simple GIS (with OSGB)"
 output: github_document
 ---
 
@@ -12,7 +13,6 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-# sgs - Simple GIS (with OSGB)
 
 <!-- badges: start -->
 [![Build Status](https://travis-ci.com/litos81/sgs.svg?branch=master)](https://travis-ci.com/litos81/sgs)
@@ -27,9 +27,9 @@ OSGB36 National Grid coordinates, and vice-versa, using [Ordnance Survey's Natio
 
 The Coordinate Systems supported by `sgs` are:
 
-* ETRS89: EPSGs 4258, 4937, 4936 (and 3857)
-* WGS84: EPSGs 4326, 4979, 4978
-* OSGB36: EPSGs 27700, 7405, 4277
+* ETRS89: EPSGs 4258, 4937, 4936 and 3035
+* WGS84: EPSGs 4326, 4979, 4978 and 3857
+* OSGB36: EPSGs 27700, 7405 and 4277
 
 
 ## Installation

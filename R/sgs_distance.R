@@ -7,9 +7,9 @@
 #'
 #' @name sgs_distance
 #' @usage sgs_distance(x, y, by.element = FALSE,
-#'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
-#'   grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-#'   iterations = 20L)
+#'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
+#'   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
+#'   TRUE, FALSE), iterations = 20L)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param y A \code{sgs_points} object, defaults to \code{x}.
@@ -19,12 +19,12 @@
 #' @param which Character vector. For geodetic coordinates one of
 #' \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
 #' coordinates it defaults to \code{BNG}.
-#' @param grid.distance Logical variable. Currently only used for BNG
+#' @param grid.true.distance Logical variable. Currently only used for BNG
 #' coordinates. If TRUE it returns the true (geodesic) distance.
 #' @param iterations Numeric variable. Maximum number of iterations used in the
 #' Vicenty method.
 #' @details
-#' TODO. fro grid.distance explain how corrrection factors work
+#' TODO. fro grid.true.distance explain how corrrection factors work
 #' @return
 #' If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
@@ -34,16 +34,16 @@
 #' #TODO
 #' @export
 sgs_distance <- function (x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
-  grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-  iterations = 20L)
+  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
+  grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
+                              TRUE, FALSE), iterations = 20L)
     UseMethod("sgs_distance")
 
 #' @export
 sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Harvesine"),
-  grid.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), TRUE, FALSE),
-  iterations = 20L) {
+  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
+  grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
+                              TRUE, FALSE), iterations = 20L) {
 
   if (missing(y))
     y <- x
@@ -62,7 +62,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     p2 <- as.matrix(y[, coords, drop=TRUE])
 
     if (by.element) {
-      bng.distance(p1, p2, grid.distance, default.simpson)
+      bng.distance(p1, p2, grid.true.distance, default.simpson)
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
@@ -73,7 +73,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
 
-      matrix(bng.distance(m1, m2, grid.distance, default.simpson),
+      matrix(bng.distance(m1, m2, grid.true.distance, default.simpson),
              rows.p1, rows.p2)
     }
 
@@ -110,20 +110,20 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 
 # parametres:
 # dist.simpson: with distances (in km) greater than those will apply simpson rule when caclulating true (geodesic) distances
-bng.distance <- function(p1, p2, grid.distance = TRUE, dist.simpson = 20) {
+bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
 
   E1 <- p1[, 1]; E2 <- p2[, 1]
   N1 <- p1[, 2]; N2 <- p2[, 2]
-  Em <- E1 + (E2 - E1) / 2 # E at midpoint
-  Nm <- N1 + (N2 - N1) / 2 # N at midpoint
 
   dE <- E2 - E1
   dN <- N2 - N1
   s <- sqrt(dE * dE + dN * dN)
 
-  if (grid.distance)
+  if (!grid.true.distance)
     return(round(s, 3)) # round to mm
 
+  Em <- E1 + (E2 - E1) / 2 # E at midpoint
+  Nm <- N1 + (N2 - N1) / 2 # N at midpoint
   if (any(s >= (dist.simpson * 1000))) {
     Ft <- local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
     len.E1 <- length(E1) # E1, E2, Em have the same length
@@ -236,9 +236,13 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 # It is accurate to within 0.5mm on the Earth ellipsoid.
 # https://en.wikipedia.org/wiki/Vincenty's_formulae
 # p1 & p2 in rad
-vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
 
-  #check first for NA points and co-incident points?
+#examples:
+#nearly antipodal points may need a higher number of iterations to converge
+#new.zealand <- sgs_points(list(174.35, -35.76),epsg=4326)
+#gibraltar <- sgs_points(list(-5.35, 36.13),epsg=4326)
+#sgs_distance(new.zealand, gibraltar, which="Vicenty", iterations=300)
+vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
 
   # initialise distances
   s <- rep(NA, nrow(p1))
@@ -253,7 +257,7 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
   f <- 1 / params$f
 
   one.f <- 1 - f
-  dlon <- (p2[, 1] - p1[, 1])     # difference of longitudes
+  dlon <- (p2[, 1] - p1[, 1])      # difference of longitudes
   U1 <- atan(one.f * tan(p1[, 2])) # reduced latitude
   U2 <- atan(one.f * tan(p2[, 2]))
 
@@ -275,6 +279,7 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
     sigma <- atan2(sin.sigma, cos.sigma)
 
     sin.alpha <- cos.U1.U2 * sin.lambda / sin.sigma
+    sin.alpha[is.nan(sin.alpha)] <- 0        # co-incident points
     cos2.alpha <- 1 - sin.alpha * sin.alpha
     cos.2sigma.m <- cos.sigma - 2 * sin.U1.U2 / cos2.alpha
     cos.2sigma.m[is.nan(cos.2sigma.m)] <- 0  # cos2.alpha = 0 (equatorial line)

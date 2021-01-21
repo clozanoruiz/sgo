@@ -67,7 +67,7 @@ Cartesian coordinates and polar coordinates
 The OSTN15 transformation model is used in this package, and it is licensed
 under the BSD Licence (http://opensource.org/licenses/bsd-license.php):\cr
 \emph{© Copyright and database rights Ordnance Survey Limited 2016, © Crown
-copyright and database rights Land & Property Services 2016 and/or © Ordnance
-Survey Ireland, 2016. All rights reserved.}
+copyright and database rights Land & Property Services 2016 and/or ©
+Ordnance Survey Ireland, 2016. All rights reserved.}
 }
 

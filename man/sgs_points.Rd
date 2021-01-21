@@ -11,7 +11,7 @@ sgs_points(x, coords = NULL, epsg = NULL)
 \method{[}{sgs_points}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
-\item{x}{A list or dataframe with at least 2 columns of either
+\item{x}{A matrix, list or dataframe with at least 2 columns of either
 easting/northing or longitude/latitude coordinates per row. A third column
 with height values is optional.
 \strong{Please note} that the order is important when \code{x} has only 2 or
@@ -36,7 +36,7 @@ of the following values:
 
 \item{i}{Record selection, see \link[base]{Extract}}
 
-\item{j}{Variable selection, see \link{[.data.frame}}
+\item{j}{Variable selection, see \link[base]{Extract}}
 
 \item{drop}{Logical variable, default \code{FALSE}. If \code{TRUE} it will
 drop the \code{sgs_points} class of the object.}
