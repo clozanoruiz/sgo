@@ -464,7 +464,8 @@ print.sgs_points <- function(x) {
 #create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
 #implement: length, [<-, [[, [[<-, c. (If [ is implemented rev, head, and tail should all work).
 #implement Summary?
-#implement cbind, rbind
+#implement cbind, rbind?
+#implement plot!
 
 #work with EPSGs
 #4277 (only 2D), 27700, 7405 (assume it works for ODN heights, so show datum flag in output!) -> OSGB36

@@ -9,7 +9,7 @@
 #' @usage sgs_distance(x, y, by.element = FALSE,
 #'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
 #'   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-#'   TRUE, FALSE), iterations = 20L)
+#'   TRUE, FALSE), iterations = 100L)
 #' @param x A \code{sgs_points} object describing a set of points in a geodetic
 #' coordinate system.
 #' @param y A \code{sgs_points} object, defaults to \code{x}.
@@ -24,26 +24,28 @@
 #' @param iterations Numeric variable. Maximum number of iterations used in the
 #' Vicenty method.
 #' @details
-#' TODO. fro grid.true.distance explain how corrrection factors work
+#' TODO. fro grid.true.distance explain how corrrection factors work.
 #' @return
 #' If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
 #' numeric vector of length \code{x} or \code{y}, the shorter one being
 #' recycled. Distances involving empty geometries are \code{NA}.
+#' @references
+#' TODO: add reference to Vicenty 1975
 #' @examples
 #' #TODO
 #' @export
 sgs_distance <- function (x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-                              TRUE, FALSE), iterations = 20L)
+                              TRUE, FALSE), iterations = 100L)
     UseMethod("sgs_distance")
 
 #' @export
 sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-                              TRUE, FALSE), iterations = 20L) {
+                              TRUE, FALSE), iterations = 100L) {
 
   if (missing(y))
     y <- x
@@ -87,7 +89,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       if (which == "Harvesine") {
         great.circle.harvesine(p1, p2)
       } else if (which == "Vicenty") {
-        vicenty.ellipsoid(p1, p2, x$datum, iterations)
+        inverse.vicenty.ellipsoid(p1, p2, x$datum, iterations)$distance
       }
 
     } else {
@@ -100,7 +102,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       if (which == "Harvesine") {
         matrix(great.circle.harvesine(m1, m2), rows.p1, rows.p2)
       } else if (which == "Vicenty") {
-        matrix(vicenty.ellipsoid(m1, m2, x$datum, iterations), rows.p1, rows.p2)
+        matrix(inverse.vicenty.ellipsoid(m1, m2, x$datum, iterations)$distance,
+               rows.p1, rows.p2)
       }
     }
 
@@ -231,7 +234,7 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 #res <- great.circle.harvesine(p1,p2)
 #res 10007556
 
-# Vicenty (inverse) iterative method to computes the geographical distance
+# Vicenty (inverse) iterative method to compute the geographical distance
 # between two given points.
 # It is accurate to within 0.5mm on the Earth ellipsoid.
 # https://en.wikipedia.org/wiki/Vincenty's_formulae
@@ -242,10 +245,8 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 #new.zealand <- sgs_points(list(174.35, -35.76),epsg=4326)
 #gibraltar <- sgs_points(list(-5.35, 36.13),epsg=4326)
 #sgs_distance(new.zealand, gibraltar, which="Vicenty", iterations=300)
-vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
-
-  # initialise distances
-  s <- rep(NA, nrow(p1))
+#TODO: test how it behaves with coincident points
+inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
 
   # ellipsoid parameters
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
@@ -257,29 +258,33 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
   f <- 1 / params$f
 
   one.f <- 1 - f
-  dlon <- (p2[, 1] - p1[, 1])      # difference of longitudes
-  U1 <- atan(one.f * tan(p1[, 2])) # reduced latitude
-  U2 <- atan(one.f * tan(p2[, 2]))
+  dlon <- (p2[, 1] - p1[, 1])    # difference of longitudes
+  tan.U1 <- one.f * tan(p1[, 2]) # tan(reduced latitude)
+  tan.U2 <- one.f * tan(p2[, 2])
 
-  sin.U1 <- sin(U1)
-  sin.U2 <- sin(U2)
+  cos.U1 <- 1 / sqrt(1 + tan.U1 * tan.U1)
+  cos.U2 <- 1 / sqrt(1 + tan.U2 * tan.U2)
+  sin.U1 <- tan.U1 * cos.U1
+  sin.U2 <- tan.U2 * cos.U2
   sin.U1.U2 <- sin.U1 * sin.U2
-  cos.U1 <- cos(U1)
-  cos.U2 <- cos(U2)
+
   cos.U1.U2 <- cos.U1 * cos.U2
 
   lambda <- dlon
+  no.convergence <- FALSE
   repeat {
     sin.lambda <- sin(lambda)
     cos.lambda <- cos(lambda)
     sin.sigma.1 <- cos.U2 * sin.lambda
     sin.sigma.2 <- cos.U1 * sin.U2 - sin.U1 * cos.U2 * cos.lambda
-    sin.sigma <- sqrt(sin.sigma.1 * sin.sigma.1 + sin.sigma.2 * sin.sigma.2)
+    sin2.sigma <- sin.sigma.1 * sin.sigma.1 + sin.sigma.2 * sin.sigma.2
+    sin.sigma <- sqrt(sin2.sigma)
     cos.sigma <- sin.U1.U2 + cos.U1.U2 * cos.lambda
     sigma <- atan2(sin.sigma, cos.sigma)
 
     sin.alpha <- cos.U1.U2 * sin.lambda / sin.sigma
-    sin.alpha[is.nan(sin.alpha)] <- 0        # co-incident points
+    coincident.points <- is.nan(sin.alpha) # or antipodal (from sin.sigma=0)
+    sin.alpha[coincident.points] <- 0
     cos2.alpha <- 1 - sin.alpha * sin.alpha
     cos.2sigma.m <- cos.sigma - 2 * sin.U1.U2 / cos2.alpha
     cos.2sigma.m[is.nan(cos.2sigma.m)] <- 0  # cos2.alpha = 0 (equatorial line)
@@ -296,8 +301,9 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
       break # ie until <= 0.06mm
     }
   }
-  if (iterations == 0L)
-    return(s)
+  if (iterations == 0L) {
+    no.convergence <- abs(lambda - lambda.tmp) > 1e-12
+  }
 
   u2 <- cos2.alpha * (a2 - b2) / b2
   A <- 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
@@ -307,7 +313,111 @@ vicenty.ellipsoid <- function(p1, p2, datum, iterations = 20L) {
                     B/6 * cos.2sigma.m * (-3 + 4 * sin.sigma * sin.sigma) *
                       (-3 + 4 * cos2.2sigma.m)))
 
-  s <- unname(b * A * (sigma - delta.sigma)) #round to mm
-  round(s, 3) #round to mm
+  # alpha1, alpha2: azimuths of the geodesic, clockwise from north
+  # alpha2 in the direction p1 p2 produced
+  alpha1 <- atan2(cos.U2 * sin.lambda,
+                  cos.U1 * sin.U2 - sin.U1 * cos.U2 * cos.lambda)
+  alpha2 <- atan2(cos.U1 * sin.lambda,
+                  -sin.U1 * cos.U2 + cos.U1 * sin.U2 * cos.lambda)
+
+  # From Chris Veness (https://www.movable-type.co.uk):
+  # Special handling of exactly antipodal points where sin2.sigma = 0
+  # (due to discontinuity atan2(0, 0) = 0 but atan2(NaN, 0) = PI/2 / 90°) - in
+  # which case bearing is always meridional, due north (or due south!)
+  alpha1[coincident.points] <- 0
+  alpha2[coincident.points] <- PI
+
+  s <- round(unname(b * A * (sigma - delta.sigma)), 3) #round to mm
+
+  if (any(no.convergence)) {
+    s[no.convergence] <- NaN
+    alpha1[no.convergence] <- NaN
+    alpha2[no.convergence] <- NaN
+    warning("Vicenty formula failed to converge. Check your results.")
+  }
+
+  list(distance=s, initial.bearing=alpha1, final.bearing=alpha2)
+
+}
+
+# Vicenty (direct) iterative method to compute a destination point from a given
+# point and an initial bearing (both in radians). 's' (distance) in m.
+#TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).
+direct.vicenty.ellipsoid <- function(p1, s, alpha1, iterations = 100L) {
+
+  # ellipsoid parameters
+  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
+                             c("a","b","f")]
+
+  a2 <- params$a * params$a
+  b <- params$b
+  b2 <- b * b
+  f <- 1 / params$f
+  one.f <- 1 - f
+
+  tan.U1 <- one.f * tan(p1[, 2])
+  cos.U1 <- 1 / sqrt(1 + tan.U1 * tan.U1)
+  sin.U1 <- tan.U1 * cos.U1
+
+  sin.alpha1 <- sin(alpha1)
+  cos.alpha1 <- cos(alpha1)
+  sigma1 <- atan2(tan.U1, cos.alpha1)
+  sin.alpha <- cos.U1 * sin.alpha1
+  cos2.alpha <- 1 - sin.alpha * sin.alpha
+
+  u2 <- cos2.alpha * (a2 - b2) / b2
+  A <- 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
+  B <- u2 / 1024 * (256 + u2 * (-128 + u2 *(74 - 47 * u2)))
+
+  sigma <- s / (b * A)
+  no.convergence <- FALSE
+  repeat {
+    cos.2sigma.m <- cos(2 * sigma1 + sigma)
+    sin.sigma <- sin(sigma)
+    cos.sigma <- cos(sigma)
+
+    delta.sigma <- B * sin.sigma * (cos.2sigma.m + B/4 *
+                     (cos.sigma * (-1 + 2 * cos2.2sigma.m) -
+                        B/6 * cos.2sigma.m * (-3 + 4 * sin.sigma * sin.sigma) *
+                        (-3 + 4 * cos2.2sigma.m)))
+    sigma.tmp <- sigma
+    sigma <- s / (b * A) + delta.sigma
+
+    iterations <- iterations - 1L
+    if ( max(abs(sigma - sigma.tmp)) <= 1e-12 || iterations == 0L) {
+      break
+    }
+  }
+  if (iterations == 0L) {
+    no.convergence <- abs(sigma - sigma.tmp) > 1e-12
+  }
+
+  x <- sin.U1 * sin.sigma - cos.U1 * cos.sigma * cos.alpha1
+  phi2 <- atan2(sin.U1 * cos.sigma + cos.U1 * sin.sigma * cos.alpha1,
+                one.f * sqrt(sin.alpha * sin.alpha + x * x))
+  lambda <- atan2(sin.sigma * sin.alpha1,
+                  cos.U1 * cos.sigma - sin.U1 * sin.sigma * cos.alpha1)
+  C <- f / 16 * cos2.alpha * (4 + f * (4 - 3 * cos2.alpha))
+  L <- lambda - (1 - C) * f * sin.alpha *
+    (sigma + C * sin.sigma * (cos.2sigma.m + C * cos.sigma *
+                                (-1 + 2 * cos2.2sigma.m)))
+  lambda2 <- p1[, 1] + L
+  alpha2 <- atan2(sin.alpha, -x)
+  p2 <- cbind(x=lambda2, y=phi2)
+
+  if (any(no.convergence)) {
+    p2[no.convergence, ]<- NaN
+    alpha2[no.convergence] <- NaN
+    warning("Vicenty formula failed to converge. Check your results.")
+  }
+
+  p2.is.p1 <- (s == 0)
+  if (any(p2.is.p1)) {
+    p2[p2.is.p1, ] <- p1[p2.is.p1, ]
+    alpha2[p2.is.p1] <- NA
+  }
+
+  list(lon=lambda2, lat=phi2, final.bearing=alpha2)
 
 }

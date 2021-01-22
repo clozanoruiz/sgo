@@ -3,6 +3,7 @@
 # 180/π
 # https://keisan.casio.com/calculator (34 digits precision)
 RAD.TO.GRAD <- 57.29577951308232087679815481410517
+PI <- 3.141592653589793238462643383279503
 
 #check 'empty' values in a vector
 is_nothing <- function(x) {

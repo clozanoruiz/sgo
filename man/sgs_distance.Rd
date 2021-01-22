@@ -8,7 +8,7 @@
 sgs_distance(x, y, by.element = FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-  TRUE, FALSE), iterations = 20L)
+  TRUE, FALSE), iterations = 100L)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object describing a set of points in a geodetic
