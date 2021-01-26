@@ -137,11 +137,14 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   if(is.null(coords)) {
     lnames <- tolower(names(x))
-    known.coords <- t(apply(coordinates.names, 1, function(n) n %in% lnames))
-    if (any(known.coords) && sum(known.coords, na.rm = TRUE) == len) {
-      coords <- names(x)[lnames %in% coordinates.names[known.coords]]
+    known.coords <- na.omit(coordinates.names[match(lnames, coordinates.names)])
+    len.known <- length(known.coords)
+    if (len.known < 4 && any(apply(coordinates.names, 1,
+                                   function(n,x) all(n[1:len.known]==x),
+                                   x=known.coords))) {
+      coords <- names(x)[lnames %in% known.coords]
     } else {
-      stop("Must specify the coordinates columns using the 'coords' parameter")
+      stop("Must specify the coordinate columns using the 'coords' parameter")
     }
   }
 
@@ -192,19 +195,16 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     cols.to.check <- if(dimension == "XY") c("x", "y") else c("x", "y", "z")
     other.columns <- other.columns[!(names(other.columns) %in% cols.to.check)]
     if (length(other.columns) != old.length) {
-      warning(paste0("Any column from input data named ",
+      warning(paste0("All columns from input data named ",
                      paste(cols.to.check, collapse = ", "),
-                     " has been removed"))
+                     " have been removed"))
     }
 
-    # all additional columns will expanded to contain the same number of
+    # all additional columns will be expanded to contain the same number of
     # elements as coordinates in the object
     max.len <- length(x[[coords[1]]])
-    expand.columns <- lapply(Filter(function(x) length(x) < max.len,
-                                    other.columns), `length<-`, max.len)
-    if (length(expand.columns)==0) expand.columns <- NULL
-    other.columns <- c(Filter(function(x) length(x) >= max.len, other.columns),
-                       expand.columns)
+    other.columns <- lapply(other.columns,
+                            function(x) { length(x) <- max.len; x })
   }
 
   points <- structure(c(other.columns, point.coords,
@@ -323,11 +323,7 @@ sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
 sgs_coordinates.sgs_points <- function(x) {
 
   coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
-
-  xyz <- matrix(unlist(x[, coords, drop=TRUE]), ncol=length(coords))
-  colnames(xyz) <- coords
-
-  xyz
+  as.matrix(x[, coords, drop=TRUE])
 
 }
 
@@ -462,10 +458,10 @@ print.sgs_points <- function(x) {
 
 #TODO
 #create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
-#implement: length, [<-, [[, [[<-, c. (If [ is implemented rev, head, and tail should all work).
-#implement Summary?
+#implement: length, [<-, [[, [[<-, c. *Look at other packages if they actually implement them?* (If [ is implemented rev, head, and tail should all work).
+#implement: as.data.frame (coordinates columns, additional columns and EPSG column (don't add datum, or dimension))
 #implement cbind, rbind?
-#implement plot!
+#implement plot
 
 #work with EPSGs
 #4277 (only 2D), 27700, 7405 (assume it works for ODN heights, so show datum flag in output!) -> OSGB36

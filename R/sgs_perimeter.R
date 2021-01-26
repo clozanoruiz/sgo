@@ -41,7 +41,9 @@
 #' Survey Professional Paper, no. 1395. Washington, DC: US Government Printing
 #' Office. DOI: 10.3133/pp1395
 #' @examples
-#' #TODO
+#' #TODO. PERHAPS MOVE PERIMETER FUNCTIONALITY TO SGS_AREA... and add a parameter to sgs_area,
+#' to return or not a perimeter along with the area? Additionally, the calculation of perimeter is trivial
+#' and could be just put in an example of sgs_distance.
 #' @export
 sgs_perimeter <- function (x,
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),

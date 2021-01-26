@@ -342,8 +342,8 @@ inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
 
 # Vicenty (direct) iterative method to compute a destination point from a given
 # point and an initial bearing (both in radians). 's' (distance) in m.
-#TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).
-direct.vicenty.ellipsoid <- function(p1, s, alpha1, iterations = 100L) {
+# TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).
+direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
 
   # ellipsoid parameters
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
@@ -374,6 +374,7 @@ direct.vicenty.ellipsoid <- function(p1, s, alpha1, iterations = 100L) {
   no.convergence <- FALSE
   repeat {
     cos.2sigma.m <- cos(2 * sigma1 + sigma)
+    cos2.2sigma.m <- cos.2sigma.m * cos.2sigma.m
     sin.sigma <- sin(sigma)
     cos.sigma <- cos(sigma)
 

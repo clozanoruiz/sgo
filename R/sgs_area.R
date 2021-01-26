@@ -7,10 +7,11 @@
 #' entered points are expressed in angular coordinates.
 #'
 #' @name sgs_area
-#' @usage sgs_area(x, ...)
+#' @usage sgs_area(x, interpolate=NULL, ...)
 #' @param x A \code{sgs_points} object describing an ordered set of points. It
 #' also accepts a list of sgs_points objects each of them describing a
 #' different polygon (area).
+#' @param interpolate Numeric variable. If not null, defines the max distance in metres allowed between adjacent. Only for angular coordinates! TODO
 #' @param ... Currently ignored
 #' @details
 #' Calculate areas using the Gauss's area formula
@@ -27,7 +28,7 @@
 #' even more accurate area computation, the boundary segments can be divided by
 #' interpolating vertices on the projected geodesic.
 #'
-#' #TODO: this is meant to relatively small areas (trying to get the area of Great Britain won't be very accurate...)
+#' #TODO: this is meant to relatively small areas (trying to get the area of Great Britain won't be very accurate or very efficient/fast...)
 #' @return
 #' When entering a single \code{sgs_points} object it returns the value of the
 #' area in squared metres. For a list of \code{sgs_points} objects, it will
@@ -44,13 +45,20 @@
 #' #TODO
 #' lon = c(-6.43698696, -6.43166843, -6.42706831, -6.42102546, -6.42248238, -6.42639092, -6.42998435, -6.43321409)
 #' lat = c(58.21740316, 58.21930597, 58.22014035, 58.22034112, 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#' #sgs_area(lon,lat)
+#' #sgs_area(lon,lat, epsg=4326)
+#' #TODO: also examples for 'lists of areas':
+#' #Split PCS and GCS if necessary
+#' #types <- epsgs[match(epsg, epsgs$epsg), "type"]
+#' #idx.PCS <- which(types == "PCS")
+#' #idx.GCS <- which(types == "GCS")
+#' #p.area <- function (x) planar.area(as.matrix(x[, coords, drop=TRUE]))
+#' #area[idx.PCS] <- lapply(x[idx.PCS], p.area)
 #' @export
-sgs_area <- function (x, ...)
+sgs_area <- function (x, interpolate = NULL, ...)
   UseMethod("sgs_area")
 
 #' @export
-sgs_area.sgs_points <- function(x, ...) {
+sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
   if (isTRUE(x$epsg %in% c(4936, 4978, 3857)))
     stop("This function doesn't support the input's EPSG")
@@ -74,7 +82,51 @@ sgs_area.sgs_points <- function(x, ...) {
     c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
                                    epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
 
-    # 3- area calculation using a region-adapted equal area projection as
+    # 3- if we need to interpolate or get the perimeter...? TODO
+    if (is.numeric(interpolate)) {
+
+      mat.x.grad <- as.matrix(x[, coords, drop=TRUE])
+      mat.x <- mat.x.grad / RAD.TO.GRAD
+      x.shift.one <- rbind(mat.x[-1, ], mat.x[1, ])
+
+      # calculate distances and bearings
+      vicenty <- inverse.vicenty.ellipsoid(mat.x, x.shift.one, x$datum, 300L)
+
+      # work only with those coordinates whose distance exceeds our threshold
+      need.int <- which(vicenty$distance > interpolate)
+      intp1 <- mat.x[need.int, ]
+      alpha1 <- vicenty$initial.bearing[need.int]
+
+      # the first results of seq is 0. Don't want it [-1].
+      segments <- mapply(function(x,y,by) seq(x,y,by)[-1],
+                         0, vicenty$distance[need.int], interpolate,
+                         SIMPLIFY = FALSE)
+
+      # call direct.vicenty.ellipsoid to calculate inter locations
+      num.segments <- lengths(segments)
+      xy <- intp1[rep(1:nrow(intp1), num.segments),]
+      d.vicenty <- direct.vicenty.ellipsoid(p1 = xy, s = unlist(segments),
+                                            alpha1 = rep(alpha1, num.segments),
+                                            datum = x$datum, iterations=100L)
+
+      inter.locations <- cbind(x = d.vicenty$lon, y = d.vicenty$lat) *
+        RAD.TO.GRAD
+      inter.locations <- cbind(inter.locations,
+                               p=rep(need.int, times=num.segments))
+
+      # insert the new locations in the existing locations
+      lst.x.grad <- lapply(seq_len(nrow(mat.x.grad)),
+                           function(i) mat.x.grad[i, ])
+      lst.x.grad[need.int]  <- lapply(need.int, function(i) {
+        rbind(lst.x.grad[[i]],
+              inter.locations[inter.locations[,"p"]==i,
+                              c(1,2)])
+        })
+      x <- sgs_points(do.call(rbind, lst.x.grad), epsg=x$epsg)
+
+    }
+
+    # 4- area calculation using a region-adapted equal area projection as
     # described in Berk and Ferlan, 2018. Albers Equal-Area Conic projection
     geod.area(x, c)
 
@@ -82,50 +134,8 @@ sgs_area.sgs_points <- function(x, ...) {
 
 }
 
-#' @export
-sgs_area.list <- function(x, ...) {
-
-  if (any(unique(lapply(x,class)) != "sgs_points"))
-    stop("All the elements in the list must be of class sgs_points")
-
-  epsg <- unlist(lapply(x, function (x) x$epsg))
-  if (isTRUE(epsg %in% c(4936, 4978, 3857)))
-    stop("This function doesn't support the EPSG:4936, 4978 or 3857")
-
-  coords <- c("x", "y")
-  area <- rep(NA, length(x))
-
-  #Split PCS and GCS if necessary
-  types <- epsgs[match(epsg, epsgs$epsg), "type"]
-  idx.PCS <- which(types == "PCS")
-  idx.GCS <- which(types == "GCS")
-
-  if (length(idx.PCS) > 0) {
-    # Planar area (27700, 7405, 3035)
-    p.area <- function (x) planar.area(as.matrix(x[, coords, drop=TRUE]))
-    area[idx.PCS] <- lapply(x[idx.PCS], p.area)
-  }
-
-  if (length(idx.GCS) > 0) {
-    #Approximate geodetic area
-    g.area <- function (x) {
-      x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
-      c <- moment.centroid(as.matrix(x.bng[, coords, drop=TRUE]))
-      c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
-                                     epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
-      geod.area(x, c)
-    }
-    area[idx.GCS] <- lapply(x[idx.GCS], g.area)
-  }
-
-  if (anyNA(area))
-    warning("Some areas couldn't be calculated and remain NA")
-
-  area
-
-}
-
-#p: matrix of points
+#' p: matrix of points
+#' @noRd
 planar.area <- function(p) {
 
   # Translate to 0,0 to minimise losing floating point precision
@@ -176,6 +186,7 @@ moment.centroid <- function (p) {
 
 #p: set of points (sgs_points object)
 #c: centroid coordinates (sgs_object)
+#maybe it could be exported??
 geod.area <- function(p, c) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==p$datum, "ellipsoid"]

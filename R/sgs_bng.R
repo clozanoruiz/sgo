@@ -272,7 +272,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       }
 
       #initialise 'unprojected' matrix of coordinates
-      items <- rep(NA, length(x$x))
+      items <- rep(NA_real_, length(x$x))
       unprojected <- cbind(items, items, deparse.level = 0)
 
       # unproject any shifted coordinates
@@ -479,7 +479,7 @@ project.onto.grid <- function (lon, lat, datum) {
 find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # Initialise list of shifts
-  items <- rep(NA, length(e))
+  items <- rep(NA_real_, length(e))
   out <- rep(FALSE, length(e))
   shifts <- list(dx=items, dy=items, dz=items, gf=items, out=out)
 
