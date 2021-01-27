@@ -5,10 +5,10 @@ sgs - Simple GIS (with OSGB)
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/litos81/sgs/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/litos81/sgs/actions?workflow=R-CMD-check)
-[![codecov](https://codecov.io/gh/litos81/sgs/branch/master/graph/badge.svg?token=Qd5gkpnxFc)](https://codecov.io/gh/litos81/sgs?branch=master)
+[![R-CMD-check](https://github.com/clozanoruiz/sgs/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/clozanoruiz/sgs/actions?workflow=R-CMD-check)
+[![codecov](https://codecov.io/gh/clozanoruiz/sgs/branch/master/graph/badge.svg?token=Qd5gkpnxFc)](https://codecov.io/gh/clozanoruiz/sgs?branch=master)
 [![Latest
-release](https://img.shields.io/github/release/litos81/sgs.svg)](https://github.com/litos81/sgs/releases)
+release](https://img.shields.io/github/release/clozanoruiz/sgs.svg)](https://github.com/clozanoruiz/sgs/releases)
 [![license](https://img.shields.io/badge/license-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end --> (DO NOT USE… YET)
 
@@ -36,7 +36,7 @@ And the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("litos81/sgs")
+devtools::install_github("clozanoruiz/sgs")
 ```
 
 ## Example

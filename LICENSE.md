@@ -1,6 +1,6 @@
 BSD 2-Clause License
 
-Copyright (c) 2018, Carlos Lozano Ruiz
+Copyright (c) 2018-2020, Carlos Lozano Ruiz\
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
