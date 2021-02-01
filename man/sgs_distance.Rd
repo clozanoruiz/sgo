@@ -21,11 +21,11 @@ distance between the first elements of \code{x} and \code{y}, the second,
 etc. If \code{FALSE}, return the dense matrix with all pairwise distances.}
 
 \item{which}{Character vector. For geodetic coordinates one of
-\code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
-coordinates it defaults to \code{BNG}.}
+\code{Harvesine} or \code{Vicenty}. It defaults to \code{BNG} for points in
+'OS British National Grid' coordinates.}
 
 \item{grid.true.distance}{Logical variable. Currently only used for BNG
-coordinates. If TRUE it returns the true (geodesic) distance.}
+coordinates. If \code{TRUE} it returns the true (geodesic) distance.}
 
 \item{iterations}{Numeric variable. Maximum number of iterations used in the
 Vicenty method.}
@@ -35,14 +35,49 @@ If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 numeric matrix of dimension length(x) by length(y). Otherwise it returns a
 numeric vector of length \code{x} or \code{y}, the shorter one being
 recycled. Distances involving empty geometries are \code{NA}.
+All distances are returned in metres.
 }
 \description{
 Calculates the distance between OS National Grid Reference points or using
 the Harvesine or Vicenty formulae for points with angular coordinates.
 }
 \details{
-TODO. fro grid.true.distance explain how corrrection factors work
+This function can use two different methods when working with geodetic
+coordinates: When \code{which = "Vicenty"} the Vincenty's formula is used to
+calculate the geodesics (distance) on an ellipsoid to an accuracy of up to
+a millimetre. If such accuracy is not needed, \code{which} can also
+accept the string "Harvesine" which calculates great-circle distance between
+two points on a sphere. Harvesines are faster to compute than the Vicenty
+dsitances but can result in an error of up to 0.5%.
+
+When working with planar coordinates the Local Scale Factor is the scale
+distortion inherent in the map projection at a point. When
+\code{grid.true.distance} is \code{FALSE} the Euclidean distance in the
+plane is calculated. When it is \code{TRUE} the function computes a line
+scale factor using Simpson's Rule to achieve greater accuracy and
+approximate the distance to the tru geodesic distance.
 }
 \examples{
-#TODO
+p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
+lon <- c(-4.25181,-3.18827)
+lat <- c(55.86424, 55.95325)
+pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
+p1.to.pts <- sgs_distance(p1, pts, by.element = TRUE)
+
+# Perimeter of a polygon defined as a series of ordered points:
+lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
+-6.42248238, -6.42639092, -6.42998435, -6.43321409)
+lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
+58.21849188, 58.21853606, 58.21824033, 58.21748949)
+pol <- sgs_points(list(lon, lat), epsg=4326)
+## Create a copy of the polygon with its coordinates shifted one
+## position so that we can calculate the distance
+coords <- sgs_coordinates(pol)
+pol.shift.one <- sgs_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
+perimeter <- sum(sgs_distance(pol, pol.shift.one, by.element=TRUE))
+}
+\references{
+Thaddeus Vincenty, 1975. \emph{Direct and Inverse Solutions of Geodesics on
+the Ellipsoid with application of nested equations}. Survey Review, 23:176,
+88-93, DOI: 10.1179/sre.1975.23.176.88
 }

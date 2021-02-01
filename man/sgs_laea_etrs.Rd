@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{sgs_laea_etrs}
 \alias{sgs_laea_etrs}
-\title{ETRS89-LAEA Easting/Northing to ETRS89 angular coordinates}
+\title{ETRS89-LAEA Easting/Northing to ETRS89 geodetic coordinates}
 \usage{
 sgs_laea_etrs(x)
 }
@@ -13,7 +13,7 @@ projected coordinate system EPSG=3035.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
-Longitude/Latitude in the CRS ETRS89.
+Longitude/Latitude in the ETRS89 Coordinate Reference System.
 }
 \description{
 Converts ETRS89-LAEA Easting/Northing to ETRS89 geodetic coordinates
@@ -24,8 +24,8 @@ ETRS89-LAEA (EPSG:3035) is a CRS for pan-European statistical mapping at all
 scales or other purposes where true area representation is required.
 }
 \examples{
-p <- sgs_points(list(3962799.45, 2999718.85), epsg=3035)
-res <- sgs_laea_etrs(p)
+prj <- sgs_points(list(3962799.45, 2999718.85), epsg=3035)
+p <- sgs_laea_etrs(prj)
 }
 \references{
 IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,

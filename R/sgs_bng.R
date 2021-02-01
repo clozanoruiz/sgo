@@ -334,7 +334,11 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
 
 }
 
-#Helper function. Unproject BNG (OSGB36) to geodetic coordinates
+# Helper function. Unproject BNG (OSGB36) to geodetic coordinates
+#' @noRd
+#' @param E A numeric vector with Easting coordinates
+#' @param N A numeric vector with Northing coordinates
+#' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 unproject.onto.ellipsoid <- function(E, N, datum) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
@@ -413,7 +417,11 @@ unproject.onto.ellipsoid <- function(E, N, datum) {
 
 }
 
-#Helper function. Project geodetic coordinates onto BNG
+# Helper function. Project geodetic coordinates onto BNG
+#' @noRd
+#' @param lon A numeric vector with Longitude coordinates
+#' @param lat A numeric vector with Latitude coordinates
+#' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 project.onto.grid <- function (lon, lat, datum) {
 
   phi <- lat / RAD.TO.GRAD
@@ -475,7 +483,11 @@ project.onto.grid <- function (lon, lat, datum) {
 
 }
 
-#Helper function. Get OSTN shift of coordinates
+# Helper function. Get OSTN shift of coordinates
+#' @noRd
+#' @param e A numeric vector with Easting coordinates
+#' @param n A numeric vector with Northing coordinates
+#' @param z A numeric vector with Height coordinates
 find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # Initialise list of shifts

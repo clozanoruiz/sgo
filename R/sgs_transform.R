@@ -13,16 +13,24 @@ NULL
 #' @param x A \code{sgs_points} object.
 #' @param to Specifies the EPSG code to convert the coordinates to. See
 #' \code{\link{sgs_points}} for a list of supported EPSG codes.
-#' @param ... Additional parameters passed to internal functions. #TODO: improve
+#' @param ... Additional parameters passed to internal functions. Currently it
+#' supports the additional arguments seen in \code{sgs_bng_lonlat} and
+#' \code{sgs_lonlat_bng}.
 #' this description and which parameters may admit...
 #' @details
 #' This function is a wrapper of specific transformation functions
 #' (\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
 #' \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}},
-#' \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_lonlat_bng}}) that transforms
+#' \code{\link{sgs_laea_etrs}}, \code{\link{sgs_etrs_laea}},
+#' \code{\link{sgs_cart_lonlat}}, \code{\link{sgs_lonlat_cart}}) that transforms
 #' the coordinate system of a set of points to any of the supported coordinate
-#' systems.
-#' #TODO warning about wgs84/etrs89 transformation
+#' systems by this package.
+#'
+#' Please note that this package assumes that the Coordinate Reference Systems
+#' (CRS) ETRS89 and WGS84 are the same within the UK, but this shouldn't be a
+#' problem for most civilian use of GPS satellites. If a high-precision
+#' transformation between WGS84 and ETRS89 is required then it is recommended
+#' to use a different package to do the conversion.
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},

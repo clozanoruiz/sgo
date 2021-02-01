@@ -1,6 +1,6 @@
 ################################################################################
 #                                                                              #
-# Adapted from 'geodesy', a JS routine by Chris Veness:                        #
+# Adapted to R from 'geodesy', a JS routine by Chris Veness:                   #
 # https://github.com/chrisveness/geodesy                                       #
 #                                                                              #
 ################################################################################

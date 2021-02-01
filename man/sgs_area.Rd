@@ -5,24 +5,24 @@
 \alias{sgs_area}
 \title{Calculate area from an ordered set of points}
 \usage{
-sgs_area(x, ...)
+sgs_area(x, interpolate = NULL, ...)
 }
 \arguments{
-\item{x}{A \code{sgs_points} object describing an ordered set of points. It
-also accepts a list of sgs_points objects each of them describing a
-different polygon (area).}
+\item{x}{A \code{sgs_points} object describing an ordered set of points.}
+
+\item{interpolate}{Numeric variable. If not \code{NULL}, defines the maximum
+distance in metres between adjacent coordinates. It is only used with
+angular coordinates.}
 
 \item{...}{Currently ignored}
 }
 \value{
-When entering a single \code{sgs_points} object it returns the value of the
-area in squared metres. For a list of \code{sgs_points} objects, it will
-return a list of areas in squared metres.
+Value of the area in squared metres round up to the first decimal.
 }
 \description{
 Calculates the planar area for a set of points defined in the OS BNG or
-ETRS89-LAEA. An approximation of the geodetic area is calculated when
-entered points are expressed in angular coordinates.
+ETRS89-LAEA. An accurate approximation of the geodetic area is calculated
+when entered points are expressed in angular coordinates.
 }
 \details{
 Calculate areas using the Gauss's area formula
@@ -36,16 +36,18 @@ The standard parallel and the projection origin are tied to the moment
 centroid of the polygon.
 
 To reduce the error introduced by boundary simplification and provide an
-even more accurate area computation, the boundary segments can be divided by
-interpolating vertices on the projected geodesic.
-
-#TODO: this is meant to relatively small areas (trying to get the area of Great Britain won't be very accurate...)
+even more accurate area computation for angular coordinates, the boundary
+segments can be divided by interpolating vertices on the projected geodesic.
+For instance, if \code{interpolate = 500} then any segment between adjacent
+coordinates whose length is greater then \code{interpolate} will be split in
+parts no greater than \code{500 m} and new vertices will be calculated.
 }
 \examples{
-#TODO
-lon = c(-6.43698696, -6.43166843, -6.42706831, -6.42102546, -6.42248238, -6.42639092, -6.42998435, -6.43321409)
-lat = c(58.21740316, 58.21930597, 58.22014035, 58.22034112, 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#sgs_area(lon,lat)
+lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
+-6.42248238, -6.42639092, -6.42998435, -6.43321409)
+lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
+58.21849188, 58.21853606, 58.21824033, 58.21748949)
+A <- sgs_area(sgs_points(list(lon, lat), epsg=4326))
 }
 \references{
 Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the

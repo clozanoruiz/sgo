@@ -44,7 +44,18 @@ drop the \code{sgs_points} class of the object.}
 \item{...}{Not currently used}
 }
 \value{
-An object of class \code{sgs_points}.
+An object of class \code{sgs_points}. This object is a list with 5 elements:
+\itemize{
+\item\code{x}: A numeric vector containing easting or longitude coordinates.
+\item\code{y}: A numeric vector with northing or latitude coordintes.
+\item\code{epsg}: A scalar value with the EPSG code of the current
+Geographic Coordinate System (GCS).
+\item\code{datum}: A string describing the geodetic datum that defines the
+GCS of the object. Currently can take the values "OSGB36", "WGS84" or
+"ETRS89"
+\item\code{dimension}: A string describing whether the object is 2D or 3D.
+It can take the values "XY" or "XYZ".
+}
 }
 \description{
 2D or 3D coordinates (and other attributes) of a point or collection of

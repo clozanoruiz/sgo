@@ -13,7 +13,6 @@
 #' \strong{Please note} that the order is important when \code{x} has only 2 or
 #' 3 columns and \code{coords} is not informed: lat/lon or northing/easting
 #' (and height) will produce wrong results.
-#'
 #' @param coords A vector with the names of the two or three columns containing
 #' the X (easting or longitude), Y (northing or latitude) and optionally Z
 #' (ellipsoid or orthometric height) coordinates.
@@ -90,7 +89,18 @@
 #' }
 #'
 #' @return
-#' An object of class \code{sgs_points}.
+#' An object of class \code{sgs_points}. This object is a list with 5 elements:
+#' \itemize{
+#' \item\code{x}: A numeric vector containing easting or longitude coordinates.
+#' \item\code{y}: A numeric vector with northing or latitude coordintes.
+#' \item\code{epsg}: A scalar value with the EPSG code of the current
+#' Geographic Coordinate System (GCS).
+#' \item\code{datum}: A string describing the geodetic datum that defines the
+#' GCS of the object. Currently can take the values "OSGB36", "WGS84" or
+#' "ETRS89"
+#' \item\code{dimension}: A string describing whether the object is 2D or 3D.
+#' It can take the values "XY" or "XYZ".
+#' }
 #' @seealso \code{\link{sgs_coordinates}}, \code{\link{sgs_transform}}.
 #' @examples
 #' # lists:
@@ -137,7 +147,8 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   if(is.null(coords)) {
     lnames <- tolower(names(x))
-    known.coords <- na.omit(coordinates.names[match(lnames, coordinates.names)])
+    known.coords <- coordinates.names[match(lnames, coordinates.names)]
+    known.coords <- known.coords[!is.na(known.coords)]
     len.known <- length(known.coords)
     if (len.known < 4 && any(apply(coordinates.names, 1,
                                    function(n,x) all(n[1:len.known]==x),
@@ -408,7 +419,7 @@ c.sgs_points <- function(...) {
       coords <- do.call(mapply, c(FUN=c, lapply(dots, `[`, coord.cols)))
       coords <- split(coords, col(coords))
 
-      other.columns <- unlist(sapply(dots, function(x, n) {x[!names(x) %in% n]}, #try to substitute this sapply with vapply (probably not posible as every list would have different size) or lapply: is lapply safer than sapply?
+      other.columns <- unlist(lapply(dots, function(x, n) {x[!names(x) %in% n]},
                                      n=sgs_points.core), recursive=FALSE)
 
       r <- structure(c(other.columns,
@@ -462,6 +473,7 @@ print.sgs_points <- function(x) {
 #implement: as.data.frame (coordinates columns, additional columns and EPSG column (don't add datum, or dimension))
 #implement cbind, rbind?
 #implement plot
+#test transform function with extra arguments(like ODN.datum... to see if the new columns are maintaned through the conversions)
 
 #work with EPSGs
 #4277 (only 2D), 27700, 7405 (assume it works for ODN heights, so show datum flag in output!) -> OSGB36

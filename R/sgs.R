@@ -1,17 +1,17 @@
 #' sgs: Simple GIS (with OSGB).
 #'
-#' The sgs package aims to provide a set of functions to perform spatial or
-#' geographic analysis in Open Source R and derivatives. Its main purpose is
-#' to permform OSGB36/ETRS89 transformations using the Ordnance Survey's
-#' OSTN15 transformation model for Great Britain and the Isle of Man. It also
-#' transforms GPS ellipsoid heights to orthometric (mean sea level)
+#' The sgs package aims to provide a set of functions that will help with
+#' spatial or geographic analysis in Open Source R and derivatives. Its main
+#' purpose is to permform OSGB36/ETRS89 transformations using the Ordnance
+#' Survey's OSTN15 transformation model for Great Britain and the Isle of Man.
+#' It also transforms GPS ellipsoid heights to orthometric (mean sea level)
 #' heights on the relevant Ordnance Survey mapping datum, using the National
 #' Geoid Model OSGM15.
 #'
 #' Most of the functions available in this package will become much less
 #' accurate if used outside the coverage of OSTN, thus it is adviced to apply
-#' those functions on coordinates within Great Britain, the Isle of Man and any
-#' areas of sea less than a few miles off shore.
+#' the functions in this package on coordinates within Great Britain, the Isle
+#' of Man and any areas of sea less than a few miles off shore.
 #'
 #' This package assumes that the Coordinate Reference Systems (CRS) ETRS89 and
 #' WGS84 are the same within the UK, but this shouldn't be a problem for most
@@ -34,6 +34,8 @@
 #' References
 #' \item\code{\link{sgs_ngr_bng}}: National Grid References and British National
 #' Grid (E/N)
+#' \item\code{\link{sgs_laea_etrs}}: ETRS89-LAEA Easting/Northing to ETRS89
+#' \item\code{\link{sgs_etrs_laea}}: ETRS89 to ETRS89-LAEA Easting/Northing
 #' \item\code{\link{sgs_cart_lonlat}}: 3D Earth Centred Earth Fixed (ECEF)
 #' Cartesian coordinates and polar coordinates
 #' \item\code{\link{sgs_lonlat_cart}}: Polar and 3D Cartesian coordinates

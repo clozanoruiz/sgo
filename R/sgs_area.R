@@ -3,15 +3,15 @@
 #'
 #' @description
 #' Calculates the planar area for a set of points defined in the OS BNG or
-#' ETRS89-LAEA. An approximation of the geodetic area is calculated when
-#' entered points are expressed in angular coordinates.
+#' ETRS89-LAEA. An accurate approximation of the geodetic area is calculated
+#' when entered points are expressed in angular coordinates.
 #'
 #' @name sgs_area
-#' @usage sgs_area(x, interpolate=NULL, ...)
-#' @param x A \code{sgs_points} object describing an ordered set of points. It
-#' also accepts a list of sgs_points objects each of them describing a
-#' different polygon (area).
-#' @param interpolate Numeric variable. If not null, defines the max distance in metres allowed between adjacent. Only for angular coordinates! TODO
+#' @usage sgs_area(x, interpolate = NULL, ...)
+#' @param x A \code{sgs_points} object describing an ordered set of points.
+#' @param interpolate Numeric variable. If not \code{NULL}, defines the maximum
+#' distance in metres between adjacent coordinates. It is only used with
+#' angular coordinates.
 #' @param ... Currently ignored
 #' @details
 #' Calculate areas using the Gauss's area formula
@@ -25,14 +25,13 @@
 #' centroid of the polygon.
 #'
 #' To reduce the error introduced by boundary simplification and provide an
-#' even more accurate area computation, the boundary segments can be divided by
-#' interpolating vertices on the projected geodesic.
-#'
-#' #TODO: this is meant to relatively small areas (trying to get the area of Great Britain won't be very accurate or very efficient/fast...)
+#' even more accurate area computation for angular coordinates, the boundary
+#' segments can be divided by interpolating vertices on the projected geodesic.
+#' For instance, if \code{interpolate = 500} then any segment between adjacent
+#' coordinates whose length is greater then \code{interpolate} will be split in
+#' parts no greater than \code{500 m} and new vertices will be calculated.
 #' @return
-#' When entering a single \code{sgs_points} object it returns the value of the
-#' area in squared metres. For a list of \code{sgs_points} objects, it will
-#' return a list of areas in squared metres.
+#' Value of the area in squared metres round up to the first decimal.
 #' @references
 #' Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the
 #' cadaster: case study of Slovenia}. Cartography and Geographic Information
@@ -42,17 +41,11 @@
 #' Survey Professional Paper, no. 1395. Washington, DC: US Government Printing
 #' Office. DOI: 10.3133/pp1395
 #' @examples
-#' #TODO
-#' lon = c(-6.43698696, -6.43166843, -6.42706831, -6.42102546, -6.42248238, -6.42639092, -6.42998435, -6.43321409)
-#' lat = c(58.21740316, 58.21930597, 58.22014035, 58.22034112, 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#' #sgs_area(lon,lat, epsg=4326)
-#' #TODO: also examples for 'lists of areas':
-#' #Split PCS and GCS if necessary
-#' #types <- epsgs[match(epsg, epsgs$epsg), "type"]
-#' #idx.PCS <- which(types == "PCS")
-#' #idx.GCS <- which(types == "GCS")
-#' #p.area <- function (x) planar.area(as.matrix(x[, coords, drop=TRUE]))
-#' #area[idx.PCS] <- lapply(x[idx.PCS], p.area)
+#' lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
+#' -6.42248238, -6.42639092, -6.42998435, -6.43321409)
+#' lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
+#' 58.21849188, 58.21853606, 58.21824033, 58.21748949)
+#' A <- sgs_area(sgs_points(list(lon, lat), epsg=4326))
 #' @export
 sgs_area <- function (x, interpolate = NULL, ...)
   UseMethod("sgs_area")
@@ -82,7 +75,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
                                    epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
 
-    # 3- if we need to interpolate or get the perimeter...? TODO
+    # 3- if we need to interpolate
     if (is.numeric(interpolate)) {
 
       mat.x.grad <- as.matrix(x[, coords, drop=TRUE])
@@ -90,7 +83,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
       x.shift.one <- rbind(mat.x[-1, ], mat.x[1, ])
 
       # calculate distances and bearings
-      vicenty <- inverse.vicenty.ellipsoid(mat.x, x.shift.one, x$datum, 300L)
+      vicenty <- inverse.vicenty.ellipsoid(mat.x, x.shift.one, x$datum,
+                                           iterations=300L)
 
       # work only with those coordinates whose distance exceeds our threshold
       need.int <- which(vicenty$distance > interpolate)
@@ -104,7 +98,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
       # call direct.vicenty.ellipsoid to calculate inter locations
       num.segments <- lengths(segments)
-      xy <- intp1[rep(1:nrow(intp1), num.segments),]
+      xy <- intp1[rep(seq_len(nrow(intp1)), num.segments),]
       d.vicenty <- direct.vicenty.ellipsoid(p1 = xy, s = unlist(segments),
                                             alpha1 = rep(alpha1, num.segments),
                                             datum = x$datum, iterations=100L)
@@ -134,8 +128,9 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
 }
 
-#' p: matrix of points
+
 #' @noRd
+#' @param p A matrix of coordinates
 planar.area <- function(p) {
 
   # Translate to 0,0 to minimise losing floating point precision
@@ -156,7 +151,8 @@ planar.area <- function(p) {
 
 }
 
-#p: matrix of points
+#' @noRd
+#' @param p A matrix of coordinates
 moment.centroid <- function (p) {
 
   # Translate to 0,0 to minimise losing floating point precision
@@ -184,9 +180,9 @@ moment.centroid <- function (p) {
 
 }
 
-#p: set of points (sgs_points object)
-#c: centroid coordinates (sgs_object)
-#maybe it could be exported??
+#' @noRd
+#' @param p An sgs_points object containing a set of ordered angular coordinates
+#' @param c An sgs_points object containing the coordinates of the centroid
 geod.area <- function(p, c) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==p$datum, "ellipsoid"]

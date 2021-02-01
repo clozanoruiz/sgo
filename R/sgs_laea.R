@@ -14,13 +14,14 @@
 #' scales or other purposes where true area representation is required.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Easting/Northing.
-#' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
+#' Easting/Northing in the EPSG:3035 Projected Coordinate System.
+#' @references
+#' IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_area}}.
 #' @examples
 #' p <- sgs_points(list(-3.9369, 56.1165), epsg=4258)
-#' res <- sgs_etrs_laea(p)
+#' prj <- sgs_etrs_laea(p)
 #' @export
 sgs_etrs_laea <- function(x) UseMethod("sgs_etrs_laea")
 
@@ -94,7 +95,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
 
 
 #' @encoding UTF-8
-#' @title ETRS89-LAEA Easting/Northing to ETRS89 angular coordinates
+#' @title ETRS89-LAEA Easting/Northing to ETRS89 geodetic coordinates
 #'
 #' @description
 #' Converts ETRS89-LAEA Easting/Northing to ETRS89 geodetic coordinates
@@ -109,13 +110,13 @@ sgs_etrs_laea.sgs_points <- function(x) {
 #' scales or other purposes where true area representation is required.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Longitude/Latitude in the CRS ETRS89.
+#' Longitude/Latitude in the ETRS89 Coordinate Reference System.
 #' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_area}}.
 #' @examples
-#' p <- sgs_points(list(3962799.45, 2999718.85), epsg=3035)
-#' res <- sgs_laea_etrs(p)
+#' prj <- sgs_points(list(3962799.45, 2999718.85), epsg=3035)
+#' p <- sgs_laea_etrs(prj)
 #' @export
 sgs_laea_etrs <- function(x) UseMethod("sgs_laea_etrs")
 

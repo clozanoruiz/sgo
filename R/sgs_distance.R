@@ -17,23 +17,55 @@
 #' distance between the first elements of \code{x} and \code{y}, the second,
 #' etc. If \code{FALSE}, return the dense matrix with all pairwise distances.
 #' @param which Character vector. For geodetic coordinates one of
-#' \code{Harvesine} or \code{Vicenty}. For points in OS British National Grid
-#' coordinates it defaults to \code{BNG}.
+#' \code{Harvesine} or \code{Vicenty}. It defaults to \code{BNG} for points in
+#' 'OS British National Grid' coordinates.
 #' @param grid.true.distance Logical variable. Currently only used for BNG
-#' coordinates. If TRUE it returns the true (geodesic) distance.
+#' coordinates. If \code{TRUE} it returns the true (geodesic) distance.
 #' @param iterations Numeric variable. Maximum number of iterations used in the
 #' Vicenty method.
 #' @details
-#' TODO. fro grid.true.distance explain how corrrection factors work.
+#' This function can use two different methods when working with geodetic
+#' coordinates: When \code{which = "Vicenty"} the Vincenty's formula is used to
+#' calculate the geodesics (distance) on an ellipsoid to an accuracy of up to
+#' a millimetre. If such accuracy is not needed, \code{which} can also
+#' accept the string "Harvesine" which calculates great-circle distance between
+#' two points on a sphere. Harvesines are faster to compute than the Vicenty
+#' dsitances but can result in an error of up to 0.5%.
+#'
+#' When working with planar coordinates the Local Scale Factor is the scale
+#' distortion inherent in the map projection at a point. When
+#' \code{grid.true.distance} is \code{FALSE} the Euclidean distance in the
+#' plane is calculated. When it is \code{TRUE} the function computes a line
+#' scale factor using Simpson's Rule to achieve greater accuracy and
+#' approximate the distance to the tru geodesic distance.
 #' @return
 #' If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
 #' numeric vector of length \code{x} or \code{y}, the shorter one being
 #' recycled. Distances involving empty geometries are \code{NA}.
+#' All distances are returned in metres.
 #' @references
-#' TODO: add reference to Vicenty 1975
+#' Thaddeus Vincenty, 1975. \emph{Direct and Inverse Solutions of Geodesics on
+#' the Ellipsoid with application of nested equations}. Survey Review, 23:176,
+#' 88-93, DOI: 10.1179/sre.1975.23.176.88
 #' @examples
-#' #TODO
+#' p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
+#' lon <- c(-4.25181,-3.18827)
+#' lat <- c(55.86424, 55.95325)
+#' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
+#' p1.to.pts <- sgs_distance(p1, pts, by.element = TRUE)
+#'
+#' # Perimeter of a polygon defined as a series of ordered points:
+#' lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
+#' -6.42248238, -6.42639092, -6.42998435, -6.43321409)
+#' lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
+#' 58.21849188, 58.21853606, 58.21824033, 58.21748949)
+#' pol <- sgs_points(list(lon, lat), epsg=4326)
+#' ## Create a copy of the polygon with its coordinates shifted one
+#' ## position so that we can calculate the distance
+#' coords <- sgs_coordinates(pol)
+#' pol.shift.one <- sgs_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
+#' perimeter <- sum(sgs_distance(pol, pol.shift.one, by.element=TRUE))
 #' @export
 sgs_distance <- function (x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
@@ -111,8 +143,12 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 
 }
 
-# parametres:
-# dist.simpson: with distances (in km) greater than those will apply simpson rule when caclulating true (geodesic) distances
+#' @noRd
+#' @param p1 A matrix of coordinates
+#' @param p2 A matrix of coordinates
+#' @param grid.true.distance Logical value
+#' @param dist.simpson: distance (in km) greater than this will apply Simpson's
+#' Rule when calculating true (geodesic) distances
 bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
 
   E1 <- p1[, 1]; E2 <- p2[, 1]
@@ -143,6 +179,9 @@ bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
 
 }
 
+#' @noRd
+#' @param E Vector of Easting coordinates
+#' @param N Vector of Northing coordinates
 local.scale.factor <- function(E, N) {
 
   # ellipsoid parameters
@@ -203,9 +242,10 @@ local.scale.factor <- function(E, N) {
 }
 
 
-# Default R as defined by the International Union of Geodesy and Geophysics
-# Harvesine error up to 0.5%
-# p1 & p2 in rad
+#' @noRd
+#' @param p1 A matrix of coordinates in radians
+#' @param p2 A matrix of coordinates in radians
+#' @param R Default defined by the International Union of Geodesy and Geophysics
 great.circle.harvesine <- function(p1, p2, R=6371008) {
 
   hav.dlat <- sin((p2[, 2] - p1[, 2]) / 2)
@@ -223,7 +263,7 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
   round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
 
 }
-#example: antipodal points:
+#TODO example (or better in tests): antipodal points:
 #p1 <- sgs_points(list(-177.5,-5.5),epsg=4326)
 #p2 <- sgs_points(list(2.5,5.5),epsg=4326)
 #res <- great.circle.harvesine(p1,p2)
@@ -234,18 +274,14 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 #res <- great.circle.harvesine(p1,p2)
 #res 10007556
 
+
 # Vicenty (inverse) iterative method to compute the geographical distance
 # between two given points.
-# It is accurate to within 0.5mm on the Earth ellipsoid.
-# https://en.wikipedia.org/wiki/Vincenty's_formulae
-# p1 & p2 in rad
-
-#examples:
-#nearly antipodal points may need a higher number of iterations to converge
-#new.zealand <- sgs_points(list(174.35, -35.76),epsg=4326)
-#gibraltar <- sgs_points(list(-5.35, 36.13),epsg=4326)
-#sgs_distance(new.zealand, gibraltar, which="Vicenty", iterations=300)
-#TODO: test how it behaves with coincident points
+#' @noRd
+#' @param p1 A matrix of coordinates in radians
+#' @param p2 A matrix of coordinates in radians
+#' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
+#' @param iterations Scalar value. Number of iterations to reach convergence
 inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
 
   # ellipsoid parameters
@@ -339,10 +375,22 @@ inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
   list(distance=s, initial.bearing=alpha1, final.bearing=alpha2)
 
 }
+#examples or better in tests TODO:
+#nearly antipodal points may need a higher number of iterations to converge
+#new.zealand <- sgs_points(list(174.35, -35.76),epsg=4326)
+#gibraltar <- sgs_points(list(-5.35, 36.13),epsg=4326)
+#sgs_distance(new.zealand, gibraltar, which="Vicenty", iterations=300)
+#TODO: test how it behaves with coincident points
+
 
 # Vicenty (direct) iterative method to compute a destination point from a given
 # point and an initial bearing (both in radians). 's' (distance) in m.
-# TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).
+#' @noRd
+#' @param p1 A matrix of coordinates in radians
+#' @param s A numeric vector. Distances (to compute the destination point)
+#' @param alpha1 A numeric vector. Initial bearing in radians
+#' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
+#' @param iterations Scalar value. Number of iterations to reach convergence
 direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
 
   # ellipsoid parameters
@@ -422,3 +470,4 @@ direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
   list(lon=lambda2, lat=phi2, final.bearing=alpha2)
 
 }
+# TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).

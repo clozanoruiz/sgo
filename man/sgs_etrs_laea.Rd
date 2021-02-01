@@ -13,7 +13,7 @@ geodetic coordinate system EPSG=4258, 4937 or 4936.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
-Easting/Northing.
+Easting/Northing in the EPSG:3035 Projected Coordinate System.
 }
 \description{
 Converts ETRS89 geodetic coordinates to ETRS89-LAEA Easting/Northing
@@ -25,7 +25,7 @@ scales or other purposes where true area representation is required.
 }
 \examples{
 p <- sgs_points(list(-3.9369, 56.1165), epsg=4258)
-res <- sgs_etrs_laea(p)
+prj <- sgs_etrs_laea(p)
 }
 \references{
 IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,

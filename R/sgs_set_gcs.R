@@ -124,6 +124,8 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
 # Converts from geodetic longitude/latitude coordinates to geocentric
 # cartesian (x/y/z) coordinates.
+#' @noRd
+#' @param points A sgs_points object.
 lonlat_to_cartesian <- function(points) {
 
   datum <- points$datum
@@ -152,6 +154,9 @@ lonlat_to_cartesian <- function(points) {
 
 
 # Applies Helmert transform  using transform parameters t.
+#' @noRd
+#' @param points A sgs_points object.
+#' @param t A dataframe with ellipsoid paramaters
 apply_transform <- function(points, t)   {
 
   # current points
@@ -179,6 +184,9 @@ apply_transform <- function(points, t)   {
 
 # Converts cartesian (x/y/z) point to ellipsoidal geodetic longitude/latitude
 # coordinates on specified epsg/datum.
+#' @noRd
+#' @param points A sgs_points object.
+#' @param epsg A scalar number with a EPSG code
 cartesian_to_lonlat <- function(points, epsg) {
 
   x <- points$x
