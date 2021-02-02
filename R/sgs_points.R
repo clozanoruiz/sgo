@@ -89,7 +89,8 @@
 #' }
 #'
 #' @return
-#' An object of class \code{sgs_points}. This object is a list with 5 elements:
+#' An object of class \code{sgs_points}. This object is a actually a list with
+#' 5 elements:
 #' \itemize{
 #' \item\code{x}: A numeric vector containing easting or longitude coordinates.
 #' \item\code{y}: A numeric vector with northing or latitude coordintes.
@@ -266,7 +267,7 @@ sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
     colnames(x) <- coords
   }
 
-  lst <- split(x, rep(seq_len(ncol(x)), each = nrow(x)))
+  lst <- lapply(seq_len(ncol(x)), function(i) x[, i])
   names(lst) <- colnames(x)
   sgs_points(lst, coords=coords, epsg=epsg)
 
@@ -338,16 +339,28 @@ sgs_coordinates.sgs_points <- function(x) {
 
 }
 
+
+#' @export
+as.data.frame.sgs_points <- function(x, ...) {
+
+  class(x) <- setdiff(class(x), "sgs_points") # to list
+  x <- x[-length(x)]                          # don't extract dimension
+  NextMethod()
+
+}
+
 # TODO
 # Extending '[' function to support sgs_points:
-#' @name sgs_points
-#' @param i Record selection, see \link[base]{Extract}
-#' @param j Variable selection, see \link[base]{Extract}
+#' @noRd
+#' @keywords internal
+#' @name `[.sgs_points`
+#' @param i Record selection (eg. rows in a matrix).
+#' @param j Variable selection (ig. columns in a matrix).
 #' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
 #' drop the \code{sgs_points} class of the object.
 #' @param ... Not currently used
 #' @details \code{[.sgs_points} will return a \code{sgs_points} object or a
-#' \code{data.frame} if any of the coordinates columns is dropped ; \code{...}
+#' \code{data.frame} if any of the coordinate columns is dropped; \code{...}
 #' arguments are not currently used.
 # @examples
 # g = st_sfc(st_point(1:2), st_point(3:4))
@@ -362,18 +375,17 @@ sgs_coordinates.sgs_points <- function(x) {
 # pol = st_sfc(st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))))
 # h = st_sf(r = 5, pol)
 # g[h,]
-#' @export
+# @export <---- NOT EXPORTED!!
 `[.sgs_points` <- function(x, i, j, drop=FALSE, ...) {
 
   coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
   other.cols <- names(x)[!names(x) %in% sgs_points.core]
   selected.columns <- c(coords, other.cols)
   epsg <- x$epsg
-  class(x) <- NULL
+  class(x) <- setdiff(class(x), "sgs_points")
 
-  if (!missing(i)) {
+  if (!missing(i))
     x <- lapply(x[selected.columns], function(p) p[i])
-  }
 
   if (!missing(j)) {
     # remove any reference to "epsg", "datum", "dimension"
@@ -386,7 +398,7 @@ sgs_coordinates.sgs_points <- function(x) {
 
   if (all(coords %in% selected.columns) && !drop) {
     if(is.matrix(x)){
-      x <- split(x, rep(seq_len(ncol(x)), each = nrow(x))) #to list
+      x <- lapply(seq_len(ncol(x)), function(i) x[, i]) #to list
       names(x) <- selected.columns
     } else {
       names(x) <- selected.columns
@@ -394,59 +406,13 @@ sgs_coordinates.sgs_points <- function(x) {
     }
     x <- sgs_points(x, coords=coords, epsg=epsg)
   } else {
-    x <- data.frame(x, stringsAsFactors = FALSE)
+    x <- as.data.frame(x, stringsAsFactors = FALSE)
   }
 
   x
 
 }
 
-#TODO export
-# does this actually make sense?? other.columns should be the same? and the number of points? etc
-#c.sgs_points <- function(..., recursive = FALSE) {
-c.sgs_points <- function(...) {
-
-  dots <- list(...)
-  classes <- vapply(dots, class, character(1))
-
-  if (all(classes == "sgs_points")) { #merge them
-
-    #all equal
-    if (length(unique(lapply(dots, `[`, "epsg"))) == 1) {
-
-      coord.cols <- if (dots[[1]]$dimension == "XY") c("x", "y")
-                      else c("x", "y", "z")
-      coords <- do.call(mapply, c(FUN=c, lapply(dots, `[`, coord.cols)))
-      coords <- split(coords, col(coords))
-
-      other.columns <- unlist(lapply(dots, function(x, n) {x[!names(x) %in% n]},
-                                     n=sgs_points.core), recursive=FALSE)
-
-      r <- structure(c(other.columns,
-                       list(coords, epsg=dots[[1]]$epsg,
-                            datum=dots[[1]]$datum,
-                            dimension=dots[[1]]$dimension)),
-                     class = "sgs_points")
-
-    } else { #different EPSG's, we cannot merge
-
-      stop("Objects with different EPSG codes cannot be combined")
-
-    }
-
-  } else { #only the first one can be sgs_points
-    if (classes[1] == "sgs_points" && all(classes[-1] != "sgs_points")) {
-      r <- NextMethod("c")
-      class(r) <- "sgs_points"
-    } else {
-      stop("Only the first object can be of type sgs_points")
-    }
-  }
-
-  attr(r, "coords") <- attr(dots[[1]], "coords")
-  r
-
-}
 
 #TODO improve print! and export
 #If you’re implementing more complicated print() methods, it’s a better idea to
@@ -469,9 +435,6 @@ print.sgs_points <- function(x) {
 
 #TODO
 #create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
-#implement: length, [<-, [[, [[<-, c. *Look at other packages if they actually implement them?* (If [ is implemented rev, head, and tail should all work).
-#implement: as.data.frame (coordinates columns, additional columns and EPSG column (don't add datum, or dimension))
-#implement cbind, rbind?
 #implement plot
 #test transform function with extra arguments(like ODN.datum... to see if the new columns are maintaned through the conversions)
 

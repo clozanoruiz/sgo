@@ -3,12 +3,9 @@
 \encoding{UTF-8}
 \name{sgs_points}
 \alias{sgs_points}
-\alias{[.sgs_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
 sgs_points(x, coords = NULL, epsg = NULL)
-
-\method{[}{sgs_points}(x, i, j, drop = FALSE, ...)
 }
 \arguments{
 \item{x}{A matrix, list or dataframe with at least 2 columns of either
@@ -33,15 +30,6 @@ of the following values:
 \code{7405}
 \item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
 }}
-
-\item{i}{Record selection, see \link[base]{Extract}}
-
-\item{j}{Variable selection, see \link[base]{Extract}}
-
-\item{drop}{Logical variable, default \code{FALSE}. If \code{TRUE} it will
-drop the \code{sgs_points} class of the object.}
-
-\item{...}{Not currently used}
 }
 \value{
 An object of class \code{sgs_points}. This object is a list with 5 elements:
@@ -121,10 +109,6 @@ The defined datum for this set of coordinates is OSGB 1936
 columns in \code{x} must be defined as Easting and Northing. The defined
 datum for this set of coordinates is WGS84 (https://epsg.io/3857)
 }
-
-\code{[.sgs_points} will return a \code{sgs_points} object or a
-\code{data.frame} if any of the coordinates columns is dropped ; \code{...}
-arguments are not currently used.
 }
 \examples{
 # lists:
