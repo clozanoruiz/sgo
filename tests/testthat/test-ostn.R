@@ -25,9 +25,9 @@ test_that("OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
                           epsg=4258)
 
   points.out <-
-    sgs_lonlat_bng(points.in, OSTN=TRUE)[, c("PointID", "x", "y"), drop=TRUE]
+    as.data.frame(sgs_lonlat_bng(points.in, OSTN=TRUE)[c("PointID", "x", "y")])
   pointsT.out <-
-    sgs_transform(points.in, to=27700)[, c("PointID", "x", "y"), drop=TRUE]
+    as.data.frame(sgs_transform(points.in, to=27700)[c("PointID", "x", "y")])
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_ETRStoOSGB.txt")
   ostn.out <- read.csv(file.out,
@@ -47,10 +47,10 @@ test_that("OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
                           coords=c("OSGB36.Eastings", "OSGB36.Northing"),
                           epsg=27700)
 
-  points.out <- sgs_bng_lonlat(points.in,
-    to=4258, OSTN=TRUE)[, c("PointID", "x", "y"), drop=TRUE]
+  points.out <- as.data.frame(sgs_bng_lonlat(points.in,
+    to=4258, OSTN=TRUE)[c("PointID", "x", "y")])
   pointsT.out <-
-    sgs_transform(points.in, to=4258)[, c("PointID", "x", "y"), drop=TRUE]
+    as.data.frame(sgs_transform(points.in, to=4258)[c("PointID", "x", "y")])
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_OSGBtoETRS.txt")
   ostn.out <- read.csv(file.out, stringsAsFactors = FALSE)

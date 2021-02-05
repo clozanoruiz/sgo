@@ -115,8 +115,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   }
 
   # return sgs_points object
-  if (num.elements > 0) new.lonlat <- c(x[, additional.elements, drop=TRUE],
-                                        new.lonlat)
+  if (num.elements > 0) new.lonlat <- c(x[additional.elements], new.lonlat)
   sgs_points(new.lonlat, coords=coords, epsg=to)
 
 }
@@ -270,8 +269,9 @@ sgs_lonlat_cart.sgs_points <- function(x) {
   cartesian <- lonlat_to_cartesian(x)
 
   # return sgs_points object
-  if (num.elements > 0) cartesian <- c(x[, additional.elements, drop=TRUE],
-                                       cartesian)
+  if (num.elements > 0)
+    cartesian <- c(x[additional.elements], cartesian)
+
   sgs_points(cartesian, coords=c("x", "y", "z"), epsg=to.epsg)
 
 }
@@ -322,8 +322,9 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   lonlat <- cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
 
   # return sgs_points object
-  if (num.elements > 0) lonlat <- c(x[, additional.elements, drop=TRUE],
-                                    lonlat)
+  if (num.elements > 0)
+    lonlat <- c(x[additional.elements], lonlat)
+
   sgs_points(lonlat, coords=c("x", "y", "z"), epsg=to.epsg)
 
 }

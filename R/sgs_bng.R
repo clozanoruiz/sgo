@@ -76,6 +76,9 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
+  x.3d <- x$dimension == "XYZ"
+  x.coords <- if (x.3d) c("x", "y", "z") else c("x", "y")
+
   # Convert datum from WGS84 to ETRS89
   # Currently we consider both EPSGs practically equal
   # otherwise: if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
@@ -108,7 +111,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
     # If datum is WGS84/ETRS89, we need to adjust with OSTN15
     if (x$epsg %in% c(4258, 4937)) {
 
-      shifts <- find.OSTN.shifts.at(e, n, x$dimension == "XYZ")
+      shifts <- find.OSTN.shifts.at(e, n, x.3d)
       # Round to mm precision
       e <- round(e + shifts$dx, 3)
       n <- round(n + shifts$dy, 3)
@@ -117,7 +120,9 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         out.of.bounds <- TRUE
-        helmert.x <- sgs_set_gcs(x[shifts$out], to = 4277)
+        out.x <- sgs_points(lapply(x[x.coords], function(el) el[shifts$out]),
+                            coords = x.coords, epsg = x$epsg)
+        helmert.x <- sgs_set_gcs(out.x, to = 4277)
         helmert.projected <- project.onto.grid(helmert.x$x,
                                                helmert.x$y,
                                                helmert.x$datum)
@@ -129,7 +134,8 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
 
   } else {  # single Helmert transformation
 
-    helmert.x <- sgs_set_gcs(x, to = 4277)
+    helmert.x <- sgs_set_gcs(sgs_points(x[x.coords], coords = x.coords,
+                                        epsg = x$epsg), to = 4277)
     helmert.projected <- project.onto.grid(helmert.x$x,
                                            helmert.x$y,
                                            helmert.x$datum)
@@ -140,7 +146,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
 
 
   # Return values
-  if (OSTN && x$dimension == "XYZ") {
+  if (OSTN && x.3d) {
     if (ODN.datum) {
       en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3), gf=shifts$gf)
     } else {
@@ -157,8 +163,10 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
     warning("There are points outside of the OSTN15 rectangle")
   }
 
-  if (num.elements > 0) en <- c(x[, additional.elements, drop=TRUE], en)
-  return (sgs_points(en, coords=coords, epsg=epsg))
+  if (num.elements > 0)
+    en <- c(x[additional.elements], en)
+
+  sgs_points(en, coords=coords, epsg=epsg)
 
 }
 
@@ -306,7 +314,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
       coords <- c("x", "y")
     }
 
-    if (num.elements > 0) unprojected <- c(x[, additional.elements, drop=TRUE],
+    if (num.elements > 0) unprojected <- c(x[additional.elements],
                                            unprojected)
     unprojected <- sgs_points(unprojected, coords=coords, epsg=to)
 
@@ -319,8 +327,9 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE) {
     os.ll <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
 
     unprojected <- list(x=os.ll[, 1], y=os.ll[, 2])
-    if (num.elements > 0) unprojected <- c(x[, additional.elements, drop=TRUE],
-                                           unprojected)
+    if (num.elements > 0)
+      unprojected <- c(x[additional.elements], unprojected)
+
     unprojected <- sgs_set_gcs(sgs_points(unprojected, coords=c("x", "y"),
                                           epsg=4277), to=to)
 

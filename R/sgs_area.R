@@ -61,7 +61,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
 
     # Planar area (27700, 7405, 3035)
-    planar.area(as.matrix(x[, coords, drop=TRUE]))
+    planar.area(as.matrix(x[coords]))
 
   } else {
 
@@ -71,14 +71,16 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
 
     # 2- calculate centroid from BNG points and convert back to lonlat
-    c <- moment.centroid(as.matrix(x.bng[, coords, drop=TRUE]))
-    c <- sgs_bng_lonlat(sgs_points(as.data.frame(c), coords=coords,
-                                   epsg = x.bng$epsg), to=x$epsg, OSTN=TRUE)
+    mc <- moment.centroid(as.matrix(x.bng[coords]))
+    mc <- structure(c(lapply(seq_len(ncol(mc)), function(i) mc[, i]),
+                      epsg = x.bng$epsg, datum = x.bng$datum,
+                      dimension = x.bng$dimension), class = "sgs_points")
+    mc <- sgs_bng_lonlat(mc, to=x$epsg, OSTN=TRUE)
 
     # 3- if we need to interpolate
     if (is.numeric(interpolate)) {
 
-      mat.x.grad <- as.matrix(x[, coords, drop=TRUE])
+      mat.x.grad <- as.matrix(x[coords])
       mat.x <- mat.x.grad / RAD.TO.GRAD
       x.shift.one <- rbind(mat.x[-1, ], mat.x[1, ])
 
@@ -116,13 +118,18 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
               inter.locations[inter.locations[,"p"]==i,
                               c(1,2)])
         })
-      x <- sgs_points(do.call(rbind, lst.x.grad), epsg=x$epsg)
+
+      res.matrix <- do.call(rbind, lst.x.grad)
+      x <- structure(c(lapply(seq_len(ncol(res.matrix)),
+                              function(i) res.matrix[, i]),
+                       epsg = x$epsg, datum = x$datum,
+                       dimension = x$dimension), class = "sgs_points")
 
     }
 
     # 4- area calculation using a region-adapted equal area projection as
     # described in Berk and Ferlan, 2018. Albers Equal-Area Conic projection
-    geod.area(x, c)
+    geod.area(x, mc)
 
   }
 

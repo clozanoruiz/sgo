@@ -201,16 +201,19 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if (length(other.columns)==0) {
     other.columns <- NULL
   } else {
-    # if other.columns contains the column names 'x', 'y' or 'z' we will remove
-    # them and warn the user about it.
-    old.length <- length(other.columns)
+    # if other.columns contains column names from sgs_points.core, rename them
+    # and warn the user about it.
     cols.to.check <- if(dimension == "XY") c("x", "y") else c("x", "y", "z")
-    other.columns <- other.columns[!(names(other.columns) %in% cols.to.check)]
-    if (length(other.columns) != old.length) {
+    cols.to.check <- c(setdiff(sgs_points.core, c("x","y","z")), cols.to.check)
+
+    to.rename <- names(other.columns) %in% cols.to.check
+    names(other.columns)[to.rename] <- paste0(
+      names(other.columns)[to.rename], ".2")
+
+    if (any(to.rename))
       warning(paste0("All columns from input data named ",
                      paste(cols.to.check, collapse = ", "),
-                     " have been removed"))
-    }
+                     " have been rnamed (suffix '.2')"))
 
     # all additional columns will be expanded to contain the same number of
     # elements as coordinates in the object
@@ -219,11 +222,10 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
                             function(x) { length(x) <- max.len; x })
   }
 
-  points <- structure(c(other.columns, point.coords,
-                        epsg=epsg,
-                        datum=epsgs[epsgs$epsg==epsg, "datum"],
-                        dimension=dimension),
-                      class="sgs_points")
+  structure(c(other.columns, point.coords, epsg=epsg,
+              datum=epsgs[epsgs$epsg==epsg, "datum"],
+              dimension=dimension),
+            class="sgs_points")
 
 }
 
@@ -305,11 +307,8 @@ sgs_points_xy.sgs_points <-function(x) {
   .Deprecated("sgs_coordinates")
 
   coords <- c("x", "y")
-
-  xy <- matrix(unlist(x[, c("x", "y"), drop=TRUE]), ncol=2)
-  colnames(xy) <- coords
-
-  xy
+  matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
+         dimnames = list(NULL, coords))
 
 }
 
@@ -335,93 +334,25 @@ sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
 sgs_coordinates.sgs_points <- function(x) {
 
   coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
-  as.matrix(x[, coords, drop=TRUE])
+  matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
+         dimnames = list(NULL, coords))
 
 }
 
-
+#TODO (docs?)
 #' @export
 as.data.frame.sgs_points <- function(x, ...) {
 
   class(x) <- setdiff(class(x), "sgs_points") # to list
-  x <- x[-length(x)]                          # don't extract dimension
+  x[c("datum", "dimension")] <- NULL          # don't extract datum, dimension
   NextMethod()
 
 }
 
-# TODO
-# Extending '[' function to support sgs_points:
-#' @noRd
-#' @keywords internal
-#' @name `[.sgs_points`
-#' @param i Record selection (eg. rows in a matrix).
-#' @param j Variable selection (ig. columns in a matrix).
-#' @param drop Logical variable, default \code{FALSE}. If \code{TRUE} it will
-#' drop the \code{sgs_points} class of the object.
-#' @param ... Not currently used
-#' @details \code{[.sgs_points} will return a \code{sgs_points} object or a
-#' \code{data.frame} if any of the coordinate columns is dropped; \code{...}
-#' arguments are not currently used.
-# @examples
-# g = st_sfc(st_point(1:2), st_point(3:4))
-# s = st_sf(a=3:4, g)
-# s[1,]
-# class(s[1,])
-# s[,1]
-# class(s[,1])
-# s[,2]
-# class(s[,2])
-# g = st_sf(a=2:3, g)
-# pol = st_sfc(st_polygon(list(cbind(c(0,3,3,0,0),c(0,0,3,3,0)))))
-# h = st_sf(r = 5, pol)
-# g[h,]
-# @export <---- NOT EXPORTED!!
-`[.sgs_points` <- function(x, i, j, drop=FALSE, ...) {
 
-  coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
-  other.cols <- names(x)[!names(x) %in% sgs_points.core]
-  selected.columns <- c(coords, other.cols)
-  epsg <- x$epsg
-  class(x) <- setdiff(class(x), "sgs_points")
-
-  if (!missing(i))
-    x <- lapply(x[selected.columns], function(p) p[i])
-
-  if (!missing(j)) {
-    # remove any reference to "epsg", "datum", "dimension"
-    if (is.character(j)) {
-      j <- setdiff(j, setdiff(sgs_points.core, c("x", "y", "z")))
-    }
-    x <- x[j]
-    selected.columns <- names(x[j])
-  }
-
-  if (all(coords %in% selected.columns) && !drop) {
-    if(is.matrix(x)){
-      x <- lapply(seq_len(ncol(x)), function(i) x[, i]) #to list
-      names(x) <- selected.columns
-    } else {
-      names(x) <- selected.columns
-      x <- as.list(x)
-    }
-    x <- sgs_points(x, coords=coords, epsg=epsg)
-  } else {
-    x <- as.data.frame(x, stringsAsFactors = FALSE)
-  }
-
-  x
-
-}
-
-
-#TODO improve print! and export
-#If you’re implementing more complicated print() methods, it’s a better idea to
-#implement format() methods that return a string, and then implement
-#print.class <- function(x, ...) cat(format(x, ...), "\n". This makes for methods
-#that are much easier to compose, because the side-effects are isolated to a single place.
-print.sgs_points <- function(x) {
-  #ADD attributes like sgs_x and sgs_y to sgspoints so we save all those coordinate checkins:
-  #like: attr(p1, "sgs_x") <-"latitude" (or easting)
+#TODO (docs?)
+#' @export
+print.sgs_points <- function(x, ..., n=10) {
 
   #len.coords <- length(x$x)
   if (length(x$x) > 6) {
@@ -431,12 +362,17 @@ print.sgs_points <- function(x) {
   cat("EPSG:", x$epsg, "\n",
       x$x, x$y)
 
+  f = format(x, ..., width = width)
+  message(f)
+  invisible(f)
+
 }
 
 #TODO
-#create a: is.XXX <- function(x) inherits(x, "XXX") to check if an objects is myclass
 #implement plot
+#chamge all internall calls to sgs_points( to a 'structure'
 #test transform function with extra arguments(like ODN.datum... to see if the new columns are maintaned through the conversions)
+#test that always, all sgs_points objects contain at least the (5-6) core columns
 
 #work with EPSGs
 #4277 (only 2D), 27700, 7405 (assume it works for ODN heights, so show datum flag in output!) -> OSGB36

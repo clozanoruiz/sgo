@@ -32,7 +32,8 @@ of the following values:
 }}
 }
 \value{
-An object of class \code{sgs_points}. This object is a list with 5 elements:
+An object of class \code{sgs_points}. This object is a actually a list with
+5 elements:
 \itemize{
 \item\code{x}: A numeric vector containing easting or longitude coordinates.
 \item\code{y}: A numeric vector with northing or latitude coordintes.
