@@ -61,7 +61,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
 
     # Planar area (27700, 7405, 3035)
-    planar.area(as.matrix(x[coords]))
+    planar.area(matrix(unlist(x[coords], use.names = FALSE), ncol = 2,
+                       byrow = FALSE))
 
   } else {
 
@@ -71,16 +72,19 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
 
     # 2- calculate centroid from BNG points and convert back to lonlat
-    mc <- moment.centroid(as.matrix(x.bng[coords]))
-    mc <- structure(c(lapply(seq_len(ncol(mc)), function(i) mc[, i]),
-                      epsg = x.bng$epsg, datum = x.bng$datum,
+    mc <- unname(moment.centroid(matrix(unlist(x.bng[coords], use.names=FALSE),
+                                        ncol = 2, byrow = FALSE)))
+    mc <- lapply(seq_len(ncol(mc)), function(i) mc[, i])
+    names(mc) <- coords
+    mc <- structure(c(mc, epsg = x.bng$epsg, datum = x.bng$datum,
                       dimension = x.bng$dimension), class = "sgs_points")
     mc <- sgs_bng_lonlat(mc, to=x$epsg, OSTN=TRUE)
 
     # 3- if we need to interpolate
     if (is.numeric(interpolate)) {
 
-      mat.x.grad <- as.matrix(x[coords])
+      mat.x.grad <- matrix(unlist(x[coords], use.names=FALSE),
+             ncol = 2, byrow = FALSE)
       mat.x <- mat.x.grad / RAD.TO.GRAD
       x.shift.one <- rbind(mat.x[-1, ], mat.x[1, ])
 
@@ -100,7 +104,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
       # call direct.vicenty.ellipsoid to calculate inter locations
       num.segments <- lengths(segments)
-      xy <- intp1[rep(seq_len(nrow(intp1)), num.segments),]
+      xy <- intp1[rep(seq_len(nrow(intp1)), num.segments), ]
       d.vicenty <- direct.vicenty.ellipsoid(p1 = xy, s = unlist(segments),
                                             alpha1 = rep(alpha1, num.segments),
                                             datum = x$datum, iterations=100L)
@@ -110,19 +114,18 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
       inter.locations <- cbind(inter.locations,
                                p=rep(need.int, times=num.segments))
 
-      # insert the new locations in the existing locations
+      # insert the new locations within the existing locations
       lst.x.grad <- lapply(seq_len(nrow(mat.x.grad)),
                            function(i) mat.x.grad[i, ])
       lst.x.grad[need.int]  <- lapply(need.int, function(i) {
         rbind(lst.x.grad[[i]],
-              inter.locations[inter.locations[,"p"]==i,
-                              c(1,2)])
+              inter.locations[inter.locations[, "p"]==i, c(1,2)])
         })
 
       res.matrix <- do.call(rbind, lst.x.grad)
-      x <- structure(c(lapply(seq_len(ncol(res.matrix)),
-                              function(i) res.matrix[, i]),
-                       epsg = x$epsg, datum = x$datum,
+      res.lst <- lapply(seq_len(ncol(res.matrix)), function(i) res.matrix[, i])
+      names(res.lst) <- coords
+      x <- structure(c(res.lst, epsg = x$epsg, datum = x$datum,
                        dimension = x$dimension), class = "sgs_points")
 
     }

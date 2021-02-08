@@ -92,8 +92,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   coords <- c("x", "y")
   if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
 
-    p1 <- as.matrix(x[, coords, drop=TRUE])
-    p2 <- as.matrix(y[, coords, drop=TRUE])
+    p1 <- matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
+    p2 <- matrix(unlist(y[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
 
     if (by.element) {
       bng.distance(p1, p2, grid.true.distance, default.simpson)
@@ -113,8 +113,10 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 
   } else {
 
-    p1 <- as.matrix(x[, coords, drop=TRUE] / RAD.TO.GRAD)
-    p2 <- as.matrix(y[, coords, drop=TRUE] / RAD.TO.GRAD)
+    p1 <- matrix(unlist(x[coords], use.names = FALSE),
+                 ncol = 2, byrow = FALSE) / RAD.TO.GRAD
+    p2 <- matrix(unlist(y[coords], use.names = FALSE),
+             ncol = 2, byrow = FALSE) / RAD.TO.GRAD
 
     if (by.element) {
 

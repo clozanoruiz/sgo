@@ -271,7 +271,7 @@ sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 
   lst <- lapply(seq_len(ncol(x)), function(i) x[, i])
   names(lst) <- colnames(x)
-  sgs_points(lst, coords=coords, epsg=epsg)
+  sgs_points(lst, coords = coords, epsg = epsg)
 
 }
 
@@ -352,25 +352,42 @@ as.data.frame.sgs_points <- function(x, ...) {
 
 #TODO (docs?)
 #' @export
-print.sgs_points <- function(x, ..., n=10) {
+print.sgs_points <- function(x, ..., n = 6L) {
 
-  #len.coords <- length(x$x)
-  if (length(x$x) > 6) {
-    "showing only the first elements... or just add  an ellipsis after the 6 coordinates"
+  len <- length(x$x)
+  if (n >= len) {
+    msg <- ""
+    n <- len
+  } else {
+    msg <- paste("\nFirst", n, "features:")
   }
 
-  cat("EPSG:", x$epsg, "\n",
-      x$x, x$y)
+  # print coordinates always last
+  if (x$dimension == "XY") {
+    coords <- c("x", "y")
+  } else {
+    coords <- c("x", "y", "z")
+  }
+  print.cols <- c(setdiff(names(x), sgs_points.core), coords)
 
-  f = format(x, ..., width = width)
-  message(f)
-  invisible(f)
+  num.fields <- length(print.cols) - ifelse(x$dimension == "XY", 2L, 3L)
+  cat("An sgs object with", n, ifelse(n == 1L,
+                                      "feature (point)", "features (points)"),
+      "and", num.fields, ifelse(num.fields == 1L, "field", "fields"),
+      "\ndimension:", x$dimension,
+      "\nEPSG:     ", x$epsg,
+      msg, "\n")
+
+  print.data.frame(as.data.frame(lapply(x[print.cols], function(l) l[1:n])))
+  #invisible(x)
 
 }
 
 #TODO
-#implement plot
-#chamge all internall calls to sgs_points( to a 'structure'
+#perhaps all inetrnal calls to sgs_bng_lonlat, sgs_lonlat_bng, etc that pass the whole object: we could just pass 'structure(x[sgs_points.core], class=class(x))' to avoid passing BIG objects in memory...
+
+#all functions that return structure(...) should try to return first any aditional columns and then the coordinates!
+
 #test transform function with extra arguments(like ODN.datum... to see if the new columns are maintaned through the conversions)
 #test that always, all sgs_points objects contain at least the (5-6) core columns
 

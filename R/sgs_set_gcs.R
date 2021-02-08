@@ -109,14 +109,18 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   if (epsgs[epsgs[, "epsg"]==to, "dimension"] != "XYZ") {
     new.lonlat <- new.lonlat[1:2]
-    coords <- c("x", "y")
+    dimension <- "XY"
   } else {
-    coords <- c("x", "y", "z")
+    dimension <- "XYZ"
   }
 
   # return sgs_points object
-  if (num.elements > 0) new.lonlat <- c(x[additional.elements], new.lonlat)
-  sgs_points(new.lonlat, coords=coords, epsg=to)
+  if (num.elements > 0)
+    new.lonlat <- c(x[additional.elements], new.lonlat)
+
+  structure(c(new.lonlat, epsg=to, datum=epsgs[epsgs$epsg==to, "datum"],
+              dimension=dimension),
+            class="sgs_points")
 
 }
 
@@ -272,7 +276,10 @@ sgs_lonlat_cart.sgs_points <- function(x) {
   if (num.elements > 0)
     cartesian <- c(x[additional.elements], cartesian)
 
-  sgs_points(cartesian, coords=c("x", "y", "z"), epsg=to.epsg)
+  structure(c(cartesian, epsg=to.epsg,
+              datum=epsgs[epsgs$epsg==to.epsg, "datum"],
+              dimension="XYZ"),
+            class="sgs_points")
 
 }
 
@@ -325,6 +332,9 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   if (num.elements > 0)
     lonlat <- c(x[additional.elements], lonlat)
 
-  sgs_points(lonlat, coords=c("x", "y", "z"), epsg=to.epsg)
+  structure(c(lonlat, epsg=to.epsg,
+              datum=epsgs[epsgs$epsg==to.epsg, "datum"],
+              dimension="XYZ"),
+            class="sgs_points")
 
 }

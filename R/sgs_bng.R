@@ -152,12 +152,12 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
     } else {
       en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
     }
-    coords <- c("x", "y", "z")
     epsg <- 7405
+    dimension <- "XYZ"
   } else {
     en <- list(x=e, y=n)
-    coords <- c("x", "y")
     epsg <- 27700
+    dimension <- "XY"
   }
   if (OSTN && out.of.bounds) {
     warning("There are points outside of the OSTN15 rectangle")
@@ -166,7 +166,9 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
   if (num.elements > 0)
     en <- c(x[additional.elements], en)
 
-  sgs_points(en, coords=coords, epsg=epsg)
+  structure(c(en, epsg=epsg, datum=epsgs[epsgs$epsg==epsg, "datum"],
+              dimension=dimension),
+            class="sgs_points")
 
 }
 

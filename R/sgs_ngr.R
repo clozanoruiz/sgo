@@ -147,7 +147,9 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
     lst <- c(old.x[!names(old.x) %in% col],
              list(x=as.numeric(e), y=as.numeric(n)))
   }
-  sgs_points(lst, coords=c("x", "y"), epsg=27700)
+  structure(c(lst, epsg=27700, datum=epsgs[epsgs$epsg==27700, "datum"],
+              dimension="XY"),
+            class="sgs_points")
 
 }
 
@@ -280,7 +282,7 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
   #return
   ngr <- list(ngr=paste0(let.pair, " ", e, " ", n))
   if (num.elements > 0) {
-    return (c(x[, additional.elements, drop=TRUE], ngr))
+    return (c(x[additional.elements], ngr))
   } else { return (ngr) }
 
 }
