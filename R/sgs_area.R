@@ -66,6 +66,9 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
   } else {
 
+    # Don't need all the extra columns it might have
+    x <- structure(x[c(coords, sgs_points.attr)], class = "sgs_points")
+
     # Geodetic area
     # 1- transform to BNG (which is conformal: keeps angles - and shapes)
     # we could also just use a mercator transformation

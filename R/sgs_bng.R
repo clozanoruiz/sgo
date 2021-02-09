@@ -164,7 +164,7 @@ sgs_lonlat_bng.sgs_points <- function(x, OSTN=TRUE, ODN.datum=TRUE) {
   }
 
   if (num.elements > 0)
-    en <- c(x[additional.elements], en)
+    en <- c(en, x[additional.elements])
 
   structure(c(en, epsg=epsg, datum=epsgs[epsgs$epsg==epsg, "datum"],
               dimension=dimension),

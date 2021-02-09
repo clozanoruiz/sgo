@@ -55,6 +55,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
   if (is.null(to)) stop("Parameter 'to' must be specified")
   if (x$epsg==to) return(x)
 
+  coords <- if (x$dimension == "XYZ") c("x", "y", "z") else c("x", "y")
+  core.elements <- c(coords, sgs_points.attr)
+
+  additional.elements <- !names(x) %in% core.elements
+  num.elements <- sum(additional.elements, na.rm=TRUE)
+  lst.additional.elements <- x[additional.elements]
+
+  # Don't need all the extra columns it might have while doing calculations
+  if (num.elements > 0)
+    x <- structure(x[core.elements], class = "sgs_points")
+
   input.args <- c(list(x=x), list(...))
   input.args <- input.args[unique(names(input.args))] # remove repeated args
 
@@ -72,7 +83,14 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
     input.args$x <- do.call(func, args)
   }
 
-  input.args$x
+  # Return sgs_points
+  ret <- input.args$x
+  if (num.elements > 0) {
+    ret.coords <- if (ret$dimension == "XYZ") c("x", "y", "z") else c("x", "y")
+    ret <- structure(c(ret[ret.coords], lst.additional.elements,
+                       ret[sgs_points.attr]), class = "sgs_points")
+  }
+  ret
 
 }
 

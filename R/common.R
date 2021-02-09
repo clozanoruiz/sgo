@@ -38,6 +38,7 @@ epsgs <- data.frame(epsg=c(4258, 4937, 4936, 3035,
 
 
 # Vector with all the main elements a sgs_points object contains
+sgs_points.attr <- c("epsg", "datum", "dimension")
 sgs_points.core <- c("x", "y", "z", "epsg", "datum", "dimension")
 
 coordinates.names <- cbind(x=c("x", "lon", "longitude", "e", "easting"),

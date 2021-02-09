@@ -73,11 +73,17 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   coord.format <- epsgs[epsgs[, "epsg"]==x$epsg, "format"] # ll, c or en
 
-  additional.elements <- !names(x) %in% sgs_points.core
+  names.in.core <- names(x) %in% sgs_points.core
+  additional.elements <- !names.in.core
   num.elements <- sum(additional.elements, na.rm=TRUE)
+  lst.additional.elements <- x[additional.elements]
 
   to.datum <- epsgs[epsgs[, "epsg"]==to, "datum"]
   transform <- NULL
+
+  # Don't need all the extra columns it might have while doing calculations
+  if (num.elements > 0)
+    x <- structure(x[names.in.core], class = "sgs_points")
 
   if (x$datum == "ETRS89") {
     # converting from ETRS89
@@ -116,7 +122,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   # return sgs_points object
   if (num.elements > 0)
-    new.lonlat <- c(x[additional.elements], new.lonlat)
+    new.lonlat <- c(new.lonlat, lst.additional.elements)
 
   structure(c(new.lonlat, epsg=to, datum=epsgs[epsgs$epsg==to, "datum"],
               dimension=dimension),
@@ -128,7 +134,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 # Converts from geodetic longitude/latitude coordinates to geocentric
 # cartesian (x/y/z) coordinates.
 #' @noRd
-#' @param points A sgs_points object.
+#' @param points A sgs_points object, or classless list with the same elements.
 lonlat_to_cartesian <- function(points) {
 
   datum <- points$datum
@@ -270,11 +276,11 @@ sgs_lonlat_cart.sgs_points <- function(x) {
   additional.elements <- !names(x) %in% sgs_points.core
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  cartesian <- lonlat_to_cartesian(x)
+  cartesian <- lonlat_to_cartesian(x[sgs_points.core])
 
   # return sgs_points object
   if (num.elements > 0)
-    cartesian <- c(x[additional.elements], cartesian)
+    cartesian <- c(cartesian, x[additional.elements])
 
   structure(c(cartesian, epsg=to.epsg,
               datum=epsgs[epsgs$epsg==to.epsg, "datum"],
@@ -330,7 +336,7 @@ sgs_cart_lonlat.sgs_points <- function(x) {
 
   # return sgs_points object
   if (num.elements > 0)
-    lonlat <- c(x[additional.elements], lonlat)
+    lonlat <- c(lonlat, x[additional.elements])
 
   structure(c(lonlat, epsg=to.epsg,
               datum=epsgs[epsgs$epsg==to.epsg, "datum"],

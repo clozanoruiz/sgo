@@ -33,10 +33,11 @@ of the following values:
 }
 \value{
 An object of class \code{sgs_points}. This object is a actually a list with
-5 elements:
+class \code{sgs_points} and 5 or 6 elements:
 \itemize{
 \item\code{x}: A numeric vector containing easting or longitude coordinates.
 \item\code{y}: A numeric vector with northing or latitude coordintes.
+\item\code{z}: A numeric vector with height values when the object is 3D.
 \item\code{epsg}: A scalar value with the EPSG code of the current
 Geographic Coordinate System (GCS).
 \item\code{datum}: A string describing the geodetic datum that defines the
@@ -129,10 +130,10 @@ p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
 
 \dontrun{
 library(maps)
-map('world', regions=('uk'))
-points(x=p1$longitude, y=p1$latitude, pch=0, col="green")
-points(x=p2$lon, y=p2$lat, pch=0, col="blue")
-points(x=p4$lon, y=p4$lat, pch=0, col="red")
+map('world', regions=('uk'), xlim=c(-9, 0), ylim=c(54.5, 60.9))
+points(x=p1$x, y=p1$y, pch=0, col="green") #Stirling
+points(p4, pch=0, col="red")
+text(p4, labels=p4$n, pos=1, cex=0.9)
 }
 }
 \seealso{

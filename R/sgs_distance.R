@@ -30,7 +30,7 @@
 #' a millimetre. If such accuracy is not needed, \code{which} can also
 #' accept the string "Harvesine" which calculates great-circle distance between
 #' two points on a sphere. Harvesines are faster to compute than the Vicenty
-#' dsitances but can result in an error of up to 0.5%.
+#' dsitances but can result in an error of up to 0.5\%.
 #'
 #' When working with planar coordinates the Local Scale Factor is the scale
 #' distortion inherent in the map projection at a point. When

@@ -87,7 +87,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
 
   # Return values
   en <- list(x=E, y=N)
-  if (num.elements > 0) en <- c(x[additional.elements], en)
+  if (num.elements > 0) en <- c(en, x[additional.elements])
 
   structure(c(en, epsg=3035, datum=epsgs[epsgs$epsg==3035, "datum"],
               dimension="XY"),
@@ -189,7 +189,7 @@ sgs_laea_etrs.sgs_points <- function(x) {
   xy <- list(x=round(lambda * RAD.TO.GRAD, 7),
              y=round(phi * RAD.TO.GRAD, 7))
   if (num.elements > 0)
-    xy <- c(x[additional.elements], xy)
+    xy <- c(xy, x[additional.elements])
 
   structure(c(xy, epsg=4258, datum=epsgs[epsgs$epsg==4258, "datum"],
               dimension="XY"),
