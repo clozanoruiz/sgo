@@ -118,7 +118,8 @@ p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
 lon <- c(-4.25181,-3.18827)
 lat <- c(55.86424, 55.95325)
 p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#p3 will fill up the list 'desc' up to 2 elements with NA's:
+#p3 will fill up the list 'desc' with NA's to have the same number of
+#elements as coordinates in the list:
 p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"),
                  coords=c("longitude", "latitude"), epsg=4326)
 # dataframe:

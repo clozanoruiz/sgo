@@ -22,7 +22,7 @@ Value of the area in squared metres round up to the first decimal.
 \description{
 Calculates the planar area for a set of points defined in the OS BNG or
 ETRS89-LAEA. An accurate approximation of the geodetic area is calculated
-when entered points are expressed in angular coordinates.
+when points are expressed in angular coordinates.
 }
 \details{
 Calculate areas using the Gauss's area formula
@@ -39,8 +39,8 @@ To reduce the error introduced by boundary simplification and provide an
 even more accurate area computation for angular coordinates, the boundary
 segments can be divided by interpolating vertices on the projected geodesic.
 For instance, if \code{interpolate = 500} then any segment between adjacent
-coordinates whose length is greater then \code{interpolate} will be split in
-parts no greater than \code{500 m} and new vertices will be calculated.
+coordinates whose length is greater than \code{interpolate} will be split in
+parts no greater than \code{500 m} and new vertices will be added.
 }
 \examples{
 lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,

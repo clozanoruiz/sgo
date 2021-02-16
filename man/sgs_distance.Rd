@@ -55,7 +55,7 @@ distortion inherent in the map projection at a point. When
 \code{grid.true.distance} is \code{FALSE} the Euclidean distance in the
 plane is calculated. When it is \code{TRUE} the function computes a line
 scale factor using Simpson's Rule to achieve greater accuracy and
-approximate the distance to the tru geodesic distance.
+approximate the distance to the true geodesic distance.
 }
 \examples{
 p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)

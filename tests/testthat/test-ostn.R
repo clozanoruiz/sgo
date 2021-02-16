@@ -266,6 +266,8 @@ test_that("Out of range conditions and comparison with Helmert", {
     "outside of the OSTN15 rectangle")
   expect_true(all(OSTN.coords == sgs_coordinates(sgs_lonlat_bng(
     sgs_points(list(-10, 55), epsg=4258), OSTN = FALSE))))
+  expect_warning(sgs_bng_lonlat(sgs_points(list(-111093, 596584), epsg=27700)),
+    "outside of the OSTN15 rectangle") #BNG to Lon/Lat (-10, 55)
 
   #In the White Sea, NW Russia
   expect_warning(OSTN.coords <- sgs_coordinates(
@@ -339,4 +341,41 @@ test_that("Boundaries of OSTN15 rectangle (edge and at sea)", {
   expect_true(all(sgs_coordinates(sgs_lonlat_bng(sgs_bng_lonlat(
     sgs_ngr_bng("SW 910150")))) == c(191000.000, 15000.000)))
 
+})
+
+test_that("Input and internal conversions checks in BNG routines", {
+
+  ## sgs_lonlat_bng
+
+  expect_error(sgs_lonlat_bng(sgs_points(list(77360, 895710), epsg=27700)),
+               "This routine only only accepts Geodetic Coordinate Systems")
+
+  #Internal (3D) conversion WGS84 to ETRS89
+  expect_true(sgs_bng_ngr(sgs_lonlat_bng(sgs_points(
+    list(-5.003508, 56.79685, 1345), epsg=4979), to=7405),
+    digits = 6) == "NN 166 712")
+
+  #Warning from 2D to 3D
+  expect_warning(sgs_lonlat_bng(sgs_points(list(-5.003508, 56.79685),
+                                           epsg=4326),to=7405),
+                 "Converted from 2D to 3D thus heights default to 0")
+
+
+  ## sgs_bng_lonlat:
+
+  expect_error(sgs_bng_lonlat(sgs_points(
+    list(-5.003508, 56.79685, 1345), epsg=4979), to=4258),
+  "This routine only supports BNG Easting and Northing entries")
+
+  expect_error(sgs_bng_lonlat(sgs_points(list(651409.903, 313177.270),
+                                         epsg=27700), to=3857),
+               "This routine only supports converting to polar coordinates")
+
+  #Warning from 2D to 3D
+  expect_warning(sgs_bng_lonlat(sgs_points(list(651409.903, 313177.270),
+                                           epsg=27700), to=4937),
+                 "Converted from 2D to 3D thus heights default to 0")
+
+ #ostn.at.shifts
+ #all.is.na
 })

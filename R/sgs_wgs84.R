@@ -36,7 +36,7 @@ sgs_wgs84_en <- function(x, to=3857) UseMethod("sgs_wgs84_en")
 sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 
   if (!x$epsg %in% c(4326, 4979, 4258, 4937))
-    stop("This routine only supports WGS84 or ETRS89 polar entries.")
+    stop("This routine only supports WGS84 or ETRS89 polar entries")
 
   if(to != 3857)
     stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")

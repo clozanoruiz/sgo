@@ -341,10 +341,12 @@ sgs_coordinates.sgs_points <- function(x) {
 
   if(x$dimension == "XY") {
     coords <- sgs_points.2d.coords
+    cols <- 2
   } else  {
     coords <- sgs_points.3d.coords
+    cols <- 3
   }
-  matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
+  matrix(unlist(x[coords], use.names = FALSE), ncol = cols, byrow = FALSE,
          dimnames = list(NULL, coords))
 
 }

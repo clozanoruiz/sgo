@@ -5,25 +5,30 @@
 \alias{sgs_lonlat_bng}
 \title{GCS to BNG Easting/Northing}
 \usage{
-sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=TRUE)
+sgs_lonlat_bng(x, to=27700, OSTN=TRUE, ODN.datum=FALSE)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object with coordinates defined in a Geodetic
 Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
 4326, 4979 or 4277)}
 
+\item{to}{Specifies the EPSG code to convert the coordinates to. It can only
+take the following values: \code{27700} or \code{7405}.}
+
 \item{OSTN}{Logical variable indicating whether use OSTN15 transformation
 when TRUE or a less accurate but slightly faster single Helmert
 transformation when FALSE.}
 
-\item{ODN.datum}{Logical variable. When TRUE, a new column will be added to
-the result indicating the ODN datum used on each point. It is ignored when
-\code{OSTN=FALSE}.}
+\item{ODN.datum}{Logical variable. When TRUE, and the output contains a
+column with heights, then a new column is added to the result indicating the
+ODN datum used on each point. It is ignored when \code{OSTN=FALSE} or data
+doesn't contain 3D points.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
 Easting/Northing (epsg=27700 or 7405). They are adjusted to the SW corner of
-1m grid square.
+1m grid square. If \code{ODN.datum=TRUE} a column named \code{gf} (geoid
+datum flag) is added to the resulting object.
 }
 \description{
 Converts a geodetic coordinate system to BNG (projected) Easting/Northing
@@ -37,8 +42,8 @@ The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 ETRS89 for longitude/latitude coordinates. Thus, \code{x} should be defined
 as ETRS89 (or WGS84) most of the times.
 
-When transforming from EPSG=4277 any height included in the input will be
-simply discarded.
+Note: When transforming from EPSG=4277 any height included in the input
+will be simply discarded (see \code{\link{sgs_points}}).
 
 According to the Transformations and OSGM15 User Guide, p. 8:
 \emph{"...ETRS89 is a precise version of the better known WGS84 reference

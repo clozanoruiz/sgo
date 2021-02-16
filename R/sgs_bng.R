@@ -170,7 +170,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
       }
     } else {
       en <- list(x=e, y=n, z=rep(0, length(e)))
-      warning("Converted from Lon/Lat to E/N with heights default to 0")
+      warning("Converted from 2D to 3D thus heights default to 0")
     }
   } else {
     en <- list(x=e, y=n)
@@ -349,7 +349,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
     } else {
       unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
                           z=rep(0, length(unprojected[, 1])))
-      warning("Converted from E/N to Lon/Lat with heights default to 0")
+      warning("Converted from 2D to 3D thus heights default to 0")
     }
   } else {
     unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
@@ -537,7 +537,10 @@ find.OSTN.shifts.at <- function(e, n, z=FALSE) {
                  out=out)
 
   # No need to continue when everything is NA
-  if (all(is.na(e))) { return (shifts) }
+  if (all(is.na(e))) {
+    shifts$out <- rep(TRUE, len.e)
+    return (shifts)
+  }
 
   # OSTN15 covers grid point (0, 0) to (700000, 1250000)
   out.of.bounds <- (e < 0 | e > 700000) |
