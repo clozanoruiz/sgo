@@ -212,12 +212,17 @@ sgs_bng_ngr <- function(x, digits=10) UseMethod("sgs_bng_ngr")
 sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
   if (!x$epsg %in% c(27700, 7405))
-    stop("This routine only supports BNG Easting and Northing entries")
+    stop("This routine only supports BNG projected coordinate system")
 
   if (digits%%2!=0 || digits>16)
     stop(paste0("Invalid precision 'digits=", digits, "'"))
 
-  core.cols <- sgs_points.core
+  x.3d <- x$dimension == "XYZ"
+  if (x.3d) {
+    core.cols <- sgs_points.3d.core
+  } else {
+    core.cols <- sgs_points.2d.core
+  }
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)

@@ -110,7 +110,8 @@
 #' lon <- c(-4.25181,-3.18827)
 #' lat <- c(55.86424, 55.95325)
 #' p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#' #p3 will fill up the list 'desc' up to 2 elements with NA's:
+#' #p3 will fill up the list 'desc' with NA's to have the same number of
+#' #elements as coordinates in the list:
 #' p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"),
 #'                  coords=c("longitude", "latitude"), epsg=4326)
 #' # dataframe:
@@ -204,8 +205,12 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   } else {
     # if other.columns contains column names from sgs_points.core, rename them
     # and warn the user about it.
-    cols.to.check <- if(dimension == "XY") c("x", "y") else c("x", "y", "z")
-    cols.to.check <- c(cols.to.check, sgs_points.attr)
+
+    if(dimension == "XY") {
+      cols.to.check <- sgs_points.2d.core
+    } else  {
+      cols.to.check <- sgs_points.3d.core
+    }
 
     to.rename <- names(other.columns) %in% cols.to.check
     names(other.columns)[to.rename] <- paste0(
@@ -214,7 +219,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     if (any(to.rename))
       warning(paste0("All columns from input data named ",
                      paste(cols.to.check, collapse = ", "),
-                     " have been rnamed (suffix '.2')"))
+                     " have been renamed appending the suffix '.2'"))
 
     # all additional columns will be expanded to contain the same number of
     # elements as coordinates in the object
@@ -307,7 +312,7 @@ sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
 sgs_points_xy.sgs_points <-function(x) {
   .Deprecated("sgs_coordinates")
 
-  coords <- c("x", "y")
+  coords <- sgs_points.2d.coords
   matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
          dimnames = list(NULL, coords))
 
@@ -334,7 +339,11 @@ sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
 #' @export
 sgs_coordinates.sgs_points <- function(x) {
 
-  coords <- if (x$dimension == "XY") c("x", "y") else c("x", "y", "z")
+  if(x$dimension == "XY") {
+    coords <- sgs_points.2d.coords
+  } else  {
+    coords <- sgs_points.3d.coords
+  }
   matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
          dimnames = list(NULL, coords))
 
@@ -370,14 +379,16 @@ print.sgs_points <- function(x, ..., n = 6L) {
   }
 
   # print coordinates always first
-  if (x$dimension == "XY") {
-    coords <- c("x", "y")
+  x.2d <- x$dimension == "XY"
+  if (x.2d) {
+    coords <- sgs_points.2d.coords
+    print.cols <- c(coords, setdiff(names(x), sgs_points.2d.core))
   } else {
-    coords <- c("x", "y", "z")
+    coords <- sgs_points.3d.coords
+    print.cols <- c(coords, setdiff(names(x), sgs_points.3d.core))
   }
-  print.cols <- c(coords, setdiff(names(x), sgs_points.core))
 
-  num.fields <- length(print.cols) - ifelse(x$dimension == "XY", 2L, 3L)
+  num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)
   cat("An sgs object with", n, ifelse(n == 1L,
                                       "feature (point)", "features (points)"),
       "and", num.fields, ifelse(num.fields == 1L, "field", "fields"),

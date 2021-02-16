@@ -4,7 +4,7 @@
 #' @description
 #' Calculates the planar area for a set of points defined in the OS BNG or
 #' ETRS89-LAEA. An accurate approximation of the geodetic area is calculated
-#' when entered points are expressed in angular coordinates.
+#' when points are expressed in angular coordinates.
 #'
 #' @name sgs_area
 #' @usage sgs_area(x, interpolate = NULL, ...)
@@ -28,8 +28,8 @@
 #' even more accurate area computation for angular coordinates, the boundary
 #' segments can be divided by interpolating vertices on the projected geodesic.
 #' For instance, if \code{interpolate = 500} then any segment between adjacent
-#' coordinates whose length is greater then \code{interpolate} will be split in
-#' parts no greater than \code{500 m} and new vertices will be calculated.
+#' coordinates whose length is greater than \code{interpolate} will be split in
+#' parts no greater than \code{500 m} and new vertices will be added.
 #' @return
 #' Value of the area in squared metres round up to the first decimal.
 #' @references
@@ -56,7 +56,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   if (isTRUE(x$epsg %in% c(4936, 4978, 3857)))
     stop("This function doesn't support the input's EPSG")
 
-  coords <- c("x", "y")
+  coords <- sgs_points.2d.coords
 
   if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
 

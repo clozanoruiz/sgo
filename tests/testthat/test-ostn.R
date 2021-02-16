@@ -14,7 +14,16 @@ library(sgs)
 # 0.1 d = 11 km; 0.01 d = 1.1km; 0.0000001 = 1cm
 # 1/1100000000. Correctness threshold defined as a hundreth of  a milimeter.
 
-threshold <- c(1/650000000, 1/1100000000)
+# Heights from BNG to Lat/Lon are returned with 4 decimals. The round()
+# function in R follows the  the IEC 60559 standard, which means that for
+# rounding off a 5, the IEC 60559 standard (see also ‘IEEE 754’) is expected to
+# be used, ‘go to the even digit’.
+# A few of the testing heights that fall in that category wouldn't match to the
+# 4th decimal, that's why we set the threshold as < 0.00015 (although the
+# resulsts should be accurate up to the mm).
+
+threshold    <- c(1/650000000, 1/1100000000)
+threshold.3d <- c(1/650000000, 1/1100000000, 0.00015)
 
 test_that("OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
 
@@ -39,6 +48,39 @@ test_that("OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
 
 })
 
+test_that("3D OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
+
+  file.in <- file.path(getwd(), "OSTN15_OSGM15_TestInput_ETRStoOSGB.txt")
+  ostn.in <- read.csv(file.in, stringsAsFactors = FALSE)
+  points.in <- sgs_points(ostn.in,
+               coords=c("ETRS.Longitude", "ETRS89.Latitude", "ETRS.Height"),
+               epsg=4937)
+
+  pointsgf.out <- as.data.frame(sgs_lonlat_bng(points.in, to=7405, OSTN=TRUE,
+                                               ODN.datum=TRUE),
+                              stringsAsFactors = FALSE)
+  points.out <- as.data.frame(sgs_lonlat_bng(points.in, to=7405, OSTN=TRUE),
+                              stringsAsFactors = FALSE)
+  pointsTgf.out <- as.data.frame(sgs_transform(points.in, to=7405, OSTN=TRUE,
+                                               ODN.datum=TRUE),
+                                 stringsAsFactors = FALSE)
+  pointsT.out <- as.data.frame(sgs_transform(points.in, to=7405, OSTN=TRUE,
+                                             ODN.datum=FALSE),
+                               stringsAsFactors = FALSE)
+
+  file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_ETRStoOSGB.txt")
+  ostn.out <- read.csv(file.out,
+                       stringsAsFactors = FALSE)[c("OSGBEast", "OSGBNorth",
+                                                   "ODNHeight",
+                                                   "OSGBDatumFlag", "PointID")]
+
+  expect_true(all(pointsgf.out == ostn.out))
+  expect_true(all(points.out == ostn.out[-4]))
+  expect_true(all(pointsTgf.out == ostn.out))
+  expect_true(all(pointsT.out == ostn.out[-4]))
+
+})
+
 test_that("OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
 
   file.in <- file.path(getwd(), "OSTN15_OSGM15_TestInput_OSGBtoETRS.txt")
@@ -57,8 +99,58 @@ test_that("OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
   ostn.out <- ostn.out[ostn.out$Iteration.No..RESULT == "RESULT",
                        c("PointID", "ETRSNorth.Long", "ETRSEast.Lat")]
 
-  expect_true(all(abs(points.out[, 2:3] - ostn.out[, 2:3]) < threshold))
-  expect_true(all(abs(pointsT.out[, 2:3] - ostn.out[, 2:3]) < threshold))
+  # We are checking the dataframe against a vector!! The default way would
+  # reuse the threshold vector by column. By using sweep we compare each
+  # element of the vector against each column.
+  #expect_true(all(abs(points.out[, 2:3] - ostn.out[, 2:3]) < threshold))WRONG
+  #expect_true(all(abs(pointsT.out[, 2:3] - ostn.out[, 2:3]) < threshold))WRONG
+  expect_true(all(sweep(abs(points.out[, 2:3] - ostn.out[, 2:3]),
+                        2, threshold, "<")))
+  expect_true(all(sweep(abs(pointsT.out[, 2:3] - ostn.out[, 2:3]),
+                        2, threshold, "<")))
+
+})
+
+test_that("3D OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
+
+  file.in <- file.path(getwd(), "OSTN15_OSGM15_TestInput_OSGBtoETRS.txt")
+  ostn.in <- read.csv(file.in, stringsAsFactors = FALSE)
+  points.in <- sgs_points(ostn.in,
+                          coords=c("OSGB36.Eastings", "OSGB36.Northing",
+                                   "Ortho.Height"),
+                          epsg=7405)
+
+  pointsgf.out <- as.data.frame(sgs_bng_lonlat(points.in, to=4937, OSTN=TRUE,
+                                               ODN.datum=TRUE),
+                              stringsAsFactors = FALSE)
+  points.out <- as.data.frame(sgs_bng_lonlat(points.in, to=4937, OSTN=TRUE),
+                              stringsAsFactors = FALSE)
+  pointsTgf.out <- as.data.frame(sgs_transform(points.in, to=4937, OSTN=TRUE,
+                                               ODN.datum=TRUE),
+                                 stringsAsFactors = FALSE)
+  pointsT.out <- as.data.frame(sgs_transform(points.in, to=4937,
+                                             ODN.datum=FALSE),
+                               stringsAsFactors = FALSE)
+
+  file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_OSGBtoETRS.txt")
+  ostn.out <- read.csv(file.out, stringsAsFactors = FALSE)
+  ostn.out <- ostn.out[ostn.out$Iteration.No..RESULT == "RESULT",
+                       c("ETRSNorth.Long", "ETRSEast.Lat",
+                         "ETRSHeight","OSGBDatumFlag", "PointID")]
+
+  #coordinates
+  expect_true(all(sweep(abs(pointsgf.out[, 1:3] - ostn.out[, 1:3]),
+                        2, threshold.3d, "<")))
+  expect_true(all(sweep(abs(points.out[, 1:3] - ostn.out[, 1:3]),
+                        2, threshold.3d, "<")))
+  expect_true(all(sweep(abs(pointsTgf.out[, 1:3] - ostn.out[, 1:3]),
+                        2, threshold.3d, "<")))
+  expect_true(all(sweep(abs(pointsT.out[, 1:3] - ostn.out[, 1:3]),
+                        2, threshold.3d, "<")))
+
+  #gf
+  expect_true(all(pointsgf.out[4] == ostn.out[4]))
+  expect_true(all(pointsTgf.out[4] == ostn.out[4]))
 
 })
 
@@ -96,7 +188,7 @@ out.n <- c(
   433818.701, 468847.388, 470703.214, 495254.887, 556034.761, 565012.703,
   664697.269, 670947.534, 797067.144, 805349.736, 846176.972, 899448.996,
   938516.404, 966483.780, 967202.992,1017347.016,1025447.602,1029604.114,
-  1072147.239,1107878.448,1138728.951)
+  1072147.239, 1107878.448, 1138728.951)
 
 lat <- c(49.96006137820, 50.43885825610, 50.57563665000 ,50.93127937910,
          51.40078220140, 51.37447025550, 51.42754743020, 51.48936564950,
@@ -131,7 +223,7 @@ test_that("OS E/N to Lon/Lat", {
   array_of_xy <- sgs_coordinates(sgs_bng_lonlat(sgs_points(list(e, n),
                                                          epsg=27700)))
   array_of_substractions <- abs(array_of_xy - cbind(lon, lat))
-  expect_true(all(sweep(array_of_substractions, 2, threshold, FUN="<")))
+  expect_true(all(sweep(array_of_substractions, 2, threshold, "<")))
 
 })
 

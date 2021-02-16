@@ -34,7 +34,13 @@ sgs_etrs_laea.sgs_points <- function(x) {
   if (x$epsg == 4936)
     x <- sgs_cart_lonlat(x)
 
-  core.cols <- sgs_points.core
+  x.3d <- x$dimension == "XYZ"
+  if (x.3d) {
+    core.cols <- sgs_points.3d.core
+  } else {
+    core.cols <- sgs_points.2d.core
+  }
+
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
@@ -89,9 +95,9 @@ sgs_etrs_laea.sgs_points <- function(x) {
   en <- list(x=E, y=N)
   if (num.elements > 0) en <- c(en, x[additional.elements])
 
-  structure(c(en, epsg=3035, datum=epsgs[epsgs$epsg==3035, "datum"],
-              dimension="XY"),
-            class="sgs_points")
+  structure(c(en, epsg = 3035, datum = epsgs[epsgs$epsg == 3035, "datum"],
+              dimension = "XY"),
+            class = "sgs_points")
 
 }
 
@@ -128,7 +134,7 @@ sgs_laea_etrs.sgs_points <- function(x) {
   if (x$epsg != 3035)
     stop("This routine only supports coordinates in EPSG:3035.")
 
-  core.cols <- sgs_points.core
+  core.cols <- sgs_points.2d.core
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
@@ -191,8 +197,8 @@ sgs_laea_etrs.sgs_points <- function(x) {
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 
-  structure(c(xy, epsg=4258, datum=epsgs[epsgs$epsg==4258, "datum"],
-              dimension="XY"),
-            class="sgs_points")
+  structure(c(xy, epsg = 4258, datum = epsgs[epsgs$epsg == 4258, "datum"],
+              dimension = "XY"),
+            class = "sgs_points")
 
 }
