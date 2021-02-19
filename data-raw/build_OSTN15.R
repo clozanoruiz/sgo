@@ -11,8 +11,8 @@
 file <- "./data-raw/OSTN15_OSGM15_DataFile.txt"
 OSTN15 <- read.csv(file)
 
-ostn_shifts <- data.matrix(OSTN15[c("ETRS89_OSGB36_EShift", "ETRS89_OSGB36_NShift", "ETRS89_ODN_HeightShift", "Height_Datum_Flag")])
-colnames(ostn_shifts) <- c("e", "n", "g", "f")
+.ostn.shifts <- data.matrix(OSTN15[c("ETRS89_OSGB36_EShift", "ETRS89_OSGB36_NShift", "ETRS89_ODN_HeightShift", "Height_Datum_Flag")])
+colnames(.ostn.shifts) <- c("e", "n", "g", "f")
 
-save(ostn_shifts, file = "./R/sysdata.rda", compress = "xz")
+save(.ostn.shifts, file = "./R/sysdata.rda", compress = "xz")
 #load(file = "./R/sysdata.rda")

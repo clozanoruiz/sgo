@@ -42,9 +42,9 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
     stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
 
   if (x$dimension == "XY") {
-    core.cols <- sgs_points.2d.core
+    core.cols <- .sgs_points.2d.core
   } else {
-    core.cols <- sgs_points.3d.core
+    core.cols <- .sgs_points.3d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -67,7 +67,7 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
   if (num.elements > 0)
     en <- c(en, x[additional.elements])
 
-  structure(c(en, epsg = to, datum = epsgs[epsgs$epsg == to, "datum"],
+  structure(c(en, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
               dimension = "XY"),
             class = "sgs_points")
 
@@ -109,7 +109,7 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   if(to != 4326)
     stop("This routine only supports converting to EPSG:4326")
 
-  core.cols <- sgs_points.2d.core
+  core.cols <- .sgs_points.2d.core
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -133,7 +133,7 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 
-  structure(c(xy, epsg=to, datum=epsgs[epsgs$epsg==to, "datum"],
+  structure(c(xy, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
               dimension="XY"),
             class="sgs_points")
 

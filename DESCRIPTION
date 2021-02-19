@@ -21,7 +21,6 @@ LazyData: true
 RoxygenNote: 7.1.0
 Collate: 
     'common.R'
-    'sgs-deprecated.R'
     'sgs.R'
     'sgs_area.R'
     'sgs_bng.R'

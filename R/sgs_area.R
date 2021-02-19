@@ -56,18 +56,18 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   if (isTRUE(x$epsg %in% c(4936, 4978, 3857)))
     stop("This function doesn't support the input's EPSG")
 
-  coords <- sgs_points.2d.coords
+  coords <- .sgs_points.2d.coords
 
-  if(isTRUE(epsgs[epsgs$epsg == x$epsg, "type"] == "PCS")) {
+  if(isTRUE(.epsgs[.epsgs$epsg == x$epsg, "type"] == "PCS")) {
 
     # Planar area (27700, 7405, 3035)
-    planar.area(matrix(unlist(x[coords], use.names = FALSE), ncol = 2,
-                       byrow = FALSE))
+    .planar.area(matrix(unlist(x[coords], use.names = FALSE), ncol = 2,
+                        byrow = FALSE))
 
   } else {
 
     # Don't need all the extra columns it might have
-    x <- structure(x[c(coords, sgs_points.attr)], class = "sgs_points")
+    x <- structure(x[c(coords, .sgs_points.attr)], class = "sgs_points")
 
     # Geodetic area
     # 1- transform to BNG (which is conformal: keeps angles - and shapes)
@@ -75,8 +75,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
 
     # 2- calculate centroid from BNG points and convert back to lonlat
-    mc <- unname(moment.centroid(matrix(unlist(x.bng[coords], use.names=FALSE),
-                                        ncol = 2, byrow = FALSE)))
+    mc <- unname(.moment.centroid(matrix(unlist(x.bng[coords], use.names=FALSE),
+                                         ncol = 2, byrow = FALSE)))
     mc <- lapply(seq_len(ncol(mc)), function(i) mc[, i])
     names(mc) <- coords
     mc <- structure(c(mc, epsg = x.bng$epsg, datum = x.bng$datum,
@@ -92,8 +92,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
       x.shift.one <- rbind(mat.x[-1, ], mat.x[1, ])
 
       # calculate distances and bearings
-      vicenty <- inverse.vicenty.ellipsoid(mat.x, x.shift.one, x$datum,
-                                           iterations=300L)
+      vicenty <- .inverse.vicenty.ellipsoid(mat.x, x.shift.one, x$datum,
+                                            iterations=300L)
 
       # work only with those coordinates whose distance exceeds our threshold
       need.int <- which(vicenty$distance > interpolate)
@@ -105,12 +105,12 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
                          0, vicenty$distance[need.int], interpolate,
                          SIMPLIFY = FALSE)
 
-      # call direct.vicenty.ellipsoid to calculate inter locations
+      # call .direct.vicenty.ellipsoid to calculate inter locations
       num.segments <- lengths(segments)
       xy <- intp1[rep(seq_len(nrow(intp1)), num.segments), ]
-      d.vicenty <- direct.vicenty.ellipsoid(p1 = xy, s = unlist(segments),
-                                            alpha1 = rep(alpha1, num.segments),
-                                            datum = x$datum, iterations=100L)
+      d.vicenty <- .direct.vicenty.ellipsoid(p1 = xy, s = unlist(segments),
+                                             alpha1 = rep(alpha1, num.segments),
+                                             datum = x$datum, iterations=100L)
 
       inter.locations <- cbind(x = d.vicenty$lon, y = d.vicenty$lat) *
         RAD.TO.GRAD
@@ -135,7 +135,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
     # 4- area calculation using a region-adapted equal area projection as
     # described in Berk and Ferlan, 2018. Albers Equal-Area Conic projection
-    geod.area(x, mc)
+    .geod.area(x, mc)
 
   }
 
@@ -144,7 +144,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
 #' @noRd
 #' @param p A matrix of coordinates
-planar.area <- function(p) {
+.planar.area <- function(p) {
 
   # Translate to 0,0 to minimise losing floating point precision
   p[, 1] <- p[, 1] - min(p[, 1])
@@ -166,7 +166,7 @@ planar.area <- function(p) {
 
 #' @noRd
 #' @param p A matrix of coordinates
-moment.centroid <- function (p) {
+.moment.centroid <- function (p) {
 
   # Translate to 0,0 to minimise losing floating point precision
   min.x <- min(p[, 1])
@@ -196,7 +196,7 @@ moment.centroid <- function (p) {
 #' @noRd
 #' @param p An sgs_points object containing a set of ordered angular coordinates
 #' @param c An sgs_points object containing the coordinates of the centroid
-geod.area <- function(p, c) {
+.geod.area <- function(p, c) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==p$datum, "ellipsoid"]
   params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
@@ -234,6 +234,6 @@ geod.area <- function(p, c) {
   e <- rho * sin(theta)
   n <- rho.c - rho * cos(theta)
 
-  planar.area(cbind(e, n))
+  .planar.area(cbind(e, n))
 
 }

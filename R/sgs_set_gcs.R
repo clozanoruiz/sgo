@@ -49,7 +49,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   if (x$epsg == to) { return (x) }
 
   # Check x is a GCS (not projected)
-  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, "type"]
+  coord.system <- .epsgs[.epsgs$epsg==x$epsg, "type"]
   if (coord.system != "GCS")
     stop("This routine only only accepts Geodetic Coordinate Systems")
 
@@ -71,19 +71,19 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     return (x)
   }
 
-  coord.format <- epsgs[epsgs[, "epsg"]==x$epsg, "format"] # ll, c or en
+  coord.format <- .epsgs[.epsgs$epsg==x$epsg, "format"] # ll, c or en
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
-    names.in.core <- names(x) %in% sgs_points.3d.core
+    names.in.core <- names(x) %in% .sgs_points.3d.core
   } else {
-    names.in.core <- names(x) %in% sgs_points.2d.core
+    names.in.core <- names(x) %in% .sgs_points.2d.core
   }
   additional.elements <- !names.in.core
   num.elements <- sum(additional.elements, na.rm=TRUE)
   lst.additional.elements <- x[additional.elements]
 
-  to.datum <- epsgs[epsgs[, "epsg"]==to, "datum"]
+  to.datum <- .epsgs[.epsgs$epsg==to, "datum"]
   transform <- NULL
 
   # Don't need all the extra columns it might have while doing calculations
@@ -111,14 +111,14 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   }
 
   if (coord.format == "ll") {
-    old.cartesian <- lonlat_to_cartesian(x)
+    old.cartesian <- .lonlat_to_cartesian(x)
   } else {
     old.cartesian <- list(x=x$x, y=x$y, z=x$z)
   }
-  new.cartesian <- apply_transform(old.cartesian, transform)
-  new.lonlat <- cartesian_to_lonlat(new.cartesian, to)
+  new.cartesian <- .apply_transform(old.cartesian, transform)
+  new.lonlat <- .cartesian_to_lonlat(new.cartesian, to)
 
-  if (epsgs[epsgs[, "epsg"]==to, "dimension"] != "XYZ") {
+  if (.epsgs[.epsgs$epsg==to, "dimension"] != "XYZ") {
     new.lonlat <- new.lonlat[1:2]
     dimension <- "XY"
   } else {
@@ -129,7 +129,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   if (num.elements > 0)
     new.lonlat <- c(new.lonlat, lst.additional.elements)
 
-  structure(c(new.lonlat, epsg = to, datum = epsgs[epsgs$epsg == to, "datum"],
+  structure(c(new.lonlat, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
               dimension = dimension),
             class = "sgs_points")
 
@@ -140,7 +140,7 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 # cartesian (x/y/z) coordinates.
 #' @noRd
 #' @param points A sgs_points object, or classless list with the same elements.
-lonlat_to_cartesian <- function(points) {
+.lonlat_to_cartesian <- function(points) {
 
   datum <- points$datum
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
@@ -171,7 +171,7 @@ lonlat_to_cartesian <- function(points) {
 #' @noRd
 #' @param points A sgs_points object.
 #' @param t A dataframe with ellipsoid paramaters
-apply_transform <- function(points, t)   {
+.apply_transform <- function(points, t)   {
 
   # current points
   x1 <- points$x; y1 <- points$y; z1 <- points$z
@@ -201,12 +201,12 @@ apply_transform <- function(points, t)   {
 #' @noRd
 #' @param points A sgs_points object.
 #' @param epsg A scalar number with a EPSG code
-cartesian_to_lonlat <- function(points, epsg) {
+.cartesian_to_lonlat <- function(points, epsg) {
 
   x <- points$x
   y <- points$y
   z <- points$z
-  datum <- epsgs[epsgs[, "epsg"]==epsg, "datum"]
+  datum <- .epsgs[.epsgs$epsg==epsg, "datum"]
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, 2:5]
@@ -279,11 +279,11 @@ sgs_lonlat_cart.sgs_points <- function(x) {
   }
 
   if (x$dimension == "XY") {
-    additional.elements <- !names(x) %in% sgs_points.2d.core
-    cartesian <- lonlat_to_cartesian(x[sgs_points.2d.core])
+    additional.elements <- !names(x) %in% .sgs_points.2d.core
+    cartesian <- .lonlat_to_cartesian(x[.sgs_points.2d.core])
   } else {
-    additional.elements <- !names(x) %in% sgs_points.3d.core
-    cartesian <- lonlat_to_cartesian(x[sgs_points.3d.core])
+    additional.elements <- !names(x) %in% .sgs_points.3d.core
+    cartesian <- .lonlat_to_cartesian(x[.sgs_points.3d.core])
   }
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
@@ -292,7 +292,7 @@ sgs_lonlat_cart.sgs_points <- function(x) {
     cartesian <- c(cartesian, x[additional.elements])
 
   structure(c(cartesian, epsg = to.epsg,
-              datum = epsgs[epsgs$epsg == to.epsg, "datum"],
+              datum = .epsgs[.epsgs$epsg == to.epsg, "datum"],
               dimension = "XYZ"),
             class = "sgs_points")
 
@@ -339,21 +339,21 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   }
 
   if (x$dimension == "XY") {
-    additional.elements <- !names(x) %in% sgs_points.2d.core
+    additional.elements <- !names(x) %in% .sgs_points.2d.core
   } else {
-    additional.elements <- !names(x) %in% sgs_points.3d.core
+    additional.elements <- !names(x) %in% .sgs_points.3d.core
   }
 
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  lonlat <- cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
+  lonlat <- .cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
 
   # return sgs_points object
   if (num.elements > 0)
     lonlat <- c(lonlat, x[additional.elements])
 
   structure(c(lonlat, epsg = to.epsg,
-              datum = epsgs[epsgs$epsg == to.epsg, "datum"],
+              datum = .epsgs[.epsgs$epsg == to.epsg, "datum"],
               dimension = "XYZ"),
             class = "sgs_points")
 

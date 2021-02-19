@@ -26,11 +26,30 @@ test_that("Convert from WGS84 to Pseudo-Mercator", {
                c(2059410.58, 7208125.26), check.attributes=FALSE)
 
   # Additional elements
+  ln <- c(-4.22472, -2.09908)
+  lt <- c(57.47777, 57.14965)
+  N <- c("Inverness", "Aberdeen")
+  country <- c("Scotland", "Scotland")
+  df <- data.frame(N, ln, lt, country, stringsAsFactors = FALSE)
+  p1 <- sgs_wgs84_en(sgs_points(df, coords=c("ln", "lt"), epsg=4326))
+  e <- c(-470293.68, -233668.52)
+  n <- c(7858404.23, 7790767.54)
+  df2 <- data.frame(N, country, e, n, stringsAsFactors = FALSE)
+  p2 <- sgs_points(df2, coords=c("e", "n"), epsg=3857)
+  expect_true(all(as.data.frame(p1) == as.data.frame(p2)))
+
 })
 
 #http://epsg.io/transform#s_srs=3857&t_srs=4326
 test_that("Convert from Pseudo-Mercator to WGS84", {
   # Check inputs
+  expect_error(sgs_en_wgs84(sgs_points(list(18.5, 54.2), epsg=4326)),
+               fixed = TRUE,
+               "This routine only supports EPSG:3857 entries")
+  expect_error(sgs_en_wgs84(sgs_points(list(-533224.71, 8030168.44),
+                                       epsg=3857), to=4258),
+               fixed = TRUE,
+               "This routine only supports converting to EPSG:4326")
 
   expect_equal(sgs_coordinates(
     sgs_en_wgs84(sgs_points(list(-489196.98, 7504281.69), epsg=3857))),
@@ -43,4 +62,15 @@ test_that("Convert from Pseudo-Mercator to WGS84", {
     c(-7.5585938, 56.2189232), check.attributes=FALSE)
 
   # Additional elements
+  e <- c(-470293.68, -233668.52)
+  n <- c(7858404.23, 7790767.54)
+  N <- c("Inverness", "Aberdeen")
+  country <- c("Scotland", "Scotland")
+  df <- data.frame(N, e, n, country, stringsAsFactors = FALSE)
+  p1 <- sgs_en_wgs84(sgs_points(df, coords=c("e", "n"), epsg=3857))
+  ln <- c(-4.22472, -2.09908)
+  lt <- c(57.47777, 57.14965)
+  df2 <- data.frame(N, country, ln, lt, stringsAsFactors = FALSE)
+  p2 <- sgs_points(df2, coords=c("ln", "lt"), epsg=4326)
+  expect_true(all(as.data.frame(p1) == as.data.frame(p2)))
 })

@@ -139,21 +139,21 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   len <- length(x)
   if (len < 2) stop("This method accepts lists with at least 2 columns")
 
-  if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
+  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
   if (len < 4 && is.null(names(x)) ) {
-    coords <- coordinates.names[1, 1:len] #c(x,y,(z)) just because
+    coords <- .coordinates.names[1, 1:len] #c(x,y,(z)) just because
     names(x) <- coords
   }
 
   if(is.null(coords)) {
     lnames <- tolower(names(x))
-    known.coords <- coordinates.names[match(lnames, coordinates.names)]
+    known.coords <- .coordinates.names[match(lnames, .coordinates.names)]
     known.coords <- known.coords[!is.na(known.coords)]
     len.known <- length(known.coords)
-    if (len.known < 4 && any(apply(coordinates.names, 1,
+    if (len.known < 4 && any(apply(.coordinates.names, 1,
                                    function(n,x) all(n[1:len.known]==x),
                                    x=known.coords))) {
       coords <- names(x)[lnames %in% known.coords]
@@ -165,8 +165,8 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   num.coords <- length(coords)
 
   #check those epsgs that ONLY admit 2 and have 3, and viceversa
-  if ((epsg %in% epsgs[epsgs$dimension=="XY", "epsg"] && num.coords > 2) ||
-      (epsg %in% epsgs[epsgs$dimension=="XYZ", "epsg"] && num.coords < 3)) {
+  if ((epsg %in% .epsgs[.epsgs$dimension=="XY", "epsg"] && num.coords > 2) ||
+      (epsg %in% .epsgs[.epsgs$dimension=="XYZ", "epsg"] && num.coords < 3)) {
     stop("Wrong number of coordinates for the The specified 'epsg'")
   }
 
@@ -178,7 +178,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   dimension <- if(num.coords == 2) "XY" else "XYZ"
 
   # correct 3D EPSG 4258, 4326, 27700 if needed
-  if (epsg %in% epsgs[epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
+  if (epsg %in% .epsgs[.epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
     if (epsg == 4258) {
       epsg <- 4937
     } else if (epsg == 4326) {
@@ -207,9 +207,9 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
     # and warn the user about it.
 
     if(dimension == "XY") {
-      cols.to.check <- sgs_points.2d.core
+      cols.to.check <- .sgs_points.2d.core
     } else  {
-      cols.to.check <- sgs_points.3d.core
+      cols.to.check <- .sgs_points.3d.core
     }
 
     to.rename <- names(other.columns) %in% cols.to.check
@@ -229,7 +229,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   }
 
   structure(c(point.coords, other.columns, epsg=epsg,
-              datum=epsgs[epsgs$epsg==epsg, "datum"],
+              datum=.epsgs[.epsgs$epsg==epsg, "datum"],
               dimension=dimension),
             class="sgs_points")
 
@@ -242,14 +242,14 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
   cols <- ncol(x)
   if (cols < 2) stop("This method accepts dataframes with at least 2 columns")
 
-  if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
+  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
   # the names we apply don't matter for the rest of the function
   # when there are only 2 columns
   if (cols == 2) {
-    coords <- coordinates.names[1, 1:cols] #just because
+    coords <- .coordinates.names[1, 1:cols] #just because
     names(x) <- coords
   }
 
@@ -264,14 +264,14 @@ sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
   cols <- ncol(x)
   if (cols < 2) stop("This method accepts matrices with at least 2 columns")
 
-  if(is.null(epsg) || (!epsg %in% epsgs[, "epsg"])) {
+  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
   # the names we apply don't matter for the rest of the function
   # when there are only 2 columns
   if (cols == 2) {
-    coords <- coordinates.names[1, 1:cols] #just because
+    coords <- .coordinates.names[1, 1:cols] #just because
     colnames(x) <- coords
   }
 
@@ -312,7 +312,7 @@ sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
 sgs_points_xy.sgs_points <-function(x) {
   .Deprecated("sgs_coordinates")
 
-  coords <- sgs_points.2d.coords
+  coords <- .sgs_points.2d.coords
   matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
          dimnames = list(NULL, coords))
 
@@ -340,10 +340,10 @@ sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
 sgs_coordinates.sgs_points <- function(x) {
 
   if(x$dimension == "XY") {
-    coords <- sgs_points.2d.coords
+    coords <- .sgs_points.2d.coords
     cols <- 2
   } else  {
-    coords <- sgs_points.3d.coords
+    coords <- .sgs_points.3d.coords
     cols <- 3
   }
   matrix(unlist(x[coords], use.names = FALSE), ncol = cols, byrow = FALSE,
@@ -358,7 +358,7 @@ as.data.frame.sgs_points <- function(x, row.names = NULL, optional = FALSE,
       stringsAsFactors = default.stringsAsFactors()) {
 
   class(x) <- setdiff(class(x), "sgs_points")
-  col.names <- setdiff(col.names, sgs_points.attr)
+  col.names <- setdiff(col.names, .sgs_points.attr)
 
   as.data.frame.list(x[col.names], row.names = row.names, optional = optional,
                      ..., cut.names = cut.names, col.names = col.names,
@@ -383,11 +383,11 @@ print.sgs_points <- function(x, ..., n = 6L) {
   # print coordinates always first
   x.2d <- x$dimension == "XY"
   if (x.2d) {
-    coords <- sgs_points.2d.coords
-    print.cols <- c(coords, setdiff(names(x), sgs_points.2d.core))
+    coords <- .sgs_points.2d.coords
+    print.cols <- c(coords, setdiff(names(x), .sgs_points.2d.core))
   } else {
-    coords <- sgs_points.3d.coords
-    print.cols <- c(coords, setdiff(names(x), sgs_points.3d.core))
+    coords <- .sgs_points.3d.coords
+    print.cols <- c(coords, setdiff(names(x), .sgs_points.3d.core))
   }
 
   num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)

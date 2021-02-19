@@ -71,21 +71,21 @@ sgs_lonlat_bng <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE)
 #' @export
 sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 
-  coord.system <- epsgs[epsgs[, "epsg"]==x$epsg, c("type", "format")]
+  coord.system <- .epsgs[.epsgs$epsg==x$epsg, c("type", "format")]
   if (coord.system$type != "GCS" || coord.system$format != "ll")
     stop("This routine only only accepts Geodetic Coordinate Systems")
 
   x.3d <- x$dimension == "XYZ"
-  out.dimension <- epsgs[epsgs[, "epsg"]==to, "dimension"]
+  out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
   if (out.dimension == "XY/Z")
     out.dimension <- "XY"
 
   if (x.3d) {
-    x.coords <- sgs_points.3d.coords
-    core.cols <- sgs_points.3d.core
+    x.coords <- .sgs_points.3d.coords
+    core.cols <- .sgs_points.3d.core
   } else {
-    x.coords <- sgs_points.2d.coords
-    core.cols <- sgs_points.2d.core
+    x.coords <- .sgs_points.2d.coords
+    core.cols <- .sgs_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -97,17 +97,17 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
   if (x$datum == "WGS84") {
     if (x$epsg == 4326) {
       x$epsg <- 4258
-      x$datum <- epsgs[epsgs[, "epsg"] == 4258, "datum"]
+      x$datum <- .epsgs[.epsgs$epsg == 4258, "datum"]
     } else {
       x$epsg <- 4937
-      x$datum <- epsgs[epsgs[, "epsg"] == 4937, "datum"]
+      x$datum <- .epsgs[.epsgs$epsg == 4937, "datum"]
     }
   }
 
   if (OSTN) {
     out.of.bounds <- FALSE # as of now no coordinate out of bounds
 
-    projected <- project.onto.grid(x$x, x$y, x$datum)
+    projected <- .project.onto.grid(x$x, x$y, x$datum)
     e <- projected[, 1]
     n <- projected[, 2]
 
@@ -123,7 +123,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
     # If datum is WGS84/ETRS89, we need to adjust with OSTN15
     if (x$epsg %in% c(4258, 4937)) {
 
-      shifts <- find.OSTN.shifts.at(e, n, x.3d)
+      shifts <- .find.OSTN.shifts.at(e, n, x.3d)
       # Round to mm precision
       e <- round(e + shifts$dx, 3)
       n <- round(n + shifts$dy, 3)
@@ -135,9 +135,9 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
         out.x <- sgs_points(lapply(x[x.coords], function(el) el[shifts$out]),
                             coords = x.coords, epsg = x$epsg)
         helmert.x <- sgs_set_gcs(out.x, to = 4277)
-        helmert.projected <- project.onto.grid(helmert.x$x,
-                                               helmert.x$y,
-                                               helmert.x$datum)
+        helmert.projected <- .project.onto.grid(helmert.x$x,
+                                                helmert.x$y,
+                                                helmert.x$datum)
         e[shifts$out] <- round(helmert.projected[, 1], 0) # Round to metres
         n[shifts$out] <- round(helmert.projected[, 2], 0)
       }
@@ -151,9 +151,9 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 
     helmert.x <- sgs_set_gcs(sgs_points(x[x.coords], coords = x.coords,
                                         epsg = x$epsg), to = 4277)
-    helmert.projected <- project.onto.grid(helmert.x$x,
-                                           helmert.x$y,
-                                           helmert.x$datum)
+    helmert.projected <- .project.onto.grid(helmert.x$x,
+                                            helmert.x$y,
+                                            helmert.x$datum)
     e <- round(helmert.projected[, 1], 0) # Round to metres
     n <- round(helmert.projected[, 2], 0)
 
@@ -179,7 +179,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
   if (num.elements > 0)
     en <- c(en, x[additional.elements])
 
-  structure(c(en, epsg=to, datum=epsgs[epsgs$epsg==to, "datum"],
+  structure(c(en, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
               dimension=out.dimension),
             class="sgs_points")
 
@@ -256,14 +256,14 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
     stop("This routine only supports converting to polar coordinates")
 
   has.z <- x$dimension == "XYZ"
-  out.dimension <- epsgs[epsgs[, "epsg"]==to, "dimension"]
+  out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
   if (out.dimension == "XY/Z")
     out.dimension <- "XY"
 
   if (has.z) {
-    core.cols <- sgs_points.3d.core
+    core.cols <- .sgs_points.3d.core
   } else {
-    core.cols <- sgs_points.2d.core
+    core.cols <- .sgs_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -273,19 +273,19 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
     out.of.bounds <- FALSE # as of now no coordinate out of bounds
 
     if (to == 4277) {
-      unprojected <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
+      unprojected <- .unproject.onto.ellipsoid(x$x, x$y, x$datum)
     }
 
     if (to %in% c(4258, 4937, 4326, 4979)) {
 
-      shifts <- find.OSTN.shifts.at(x$x, x$y, has.z)
+      shifts <- .find.OSTN.shifts.at(x$x, x$y, has.z)
       e <- x$x - shifts$dx
       n <- x$y - shifts$dy
       last.shifts <- shifts
 
       for (i in c(1:20)) {
 
-        shifts <- find.OSTN.shifts.at(e, n, has.z)
+        shifts <- .find.OSTN.shifts.at(e, n, has.z)
         if (all(shifts$out) == TRUE) {
           # all coordinates have been shifted off the edge
           break
@@ -309,17 +309,17 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
       if (any(shifts$out == FALSE)) {
         e <- x$x[!shifts$out] - shifts$dx[!shifts$out]
         n <- x$y[!shifts$out] - shifts$dy[!shifts$out]
-        unprojected[!shifts$out, ] <- unproject.onto.ellipsoid(e, n,
-                                        epsgs[epsgs$epsg==to, "datum"])
+        unprojected[!shifts$out, ] <- .unproject.onto.ellipsoid(e, n,
+                                        .epsgs[.epsgs$epsg==to, "datum"])
       }
 
       # unproject the rest of coordinates (the ones that couldn't be shifted)
       if (any(shifts$out == TRUE)) {
         out.of.bounds <- TRUE
-        os.ll <- unproject.onto.ellipsoid(x$x[shifts$out],
-                                          x$y[shifts$out], x$datum)
+        os.ll <- .unproject.onto.ellipsoid(x$x[shifts$out],
+                                           x$y[shifts$out], x$datum)
         os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]),
-                                               coords=sgs_points.2d.coords,
+                                               coords=.sgs_points.2d.coords,
                                                epsg=4277),
                                     to=to)
         unprojected[shifts$out, ] <- cbind(x=os.ll.points$x, y=os.ll.points$y)
@@ -332,7 +332,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
 
   } else {  # single Helmert transformation
 
-    unprojected <- unproject.onto.ellipsoid(x$x, x$y, x$datum)
+    unprojected <- .unproject.onto.ellipsoid(x$x, x$y, x$datum)
 
   } # end if (OSTN)
 
@@ -362,11 +362,11 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
   #Return
   if (OSTN) {
     structure(c(unprojected, epsg=to,
-              datum=epsgs[epsgs$epsg==to, "datum"],
+              datum=.epsgs[.epsgs$epsg==to, "datum"],
               dimension=out.dimension), class="sgs_points")
   } else {
     sgs_set_gcs(structure(c(unprojected, epsg=4277,
-        datum=epsgs[epsgs$epsg==4277, "datum"],
+        datum=.epsgs[.epsgs$epsg==4277, "datum"],
         dimension="XY"), class="sgs_points"), to=to)
   }
 
@@ -377,7 +377,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
 #' @param E A numeric vector with Easting coordinates
 #' @param N A numeric vector with Northing coordinates
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
-unproject.onto.ellipsoid <- function(E, N, datum) {
+.unproject.onto.ellipsoid <- function(E, N, datum) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
@@ -460,7 +460,7 @@ unproject.onto.ellipsoid <- function(E, N, datum) {
 #' @param lon A numeric vector with Longitude coordinates
 #' @param lat A numeric vector with Latitude coordinates
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
-project.onto.grid <- function (lon, lat, datum) {
+.project.onto.grid <- function (lon, lat, datum) {
 
   phi <- lat / RAD.TO.GRAD
   lambda <- lon / RAD.TO.GRAD
@@ -526,7 +526,7 @@ project.onto.grid <- function (lon, lat, datum) {
 #' @param e A numeric vector with Easting coordinates
 #' @param n A numeric vector with Northing coordinates
 #' @param z A numeric vector with Height coordinates
-find.OSTN.shifts.at <- function(e, n, z=FALSE) {
+.find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # Initialise list of shifts
   len.e <- length(e)
@@ -558,10 +558,10 @@ find.OSTN.shifts.at <- function(e, n, z=FALSE) {
     north.km <- trunc(os.n)
 
     # R 'lists' are 1-based (find which data records to use)
-    ll <- ostn_shifts[east.km + north.km * 701 + 1, , drop=FALSE]
-    lr <- ostn_shifts[east.km + north.km * 701 + 2, , drop=FALSE]
-    ul <- ostn_shifts[east.km + north.km * 701 + 702, , drop=FALSE]
-    ur <- ostn_shifts[east.km + north.km * 701 + 703, , drop=FALSE]
+    ll <- .ostn.shifts[east.km + north.km * 701 + 1, , drop=FALSE]
+    lr <- .ostn.shifts[east.km + north.km * 701 + 2, , drop=FALSE]
+    ul <- .ostn.shifts[east.km + north.km * 701 + 702, , drop=FALSE]
+    ur <- .ostn.shifts[east.km + north.km * 701 + 703, , drop=FALSE]
 
     t <- os.e - east.km
     u <- os.n - north.km

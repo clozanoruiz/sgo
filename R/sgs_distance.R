@@ -89,14 +89,14 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     stop("This function doesn't support the input's EPSG")
 
   default.simpson <- 20 #20 km
-  coords <- sgs_points.2d.coords
+  coords <- .sgs_points.2d.coords
   if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
 
     p1 <- matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
     p2 <- matrix(unlist(y[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
 
     if (by.element) {
-      bng.distance(p1, p2, grid.true.distance, default.simpson)
+      .bng.distance(p1, p2, grid.true.distance, default.simpson)
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
@@ -107,7 +107,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
 
-      matrix(bng.distance(m1, m2, grid.true.distance, default.simpson),
+      matrix(.bng.distance(m1, m2, grid.true.distance, default.simpson),
              rows.p1, rows.p2)
     }
 
@@ -121,9 +121,9 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     if (by.element) {
 
       if (which == "Harvesine") {
-        great.circle.harvesine(p1, p2)
+        .great.circle.harvesine(p1, p2)
       } else if (which == "Vicenty") {
-        inverse.vicenty.ellipsoid(p1, p2, x$datum, iterations)$distance
+        .inverse.vicenty.ellipsoid(p1, p2, x$datum, iterations)$distance
       }
 
     } else {
@@ -134,9 +134,9 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
       m2 <- p2 %x% rep(1, rows.p1)
 
       if (which == "Harvesine") {
-        matrix(great.circle.harvesine(m1, m2), rows.p1, rows.p2)
+        matrix(.great.circle.harvesine(m1, m2), rows.p1, rows.p2)
       } else if (which == "Vicenty") {
-        matrix(inverse.vicenty.ellipsoid(m1, m2, x$datum, iterations)$distance,
+        matrix(.inverse.vicenty.ellipsoid(m1, m2, x$datum, iterations)$distance,
                rows.p1, rows.p2)
       }
     }
@@ -151,7 +151,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
 #' @param grid.true.distance Logical value
 #' @param dist.simpson: distance (in km) greater than this will apply Simpson's
 #' Rule when calculating true (geodesic) distances
-bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
+.bng.distance <- function(p1, p2, grid.true.distance = TRUE,
+                          dist.simpson = 20) {
 
   E1 <- p1[, 1]; E2 <- p2[, 1]
   N1 <- p1[, 2]; N2 <- p2[, 2]
@@ -166,7 +167,7 @@ bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
   Em <- E1 + (E2 - E1) / 2 # E at midpoint
   Nm <- N1 + (N2 - N1) / 2 # N at midpoint
   if (any(s >= (dist.simpson * 1000))) {
-    Ft <- local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
+    Ft <- .local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
     len.E1 <- length(E1) # E1, E2, Em have the same length
     F1 <- Ft[(1:len.E1)]
     F2 <- Ft[length(Ft) - (len.E1:0)]
@@ -174,7 +175,7 @@ bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
     F <- (F1 + 4 * Fm + F2) / 6
   } else {
     #F for mid point only
-    F <- local.scale.factor(Em, Nm)
+    F <- .local.scale.factor(Em, Nm)
   }
 
   round(s / F, 3) # S (true distance)
@@ -184,7 +185,7 @@ bng.distance <- function(p1, p2, grid.true.distance = TRUE, dist.simpson = 20) {
 #' @noRd
 #' @param E Vector of Easting coordinates
 #' @param N Vector of Northing coordinates
-local.scale.factor <- function(E, N) {
+.local.scale.factor <- function(E, N) {
 
   # ellipsoid parameters
   params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid=="Airy1830",
@@ -248,7 +249,7 @@ local.scale.factor <- function(E, N) {
 #' @param p1 A matrix of coordinates in radians
 #' @param p2 A matrix of coordinates in radians
 #' @param R Default defined by the International Union of Geodesy and Geophysics
-great.circle.harvesine <- function(p1, p2, R=6371008) {
+.great.circle.harvesine <- function(p1, p2, R=6371008) {
 
   hav.dlat <- sin((p2[, 2] - p1[, 2]) / 2)
   hav.dlon <- sin((p2[, 1] - p1[, 1]) / 2)
@@ -265,15 +266,15 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
   round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
 
 }
-#TODO example (or better in tests): antipodal points:
+#TODO in tests: antipodal points:
 #p1 <- sgs_points(list(-177.5,-5.5),epsg=4326)
 #p2 <- sgs_points(list(2.5,5.5),epsg=4326)
-#res <- great.circle.harvesine(p1,p2)
+#res <- .great.circle.harvesine(p1,p2)
 #res: 20015112
 
 #p1 <- sgs_points(list(0,0),epsg=4326)
 #p2 <- sgs_points(list(90,90),epsg=4326)
-#res <- great.circle.harvesine(p1,p2)
+#res <- .great.circle.harvesine(p1,p2)
 #res 10007556
 
 
@@ -284,7 +285,7 @@ great.circle.harvesine <- function(p1, p2, R=6371008) {
 #' @param p2 A matrix of coordinates in radians
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 #' @param iterations Scalar value. Number of iterations to reach convergence
-inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
+.inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
 
   # ellipsoid parameters
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
@@ -393,7 +394,7 @@ inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
 #' @param alpha1 A numeric vector. Initial bearing in radians
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 #' @param iterations Scalar value. Number of iterations to reach convergence
-direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
+.direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
 
   # ellipsoid parameters
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]

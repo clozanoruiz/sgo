@@ -5,48 +5,43 @@
 RAD.TO.GRAD <- 57.29577951308232087679815481410517
 PI <- 3.141592653589793238462643383279503
 
-#check 'empty' values in a vector
-is_nothing <- function(x) {
-  is.null(x) | is.na(x) | is.nan(x) | x == ""
-}
-
 
 # list of EPSG codes and types #,
 # we could admit some epsg which should be XY as XYZ (eg. 4258, 4326, 27700)
 # format is either ll (lon/lat), c (cartesians), en (easting/northing)
-epsgs <- data.frame(epsg=c(4258, 4937, 4936, 3035,
-                           4326, 4979, 4978, 3857,
-                           4277, 27700, 7405,
-                           3035),
-                    datum=c("ETRS89", "ETRS89", "ETRS89", "ETRS89",
-                            "WGS84", "WGS84", "WGS84", "WGS84",
-                            "OSGB36", "OSGB36", "OSGB36",
-                            "ETRS89"),
-                    type=c("GCS", "GCS", "GCS", "PCS",
-                           "GCS", "GCS", "GCS", "PCS",
-                           "GCS", "PCS", "PCS",
-                           "PCS"),
-                    dimension=c("XY/Z", "XYZ", "XYZ", "XY",
-                                "XY/Z", "XYZ", "XYZ", "XY",
-                                "XY", "XY/Z", "XYZ",
-                                "XY"),
-                    format=c("ll", "ll", "c", "en",
-                             "ll", "ll", "c", "en",
-                             "ll", "en", "en",
-                             "en"),
-                    stringsAsFactors = FALSE)
+.epsgs <- data.frame(epsg=c(4258, 4937, 4936, 3035,
+                            4326, 4979, 4978, 3857,
+                            4277, 27700, 7405,
+                            3035),
+                     datum=c("ETRS89", "ETRS89", "ETRS89", "ETRS89",
+                             "WGS84", "WGS84", "WGS84", "WGS84",
+                             "OSGB36", "OSGB36", "OSGB36",
+                             "ETRS89"),
+                     type=c("GCS", "GCS", "GCS", "PCS",
+                            "GCS", "GCS", "GCS", "PCS",
+                            "GCS", "PCS", "PCS",
+                            "PCS"),
+                     dimension=c("XY/Z", "XYZ", "XYZ", "XY",
+                                 "XY/Z", "XYZ", "XYZ", "XY",
+                                 "XY", "XY/Z", "XYZ",
+                                 "XY"),
+                     format=c("ll", "ll", "c", "en",
+                              "ll", "ll", "c", "en",
+                              "ll", "en", "en",
+                              "en"),
+                     stringsAsFactors = FALSE)
 
 
 # Vector with all the main elements a sgs_points object contains
-sgs_points.attr <- c("epsg", "datum", "dimension")
-sgs_points.2d.coords <- c("x", "y")
-sgs_points.3d.coords <- c("x", "y", "z")
-sgs_points.2d.core <- c(sgs_points.2d.coords, sgs_points.attr)
-sgs_points.3d.core <- c(sgs_points.3d.coords, sgs_points.attr)
+.sgs_points.attr <- c("epsg", "datum", "dimension")
+.sgs_points.2d.coords <- c("x", "y")
+.sgs_points.3d.coords <- c("x", "y", "z")
+.sgs_points.2d.core <- c(.sgs_points.2d.coords, .sgs_points.attr)
+.sgs_points.3d.core <- c(.sgs_points.3d.coords, .sgs_points.attr)
 
-coordinates.names <- cbind(x=c("x", "lon", "longitude", "e", "easting"),
-                           y=c("y", "lat", "latitude","n", "northing"),
-                           z=c("z", "h", "height", "h", "height"))
+.coordinates.names <- cbind(x=c("x", "lon", "longitude", "e", "easting"),
+                            y=c("y", "lat", "latitude","n", "northing"),
+                            z=c("z", "h", "height", "h", "height"))
 
 
 # Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f)
@@ -94,9 +89,3 @@ datum.flags <- data.frame(
            "Shetland Isles", "Orkney Isles",
            "Offshore (from 2km offshore up to transformation boundary)",
            "Outside transformation area"))
-
-
-# Helper function. Extract last n characters from a string
-substr.r <- function(x, n){
-  substr(x, nchar(x) - n+1, nchar(x))
-}

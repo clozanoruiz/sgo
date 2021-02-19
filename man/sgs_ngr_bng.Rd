@@ -36,8 +36,8 @@ to inform the function which of the elements contains the NGR strings. The
 rest of the elements will be appended to the resulting object. See examples.
 }
 \examples{
-vec <- c("NN 166 712", "HU 3863 7653")
-lst <- list(p1="NN166712", p2="HU 38637653")
+vec <- c("NN 166 712", "HU38637653")
+lst <- list(vec)
 v <- sgs_ngr_bng(vec)
 l <- sgs_ngr_bng(lst)
 

@@ -35,8 +35,8 @@
 #' which ones are not.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_ngr}}.
 #' @examples
-#' vec <- c("NN 166 712", "HU 3863 7653")
-#' lst <- list(p1="NN166712", p2="HU 38637653")
+#' vec <- c("NN 166 712", "HU38637653")
+#' lst <- list(vec)
 #' v <- sgs_ngr_bng(vec)
 #' l <- sgs_ngr_bng(lst)
 #'
@@ -66,46 +66,40 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
   old.x <- x
 
   if (!is.null(col)) {
-    x <- unlist(x[col], use.names = FALSE)
-  } else {
-    if (length(x) > 1 && length(x[[1]]) > 1) {
+    x <- x[col]
+  } else if (length(x) > 1) {
       #error if more than one list in x and 'col' is not defined
       stop("Parameter 'col' must be entered")
-    } else {
-      x <- unlist(x, use.names = FALSE)
-    }
   }
 
+  x <- unlist(x, use.names = FALSE)
+  if (length(x[is.na(x) | x == "" | x == "NaN"]) > 0)
+    stop(paste(err.msg , ": ",
+                "There are empty or null coordinates",sep=" "))
 
   # Validate format
   # Parse only printable ASCII characters (excluding spaces)
   # https://en.wikipedia.org/wiki/ASCII
   x <- gsub("[^\x21-\x7E]", "", x)
-  match <- grepl(
-    "^([HNOSThnost][A-Za-z]\\s?)(\\d{2}|\\d{4}|\\d{6}|\\d{8}|\\d{10})$", x,
-    ignore.case=TRUE, perl=TRUE)
-  invalid.indices <- match==FALSE
 
-  if (check.only) {
+  # matching. Adapted from https://stackoverflow.com/a/31283825:
+  match <- grepl(paste0("^(H[OPTUWXYZ]|",
+                        "N[ABCDFGHJKLMNOPRSTUWXYZ]|",
+                        "OV|",
+                        "S[CDEHJKMNOPRSTUVWXYZ]|",
+                        "T[AFGLMQRV])",
+                        "(\\d{2}|\\d{4}|\\d{6}|\\d{8}|\\d{10})$"), x,
+                 ignore.case=TRUE, perl=TRUE)
+  invalid.indices <- match == FALSE
 
+  if (check.only)
     return (match)
 
-  }
-
   if (any(invalid.indices)) {
-    if ( all( is_nothing(x[which(invalid.indices)]) ) ) {
-      #from here we will only work with those that do not have invalid values
-      #x.holder <- rep(NA, length(x))
-      #x <- x[!invalid.indices]
-      stop( paste(err.msg , ": ",
-                  "There are empty or null coordinates",sep=" "))
-    } else {
-      invalid.values <- x[which(invalid.indices)]
-      one.invalid.value <- invalid.values[which(!is_nothing(invalid.values))][1]
-      stop( paste(err.msg , ": ",  one.invalid.value, sep=" "))
-    }
+    invalid.values <- x[which(invalid.indices)]
+    # show the first invalid value in the list
+    stop( paste(err.msg , ": ",  invalid.values[1], sep=" "))
   }
-
 
   # Get numeric values of letter references, mapping A->0, B->1, C->2, etc:
   a.code <- strtoi(charToRaw("A"), 16L)
@@ -130,8 +124,9 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
   n <- substr(en, n.char/2 + 1, n.char)
 
   # Validation
-  if (any(e100km<0 | e100km>6 | n100km<0 | n100km>12)) stop( err.msg )
-  if (any(nchar(e) != nchar(n))) stop( err.msg )
+  # (not needed anymore because of the validating regex in grepl?)
+  #if (any(e100km<0 | e100km>6 | n100km<0 | n100km>12)) stop( err.msg )
+  #if (any(nchar(e) != nchar(n))) stop( err.msg )
 
   # Standardise up to to 10-digit refs (metres)
   e <- paste0( e100km, substr(paste0(e, "00000"), 1, 5) )
@@ -144,10 +139,10 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
   if(is.null(col)) {
     lst <-  list(x=as.numeric(e), y=as.numeric(n))
   } else {
-    lst <- c(old.x[!names(old.x) %in% col],
-             list(x=as.numeric(e), y=as.numeric(n)))
+    lst <- c(list(x=as.numeric(e), y=as.numeric(n)),
+             old.x[!names(old.x) %in% col])
   }
-  structure(c(lst, epsg=27700, datum=epsgs[epsgs$epsg==27700, "datum"],
+  structure(c(lst, epsg=27700, datum=.epsgs[.epsgs$epsg==27700, "datum"],
               dimension="XY"),
             class="sgs_points")
 
@@ -166,7 +161,7 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
   if (is.atomic(x)) {
     sgs_ngr_bng(list(x), col=col, check.only=check.only)
   } else {
-    stop("sgs_ngr_bng only works with atomic vectors, lists or dataframes")
+    stop("sgs_ngr_bng only accepts lists, dataframes or atomic types")
   }
 
 }
@@ -219,9 +214,9 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
-    core.cols <- sgs_points.3d.core
+    core.cols <- .sgs_points.3d.core
   } else {
-    core.cols <- sgs_points.2d.core
+    core.cols <- .sgs_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -235,28 +230,24 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
     e.int <- trunc(e); e.dec <- e - e.int
     n.int <- trunc(n); n.dec <- n - n.int
-    e.pad <- paste0(substr.r(paste0('000000', e.int), 6),
+    e.pad <- paste0(.substr.r(paste0('000000', e.int), 6),
                     ifelse(e.dec>0,
                            substring(as.character(round(e.dec, 3)), 2), ""))
     n.pad <- paste0(ifelse(n.int<1e6,
-                           substr.r(paste0('000000', n.int), 6), n.int),
+                           .substr.r(paste0('000000', n.int), 6), n.int),
                     ifelse(n.dec>0,
                            substring(as.character(round(n.dec, 3)), 2), ""))
 
     #return
-    ngr <- list(ngr=paste0(e.pad, ",",  n.pad))
+    ngr <- list(ngr=paste0(e.pad, ", ",  n.pad))
     if (num.elements > 0) {
-      return (c(x[additional.elements], ngr))
+      return (c(ngr, x[additional.elements]))
     } else { return (ngr) }
 
   }
 
   # Get the 100km-grid indices
   e100k <- trunc(e/100000); n100k <- trunc(n/100000)
-
-  if (any(e100k<0 | e100k>6 | n100k<0 | n100k>12)) {
-    return (list(ngr="100km-grid indices out of bounds"))
-  }
 
   # Translate those into numeric equivalents of the grid letters
   l1 <- (19-n100k) - (19-n100k)%%5 + trunc((e100k+10)/5)
@@ -281,13 +272,27 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
   # Pad eastings & northings with leading zeros (just in case,
   # allow up to 16-digit (mm) refs)
-  e <- substr.r(paste0("00000000", e), (digits/2))
-  n <- substr.r(paste0("00000000", n), (digits/2))
+  e <- .substr.r(paste0("00000000", e), (digits/2))
+  n <- .substr.r(paste0("00000000", n), (digits/2))
 
-  #return
+
+  # Return
   ngr <- list(ngr=paste0(let.pair, " ", e, " ", n))
+
+  # Return NA for 100km-grid indices out of bounds
+  invalid.idx <- e100k<0 | e100k>6 | n100k<0 | n100k>12
+  if (any(invalid.idx)) {
+    ngr$ngr[invalid.idx] <- NA_character_
+    warning("There are 100km-grid indices out of bounds")
+  }
+
   if (num.elements > 0) {
-    return (c(x[additional.elements], ngr))
+    return (c(ngr, x[additional.elements]))
   } else { return (ngr) }
 
+}
+
+# Helper function. Extract last n characters from a string
+.substr.r <- function(x, n){
+  substr(x, nchar(x) - n+1, nchar(x))
 }
