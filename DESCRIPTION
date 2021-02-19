@@ -20,7 +20,6 @@ ByteCompile: yes
 LazyData: true
 RoxygenNote: 7.1.0
 Collate: 
-    'common.R'
     'sgs.R'
     'sgs_area.R'
     'sgs_bng.R'

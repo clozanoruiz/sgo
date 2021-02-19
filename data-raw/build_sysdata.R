@@ -1,5 +1,3 @@
-## This modelue contains 'common' and helper functions
-
 # 180/π
 # https://keisan.casio.com/calculator (34 digits precision)
 RAD.TO.GRAD <- 57.29577951308232087679815481410517
@@ -89,3 +87,32 @@ datum.flags <- data.frame(
            "Shetland Isles", "Orkney Isles",
            "Offshore (from 2km offshore up to transformation boundary)",
            "Outside transformation area"))
+
+
+# Get the OSTN15 for developers from Ordnance Survey
+# https://www.ordnancesurvey.co.uk/business-and-government/help-and-support/navigation-technology/os-net/formats-for-developers.html
+
+# OSTN15 coverage is extended from grid point (0,0) to (700000,1250000),
+# although the accuracy far off shore should not be relied on more than
+# about +/- 5m.
+
+# The table of data supplied by the Ordnance Survey contains 876951 rows with
+# entries for each km intersection between (0,0) and (700000, 1250000).
+
+# Make sure this file exists in the folder (currently in ./dev folder)
+file <- "./data-raw/OSTN15_OSGM15_DataFile.txt"
+OSTN15 <- read.csv(file)
+
+.ostn.shifts <- data.matrix(OSTN15[c("ETRS89_OSGB36_EShift",
+                                     "ETRS89_OSGB36_NShift",
+                                     "ETRS89_ODN_HeightShift",
+                                     "Height_Datum_Flag")])
+colnames(.ostn.shifts) <- c("e", "n", "g", "f")
+
+
+#SAVE EVERYTHING IN sysdata.rda
+save(RAD.TO.GRAD, PI, .epsgs, .sgs_points.attr, .sgs_points.2d.coords,
+     .sgs_points.3d.coords, .sgs_points.2d.core, .sgs_points.3d.core,
+     .coordinates.names, lonlat.ellipsoid, lonlat.datum, datum.flags,
+     .ostn.shifts, file = "./R/sysdata.rda", compress = "xz")
+#load(file = "./R/sysdata.rda")
