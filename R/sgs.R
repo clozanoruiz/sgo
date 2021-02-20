@@ -26,21 +26,22 @@
 #' }
 #'
 #' @section Transformation and Conversion functions:
-#' Functions to provide coordinate transformations between:
+#' Functions to provide coordinate transformations:
 #' \itemize{
-#' \item\code{\link{sgs_bng_lonlat}}: British National Grid (E/N) and Lon/Lat
-#' \item\code{\link{sgs_lonlat_bng}}: Lon/Lat and British National Grid (E/N)
-#' \item\code{\link{sgs_bng_ngr}}: British National Grid (E/N) and National Grid
+#' \item\code{\link{sgs_bng_lonlat}}: British National Grid (E/N) to Lon/Lat
+#' \item\code{\link{sgs_lonlat_bng}}: Lon/Lat to British National Grid (E/N)
+#' \item\code{\link{sgs_bng_ngr}}: British National Grid (E/N) to National Grid
 #' References
-#' \item\code{\link{sgs_ngr_bng}}: National Grid References and British National
+#' \item\code{\link{sgs_ngr_bng}}: National Grid References to British National
 #' Grid (E/N)
 #' \item\code{\link{sgs_laea_etrs}}: ETRS89-LAEA Easting/Northing to ETRS89
 #' \item\code{\link{sgs_etrs_laea}}: ETRS89 to ETRS89-LAEA Easting/Northing
 #' \item\code{\link{sgs_cart_lonlat}}: 3D Earth Centred Earth Fixed (ECEF)
-#' Cartesian coordinates and polar coordinates
-#' \item\code{\link{sgs_lonlat_cart}}: Polar and 3D Cartesian coordinates
-#' \item\code{\link{sgs_wgs84_en}}: WGS84 Lon/Lat and Pseudo-Mercator (E/N)
-#' \item\code{\link{sgs_en_wgs84}}: Pseudo-Mercator (E/N) and WGS84 Lon/Lat
+#' Cartesian coordinates to polar coordinates
+#' \item\code{\link{sgs_lonlat_cart}}: Polar coordinates to 3D ECEF
+#' Cartesian coordinates
+#' \item\code{\link{sgs_wgs84_en}}: WGS84 Lon/Lat to Pseudo-Mercator (E/N)
+#' \item\code{\link{sgs_en_wgs84}}: Pseudo-Mercator (E/N) to WGS84 Lon/Lat
 #' \item\code{\link{sgs_transform}}: Wrapper for all the transformations above
 #' \item\code{\link{sgs_coordinates}}: Extract coordinates from a
 #' \code{sgs_points} object

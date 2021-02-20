@@ -8,7 +8,7 @@
 #' the National Geoid Model OSGM15.
 #'
 #' @name sgs_lonlat_bng
-#' @usage sgs_lonlat_bng(x, to=27700, OSTN=TRUE, ODN.datum=FALSE)
+#' @usage sgs_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
 #' @param x A \code{sgs_points} object with coordinates defined in a Geodetic
 #' Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
 #' 4326, 4979 or 4277)
@@ -17,10 +17,10 @@
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
 #' when TRUE or a less accurate but slightly faster single Helmert
 #' transformation when FALSE.
-#' @param ODN.datum Logical variable. When TRUE, and the output contains a
+#' @param OD Logical variable. When TRUE, and the output contains a
 #' column with heights, then a new column is added to the result indicating the
-#' ODN datum used on each point. It is ignored when \code{OSTN=FALSE} or data
-#' doesn't contain 3D points.
+#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
+#' or data doesn't contain 3D points.
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
@@ -53,8 +53,8 @@
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
 #' Easting/Northing (epsg=27700 or 7405). They are adjusted to the SW corner of
-#' 1m grid square. If \code{ODN.datum=TRUE} a column named \code{gf} (geoid
-#' datum flag) is added to the resulting object.
+#' 1m grid square. If \code{OD=TRUE} a column named \code{height.datum} is
+#' added to the resulting object.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_lonlat}},
 #' \code{\link{sgs_set_gcs}}.
 #' @references
@@ -65,11 +65,11 @@
 #' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' bng.pts <- sgs_lonlat_bng(pts)
 #' @export
-sgs_lonlat_bng <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE)
+sgs_lonlat_bng <- function(x, to=27700, OSTN=TRUE, OD=FALSE)
   UseMethod("sgs_lonlat_bng")
 
 #' @export
-sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
+sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   coord.system <- .epsgs[.epsgs$epsg==x$epsg, c("type", "format")]
   if (coord.system$type != "GCS" || coord.system$format != "ll")
@@ -163,8 +163,10 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
   # Return values with correct EPSG depending on input and output.
   if (out.dimension == "XYZ") {
     if (OSTN && x.3d) {
-      if (ODN.datum) {
-        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3), gf=shifts$gf)
+      if (OD) {
+        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3),
+                   height.datum=datum.flags[match(shifts$gf,
+                                             datum.flags$geoid.datum.flag), 4])
       } else {
         en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
       }
@@ -194,7 +196,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 #' longitude/latitude (SW corner of grid square).
 #'
 #' @name sgs_bng_lonlat
-#' @usage sgs_bng_lonlat(x, to = 4258, OSTN = TRUE, ODN.datum = FALSE)
+#' @usage sgs_bng_lonlat(x, to = 4258, OSTN = TRUE, OD = FALSE)
 #' @param x A \code{sgs_points} object with coordinates defined in the projected
 #' coordinate system BNG (EPSGs 27700 or 7405)
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
@@ -202,10 +204,10 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
 #' when TRUE or a less accurate but slightly faster single Helmert
 #' transformation when FALSE.
-#' @param ODN.datum Logical variable. When TRUE, and the output contains a
+#' @param OD Logical variable. When TRUE, and the output contains a
 #' column with heights, then a new column is added to the result indicating the
-#' ODN datum used on each point. It is ignored when \code{OSTN=FALSE} or data
-#' doesn't contain 3D points.
+#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
+#' or data doesn't contain 3D points.
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
@@ -233,7 +235,8 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 #' OSTN15.
 #' @return
 #' An object of class \code{sgs_points} whose coordinates are defined as
-#' Longitude/Latitude.
+#' Longitude/Latitude.If \code{OD=TRUE} a column named \code{height.datum} is
+#' added to the resulting object.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_lonlat_bng}},
 #' \code{\link{sgs_set_gcs}}.
 #' @references
@@ -243,11 +246,11 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, ODN.datum=FALSE) {
 #' p.84 <- sgs_bng_lonlat(p) #ETRS89 lon/lat
 #' p.36 <- sgs_bng_lonlat(p, to=4277) #OSGB36 lon/lat
 #' @export
-sgs_bng_lonlat <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE)
+sgs_bng_lonlat <- function(x, to=4258, OSTN=TRUE, OD=FALSE)
   UseMethod("sgs_bng_lonlat")
 
 #' @export
-sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
+sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
   if (!x$epsg %in% c(27700, 7405))
     stop("This routine only supports BNG Easting and Northing entries")
@@ -339,9 +342,12 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
 
   if (out.dimension == "XYZ") {
     if (OSTN && has.z) {
-      if (ODN.datum) {
+      if (OD) {
+
         unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
-                            z=round(x$z + shifts$dz, 4), gf=shifts$gf)
+                            z=round(x$z + shifts$dz, 4),
+                            height.datum=datum.flags[match(shifts$gf,
+                                            datum.flags$geoid.datum.flag), 4])
       } else {
         unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
                             z=round(x$z + shifts$dz, 4))
@@ -532,9 +538,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
   len.e <- length(e)
   items <- rep(NA_real_, len.e)
   out <- rep(FALSE, len.e)
-  shifts <- list(dx=items, dy=items, dz=items,
-                 gf=rep(NA_integer_, len.e),
-                 out=out)
+  shifts <- list(dx=items, dy=items, dz=items, gf=items, out=out)
 
   # No need to continue when everything is NA
   if (all(is.na(e))) {
@@ -586,10 +590,10 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, ODN.datum=FALSE) {
              + one.t * u * ul[, "g"]
              + t * u * ur[, "g"])
 
-      llf <- as.integer(ll[, "f"])
-      lrf <- as.integer(lr[, "f"])
-      ulf <- as.integer(ul[, "f"])
-      urf <- as.integer(ur[, "f"])
+      llf <- ll[, "f"]
+      lrf <- lr[, "f"]
+      ulf <- ul[, "f"]
+      urf <- ur[, "f"]
       gf <- ifelse(llf == lrf & lrf == ulf & ulf == urf, llf #all equal
                  , ifelse(t <= 0.5 & u <= 0.5, llf #point in SW (or dead centre)
                  , ifelse(t > 0.5 & u <= 0.5, lrf #point in SE quadrant

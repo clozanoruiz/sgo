@@ -100,7 +100,7 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
 # Helper functions to remove or add the Z coordinate (EPSGs 27700 / 7405)
 .remove.z <- function(x) {
-  #x$gf <- NULL
+  #x$height.datum <- NULL
   x$z <- NULL
   x$dimension <- "XY"
   x$epsg <- 27700

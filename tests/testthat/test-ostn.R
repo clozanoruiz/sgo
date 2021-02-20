@@ -57,15 +57,15 @@ test_that("3D OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
                epsg=4937)
 
   pointsgf.out <- as.data.frame(sgs_lonlat_bng(points.in, to=7405, OSTN=TRUE,
-                                               ODN.datum=TRUE),
+                                               OD=TRUE),
                               stringsAsFactors = FALSE)
   points.out <- as.data.frame(sgs_lonlat_bng(points.in, to=7405, OSTN=TRUE),
                               stringsAsFactors = FALSE)
   pointsTgf.out <- as.data.frame(sgs_transform(points.in, to=7405, OSTN=TRUE,
-                                               ODN.datum=TRUE),
+                                               OD=TRUE),
                                  stringsAsFactors = FALSE)
   pointsT.out <- as.data.frame(sgs_transform(points.in, to=7405, OSTN=TRUE,
-                                             ODN.datum=FALSE),
+                                             OD=FALSE),
                                stringsAsFactors = FALSE)
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_ETRStoOSGB.txt")
@@ -73,6 +73,9 @@ test_that("3D OSTN15_OSGM15_TestInput_ETRStoOSGB.txt", {
                        stringsAsFactors = FALSE)[c("OSGBEast", "OSGBNorth",
                                                    "ODNHeight",
                                                    "OSGBDatumFlag", "PointID")]
+  # convert flags to text
+  ostn.out[, "OSGBDatumFlag"] <- datum.flags[match(ostn.out[, "OSGBDatumFlag"],
+                                              datum.flags$geoid.datum.flag), 4]
 
   expect_true(all(pointsgf.out == ostn.out))
   expect_true(all(points.out == ostn.out[-4]))
@@ -121,15 +124,15 @@ test_that("3D OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
                           epsg=7405)
 
   pointsgf.out <- as.data.frame(sgs_bng_lonlat(points.in, to=4937, OSTN=TRUE,
-                                               ODN.datum=TRUE),
+                                               OD=TRUE),
                               stringsAsFactors = FALSE)
   points.out <- as.data.frame(sgs_bng_lonlat(points.in, to=4937, OSTN=TRUE),
                               stringsAsFactors = FALSE)
   pointsTgf.out <- as.data.frame(sgs_transform(points.in, to=4937, OSTN=TRUE,
-                                               ODN.datum=TRUE),
+                                               OD=TRUE),
                                  stringsAsFactors = FALSE)
   pointsT.out <- as.data.frame(sgs_transform(points.in, to=4937,
-                                             ODN.datum=FALSE),
+                                             OD=FALSE),
                                stringsAsFactors = FALSE)
 
   file.out <- file.path(getwd(), "OSTN15_OSGM15_TestOutput_OSGBtoETRS.txt")
@@ -137,6 +140,10 @@ test_that("3D OSTN15_OSGM15_TestInput_OSGBtoETRS.txt", {
   ostn.out <- ostn.out[ostn.out$Iteration.No..RESULT == "RESULT",
                        c("ETRSNorth.Long", "ETRSEast.Lat",
                          "ETRSHeight","OSGBDatumFlag", "PointID")]
+
+  # convert flags to text
+  ostn.out[, "OSGBDatumFlag"] <- datum.flags[match(ostn.out[, "OSGBDatumFlag"],
+                                              datum.flags$geoid.datum.flag), 4]
 
   #coordinates
   expect_true(all(sweep(abs(pointsgf.out[, 1:3] - ostn.out[, 1:3]),

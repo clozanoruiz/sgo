@@ -82,11 +82,18 @@ datum.flags <- data.frame(
   geoid.datum.flag=c(1, 2, 3, 4, 6, 7, 15, 16),
   datum.name=c("Newlyn", "St Marys", "Douglas02", "Stornoway15", "Lerwick",
                "Newlyn (Orkney)", "Newlyn Offshore",
-               "Outside trnasformation area"),
+               "Outside transformation area"),
   region=c("UK mainland", "Scilly Isles", "Isle of Man", "Outer Hebrides",
            "Shetland Isles", "Orkney Isles",
            "Offshore (from 2km offshore up to transformation boundary)",
-           "Outside transformation area"))
+           "Outside transformation area"),
+  height.datum=c("Newlyn, UK mainland", "St Marys, Scilly Isles",
+                 "Douglas02, Isle of Man", "Stornoway15, Outer Hebrides",
+                 "Lerwick, Shetland Isles",
+                 "Newlyn (Orkney), Orkney Isles",
+                 paste("Newlyn Offshore,",
+                  "Offshore (from 2km offshore up to transformation boundary)"),
+                 "Outside transformation area"), stringsAsFactors = FALSE)
 
 
 # Get the OSTN15 for developers from Ordnance Survey

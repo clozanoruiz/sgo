@@ -391,9 +391,10 @@ print.sgs_points <- function(x, ..., n = 6L) {
   }
 
   num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)
+  and <- paste("and", num.fields, ifelse(num.fields == 1L, "field", "fields"))
   cat("An sgs object with", n, ifelse(n == 1L,
                                       "feature (point)", "features (points)"),
-      "and", num.fields, ifelse(num.fields == 1L, "field", "fields"),
+      if (num.fields == 0L) NULL else and,
       "\ndimension:", x$dimension,
       "\nEPSG:     ", x$epsg,
       msg, "\n")

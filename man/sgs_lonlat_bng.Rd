@@ -5,7 +5,7 @@
 \alias{sgs_lonlat_bng}
 \title{GCS to BNG Easting/Northing}
 \usage{
-sgs_lonlat_bng(x, to=27700, OSTN=TRUE, ODN.datum=FALSE)
+sgs_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
 }
 \arguments{
 \item{x}{A \code{sgs_points} object with coordinates defined in a Geodetic
@@ -19,16 +19,16 @@ take the following values: \code{27700} or \code{7405}.}
 when TRUE or a less accurate but slightly faster single Helmert
 transformation when FALSE.}
 
-\item{ODN.datum}{Logical variable. When TRUE, and the output contains a
+\item{OD}{Logical variable. When TRUE, and the output contains a
 column with heights, then a new column is added to the result indicating the
-ODN datum used on each point. It is ignored when \code{OSTN=FALSE} or data
-doesn't contain 3D points.}
+ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
+or data doesn't contain 3D points.}
 }
 \value{
 An object of class \code{sgs_points} whose coordinates are defined as
 Easting/Northing (epsg=27700 or 7405). They are adjusted to the SW corner of
-1m grid square. If \code{ODN.datum=TRUE} a column named \code{gf} (geoid
-datum flag) is added to the resulting object.
+1m grid square. If \code{OD=TRUE} a column named \code{height.datum} is
+added to the resulting object.
 }
 \description{
 Converts a geodetic coordinate system to BNG (projected) Easting/Northing

@@ -72,7 +72,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     # Geodetic area
     # 1- transform to BNG (which is conformal: keeps angles - and shapes)
     # we could also just use a mercator transformation
-    x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, ODN.datum=FALSE)
+    x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, OD=FALSE)
 
     # 2- calculate centroid from BNG points and convert back to lonlat
     mc <- unname(.moment.centroid(matrix(unlist(x.bng[coords], use.names=FALSE),
