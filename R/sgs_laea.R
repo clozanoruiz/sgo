@@ -72,7 +72,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
                          log((1 - e * sin.phi) / (1 + e * sin.phi)))
   q.phi0 <- (1 - e2) * (sin.phi0 / splat0 - 1/(2 * e) *
                          log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
-  #phi.p = π/2 rad, thus sin(phi.p) = 1
+  #phi.p = π/2 rad, therefore sin(phi.p) = 1
   q.phi.p <- (1 - e2) * (1 / (1-e2) - 1/(2 * e) * log((1 - e ) / (1 + e)))
 
   beta <- asin(q.phi / q.phi.p)
@@ -93,6 +93,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
 
   # Return values
   en <- list(x=E, y=N)
+  en <- lapply(en, round, 2) #round to cm
   if (num.elements > 0) en <- c(en, x[additional.elements])
 
   structure(c(en, epsg = 3035, datum = .epsgs[.epsgs$epsg == 3035, "datum"],
@@ -162,7 +163,7 @@ sgs_laea_etrs.sgs_points <- function(x) {
 
   q.phi0 <- (1 - e2) * (sin.phi0 / splat0 - 1/(2 * e) *
                           log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
-  #phi.p = π/2 rad, thus sin(phi.p) = 1
+  #phi.p = π/2 rad, therefore sin(phi.p) = 1
   q.phi.p <- (1 - e2) * (1 / (1-e2) - 1/(2 * e) * log((1 - e ) / (1 + e)))
 
   beta0 <- asin(q.phi0 / q.phi.p)

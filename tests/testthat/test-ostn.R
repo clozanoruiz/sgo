@@ -363,9 +363,9 @@ test_that("Input and internal conversions checks in BNG routines", {
     digits = 6) == "NN 166 712")
 
   #Warning from 2D to 3D
-  expect_warning(sgs_lonlat_bng(sgs_points(list(-5.003508, 56.79685),
-                                           epsg=4326),to=7405),
-                 "Converted from 2D to 3D thus heights default to 0")
+  #expect_warning(sgs_lonlat_bng(sgs_points(list(-5.003508, 56.79685),
+  #                                         epsg=4326),to=7405),
+  #               "Converted from 2D to 3D thus heights default to 0")
 
 
   ## sgs_bng_lonlat:
@@ -379,9 +379,9 @@ test_that("Input and internal conversions checks in BNG routines", {
                "This routine only supports converting to polar coordinates")
 
   #Warning from 2D to 3D
-  expect_warning(sgs_bng_lonlat(sgs_points(list(651409.903, 313177.270),
-                                           epsg=27700), to=4937),
-                 "Converted from 2D to 3D thus heights default to 0")
+  #expect_warning(sgs_bng_lonlat(sgs_points(list(651409.903, 313177.270),
+  #                                         epsg=27700), to=4937),
+  #               "Converted from 2D to 3D thus heights default to 0")
 
  #ostn.at.shifts
  #all.is.na

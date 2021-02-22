@@ -122,6 +122,8 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     new.lonlat <- new.lonlat[1:2]
     dimension <- "XY"
   } else {
+    if (!x.3d)
+      new.lonlat$z <- rep(0, length(x$x))
     dimension <- "XYZ"
   }
 
@@ -147,7 +149,8 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   phi <- points$y / RAD.TO.GRAD
   lambda <- points$x / RAD.TO.GRAD
-  H <- if (points$dimension=="XYZ") points$z else 0 # height above ellipsoid
+  # height above ellipsoid
+  h <- if (points$dimension=="XYZ") points$z else rep(0, length(points$x))
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
   e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"]
 
@@ -158,9 +161,9 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
 
   nu <- a / sqrt(1 - e2 * sin.phi * sin.phi) #r of curvature in prime vertical
 
-  x <- (nu + H) * cos.phi * cos.lambda
-  y <- (nu + H) * cos.phi * sin.lambda
-  z <- (nu * (1 - e2) + H) * sin.phi
+  x <- (nu + h) * cos.phi * cos.lambda
+  y <- (nu + h) * cos.phi * sin.lambda
+  z <- (nu * (1 - e2) + h) * sin.phi
 
   list(x=x, y=y, z=z)
 
@@ -232,9 +235,9 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   lat <- phi * RAD.TO.GRAD
   lon <- lambda * RAD.TO.GRAD
   # height above ellipsoid
-  H <- unname(p / cos(phi) - nu)
+  h <- unname(p / cos(phi) - nu)
 
-  list(x=lon, y=lat, z=H)
+  list(x=lon, y=lat, z=h)
 
 }
 
@@ -285,6 +288,7 @@ sgs_lonlat_cart.sgs_points <- function(x) {
     additional.elements <- !names(x) %in% .sgs_points.3d.core
     cartesian <- .lonlat_to_cartesian(x[.sgs_points.3d.core])
   }
+  cartesian <- lapply(cartesian, round, 3) #round to mm
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   # return sgs_points object
@@ -347,6 +351,7 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   lonlat <- .cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
+  lonlat$z <- round(lonlat$z, 1) #round to decimeters
 
   # return sgs_points object
   if (num.elements > 0)

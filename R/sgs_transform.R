@@ -300,7 +300,7 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
                      list(sgs_bng_lonlat, sgs_lonlat_cart),                #7405
                      list(sgs_laea_etrs, sgs_set_gcs, sgs_lonlat_cart)     #3035
 )
-.ARGS_TO_4978 <- list(list(to=4978),                                       #4326
+.ARGS_TO_4978 <- list(list(),                                              #4326
                       list(list(to=4326), list()),                         #3857
                       list(list(to=27700), list(to=4326), list()),         #4277
                       list(list(to=4326), list()),                        #27700

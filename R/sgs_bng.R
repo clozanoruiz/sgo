@@ -93,7 +93,6 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   # Convert datum from WGS84 to ETRS89
   # Currently we consider both EPSGs practically equal
-  # otherwise: if (x$epsg == 4326) { x <- sgs_set_gcs(x, to=4258) }
   if (x$datum == "WGS84") {
     if (x$epsg == 4326) {
       x$epsg <- 4258
@@ -172,7 +171,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
       }
     } else {
       en <- list(x=e, y=n, z=rep(0, length(e)))
-      warning("Converted from 2D to 3D thus heights default to 0")
+      #warning("Converted from 2D to 3D. Hence heights default to 0")
     }
   } else {
     en <- list(x=e, y=n)
@@ -355,7 +354,7 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
     } else {
       unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
                           z=rep(0, length(unprojected[, 1])))
-      warning("Converted from 2D to 3D thus heights default to 0")
+      #warning("Converted from 2D to 3D. Hence heights default to 0")
     }
   } else {
     unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])

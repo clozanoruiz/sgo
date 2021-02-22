@@ -2,6 +2,7 @@ context("Testing sgs_transform wrapper")
 library(sgs)
 
 #TODO: add all the transformations! (many are left)
+#Comparing outputs againts cs2cs 6.3.1 results
 
 test_that("Check inputs", {
   expect_error(sgs_transform(
@@ -36,7 +37,38 @@ test_that("Transform from 4326", {
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=4258)),
     c(-3.9369234, 56.1165135), check.attributes=FALSE)
+
+  #to 4937
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=4937)),
+    c(-3.9369234, 56.1165135, 0), check.attributes=FALSE)
+
+  #to 4936
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=4936)),
+    c(3555669.675, -244703.389, 5271685.677), check.attributes=FALSE)
+
+  #to 3035
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=3035)),
+    c(3459763.30, 3751984.65), check.attributes=FALSE)
+
+  #to 4979
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=4979)),
+    c(-3.9369234, 56.1165135, 0), check.attributes=FALSE)
+
+  #to 4978
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=4978)),
+    c(3555669.675, -244703.389, 5271685.677), check.attributes=FALSE)
+
+  #to 7405
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=7405)),
+    c(279665.251, 693220.644, 0), check.attributes=FALSE)
 })
+
 test_that("Transform from 3857", {
   #to itself
   expect_equal(sgs_coordinates(sgs_transform(
@@ -63,7 +95,15 @@ test_that("Transform from 3857", {
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(-344578.12, 7751020.42), epsg=3857), to=4258)),
     c(-3.0953979, 56.9554595), check.attributes=FALSE)
+
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
 })
+
 test_that("Transform from 4277", {
   #to itself
   expect_equal(sgs_coordinates(sgs_transform(
@@ -94,7 +134,15 @@ test_that("Transform from 4277", {
   expect_true(all(abs(sgs_coordinates(sgs_transform(
     sgs_points(list(-3.09391642, 56.95563593), epsg=4277), to=4258))
     - c(-3.09539969, 56.95544732)) < 0.00000005))
+
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
 })
+
 test_that("Transform from 27700", {
   #to itself
   expect_equal(sgs_coordinates(sgs_transform(
@@ -116,7 +164,15 @@ test_that("Transform from 27700", {
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(166341.986, 788816.800), epsg=27700), to=4258)),
     c(-5.8419610340, 56.9314678393), check.attributes=FALSE)
+
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
 })
+
 test_that("Transform from 4258", {
   #to itlsef
   expect_equal(sgs_coordinates(sgs_transform(
@@ -141,5 +197,107 @@ test_that("Transform from 4258", {
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(-3.93692340, 56.11651350), epsg=4258), to=27700)),
     c(279665.251, 693220.644), check.attributes=FALSE)
+
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
+})
+
+test_that("Transform from 4937", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
+
+})
+
+test_that("Transform from 4936", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4937
+  #to 3035
+  #to 4979
+  #to 4978
+  #to 7405
+
+})
+
+test_that("Transform from 3035", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4937
+  #to 4936
+  #to 4979
+  #to 4978
+  #to 7405
+
+})
+
+test_that("Transform from 4979", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4978
+  #to 7405
+
+})
+
+test_that("Transform from 4978", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 7405
+
+})
+
+test_that("Transform from 7405", {
+
+  #to itself
+  #to 4326
+  #to 3857
+  #to 4277
+  #to 27700
+  #to 4258
+  #to 4937
+  #to 4936
+  #to 3035
+  #to 4979
+  #to 4978
 
 })
