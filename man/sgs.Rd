@@ -16,15 +16,15 @@ Geoid Model OSGM15.
 }
 \details{
 Most of the functions available in this package will become much less
-accurate if used outside the coverage of OSTN, thus it is adviced to apply
-the functions in this package on coordinates within Great Britain, the Isle
-of Man and any areas of sea less than a few miles off shore.
+accurate if used outside the coverage of OSTN, therefore it is adviced to
+apply the functions in this package on coordinates within Great Britain,
+the Isle of Man and any areas of sea less than a few miles off shore.
 
 This package assumes that the Coordinate Reference Systems (CRS) ETRS89 and
-WGS84 are the same within the UK, but this shouldn't be a problem for most
-civilian use of GPS satellites. If a high-precision transformation between
-WGS84 and ETRS89 is required then it is recommended to use a different
-package to do the conversion.
+WGS84 are practically the same within the UK, but this shouldn't be a
+problem for most civilian use of GPS satellites. If a high-precision
+transformation between WGS84 and ETRS89 is required then it is recommended
+to use a different package to do the conversion.
 }
 \section{Object constructors}{
 

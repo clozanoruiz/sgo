@@ -33,7 +33,7 @@ of the following values:
 }
 \value{
 An object of class \code{sgs_points}. This object is a actually a list with
-class \code{sgs_points} and 5 or 6 elements:
+class \code{sgs_points} and 5 elements (or 6 elements if it is 3D):
 \itemize{
 \item\code{x}: A numeric vector containing easting or longitude coordinates.
 \item\code{y}: A numeric vector with northing or latitude coordintes.
@@ -92,8 +92,9 @@ defined datum for this set of coordinates is WGS84 (https://epsg.io/4978)
 \code{x} must be defined as Longitude and Latitude values respectively. The
 defined datum for this set of coordinates is OSGB 1936
 (https://epsg.io/4277). \emph{Coordinates defined like this should only be
-used for historical reasons.} \strong{Height values will be discarded when
-working with this coordinate system.}
+used for historical reasons and to convert only to or from BNG coordinates
+(as it relies on a single Helmert transformation.} \strong{Height values
+will be discarded when working with this coordinate system.}
 
 \item\code{27700}: British National Grid, projected coordinate system. The
 columns in \code{x} must be defined as Easting and Northing (\code{sgs} also

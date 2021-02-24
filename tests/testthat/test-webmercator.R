@@ -51,15 +51,15 @@ test_that("Convert from Pseudo-Mercator to WGS84", {
                fixed = TRUE,
                "This routine only supports converting to EPSG:4326")
 
-  expect_equal(sgs_coordinates(
-    sgs_en_wgs84(sgs_points(list(-489196.98, 7504281.69), epsg=3857))),
-    c(-4.3945312, 55.7271101), check.attributes=FALSE)
-  expect_equal(sgs_coordinates(
-    sgs_en_wgs84(sgs_points(list(-533224.71, 8030168.44), epsg=3857))),
-    c(-4.7900391, 58.2979440), check.attributes=FALSE)
-  expect_equal(sgs_coordinates(
-    sgs_en_wgs84(sgs_points(list(-841418.81, 7602121.08), epsg=3857))),
-    c(-7.5585938, 56.2189232), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-489196.98, 7504281.69), epsg=3857), to=4326))
+    - c(-4.394531241, 55.727110090)) < 0.000000001))
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-533224.71, 8030168.44), epsg=3857), to=4326))
+    - c(-4.790039069, 58.297944029)) < 0.000000001))
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-841418.81, 7602121.08), epsg=3857), to=4326))
+    - c(-7.558593774, 56.218923164)) < 0.000000001))
 
   # Additional elements
   e <- c(-470293.68, -233668.52)
@@ -72,5 +72,7 @@ test_that("Convert from Pseudo-Mercator to WGS84", {
   lt <- c(57.47777, 57.14965)
   df2 <- data.frame(N, country, ln, lt, stringsAsFactors = FALSE)
   p2 <- sgs_points(df2, coords=c("ln", "lt"), epsg=4326)
-  expect_true(all(as.data.frame(p1) == as.data.frame(p2)))
+  expect_true(all(abs(as.data.frame(p1[1:2]) - as.data.frame(p2[1:2])) <
+                    0.000001))
+  expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
 })

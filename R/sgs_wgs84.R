@@ -127,9 +127,8 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
   phi <- (pi/2) - 2 * atan(exp(D))
   lambda <- ((E - FE)/a) + lambda0
 
-  # Round and Return
-  xy <- list(x=round(lambda * RAD.TO.GRAD, 7),
-             y=round(phi * RAD.TO.GRAD, 7))
+  # Return
+  xy <- list(x=lambda * RAD.TO.GRAD, y=phi * RAD.TO.GRAD)
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 

@@ -31,6 +31,11 @@ NULL
 #' problem for most civilian use of GPS satellites. If a high-precision
 #' transformation between WGS84 and ETRS89 is required then it is recommended
 #' to use a different package to do the conversion.
+#'
+#' \strong{Warning: }Coordinates defined in the Geodetic Coordinate System
+#' EPSG:4277 (with datum OSGB 1936) or transformations to this GCS depend on a
+#' single Helmert transformation. This GCS should only be used to convert to or
+#' from BNG coordinates and for historical reasons only.
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
@@ -54,6 +59,14 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
   if (is.null(to)) stop("Parameter 'to' must be specified")
   if (x$epsg==to) return(x)
+
+  if ((x$epsg == 4277 && (!to %in% c(27700,7405))) ||
+      (to == 4277 && (!x$epsg %in% c(27700,7405)))) {
+    warning(paste("Loss of accuracy.",
+                  "Transformations from or to EPSG:4277",
+                  "rely on a single Helmert transformation."))
+  }
+
 
   if(x$dimension == "XYZ") {
     core.elements <- .sgs_points.3d.core
@@ -107,10 +120,12 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
   x
 }
 .add.z <- function(x) {
-  x$z <- 0
+  x$z <- rep(0, length(x$x))
   x$dimension <- "XYZ"
   x$epsg <- 7405
-  x
+  structure(x[c(.sgs_points.3d.coords,
+                names(x)[!names(x) %in% .sgs_points.3d.coords])],
+            class="sgs_points")
 }
 
 #Dataframes of operations and their arguments
@@ -341,7 +356,7 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
 
 .FUN_TO_4936 <- list(list(sgs_set_gcs, sgs_lonlat_cart),
-                     list(sgs_en_wgs84, sgs_set_gcs, sgs_lonlat_cart),
+                     list(sgs_en_wgs84, sgs_set_gcs, sgs_lonlat_cart),     #3857
                      list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_lonlat_cart),#4277
                      list(sgs_bng_lonlat, sgs_lonlat_cart),
                      list(sgs_lonlat_cart),                                #4258

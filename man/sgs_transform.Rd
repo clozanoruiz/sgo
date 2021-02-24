@@ -39,6 +39,11 @@ Please note that this package assumes that the Coordinate Reference Systems
 problem for most civilian use of GPS satellites. If a high-precision
 transformation between WGS84 and ETRS89 is required then it is recommended
 to use a different package to do the conversion.
+
+\strong{Warning: }Coordinates defined in the Geodetic Coordinate System
+EPSG:4277 (with datum OSGB 1936) or transformations to this GCS depend on a
+single Helmert transformation. This GCS should only be used to convert to or
+from BNG coordinates and for historical reasons only.
 }
 \examples{
 ln <- c(-4.22472, -2.09908)

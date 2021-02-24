@@ -18,7 +18,7 @@ Copyright: OSTN transformation data included in this module is freely available
 Encoding: UTF-8
 ByteCompile: yes
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Collate: 
     'sgs.R'
     'sgs_area.R'
