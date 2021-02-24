@@ -250,7 +250,7 @@ test_that("Transform from 27700", {
   p <- sgs_points(list(166341.986, 788816.800), epsg=27700)
   p2 <- .add.z(p)
   expect_true(class(p)==class(p2) && p2$z == rep(0,length(p$x)) &&
-                p2[c("epsg", "dimension")] == c(7405, "XYZ"))
+                all(p2[c("epsg", "dimension")] == c(7405, "XYZ")))
 })
 
 test_that("Transform from 4258", {
@@ -398,7 +398,7 @@ test_that("Transform from 7405", {
   p <- sgs_points(list(525745.670,470703.214,41.232), epsg=7405)
   p2 <- .remove.z(p)
   expect_true(class(p)==class(p2) && length(p2) == (length(p) - 1) &&
-                p2[c("epsg", "dimension")] == c(27700, "XY"))
+                all(p2[c("epsg", "dimension")] == c(27700, "XY")))
   #to 4258
   #to 4937
   #to 4936
