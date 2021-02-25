@@ -30,8 +30,8 @@ assumed to be accurate to better than a meter; between OSGB36 and WGS84
 somewhat less - the lost of accuracy can be up to ±5m when using single
 Helmert transformations).
 
-Input points with a projected coordinate system (e.g. 27700, 7405 or 3857)
-are not allowed.
+Input points with a projected coordinate system (e.g. 27700, 7405, 3035 or
+3857) are not allowed.
 
 \strong{Warning}
 This function is mainly for internal use of the program. Since it relies on a

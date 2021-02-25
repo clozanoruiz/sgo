@@ -20,8 +20,8 @@
 #' somewhat less - the lost of accuracy can be up to ±5m when using single
 #' Helmert transformations).
 #'
-#' Input points with a projected coordinate system (e.g. 27700, 7405 or 3857)
-#' are not allowed.
+#' Input points with a projected coordinate system (e.g. 27700, 7405, 3035 or
+#' 3857) are not allowed.
 #'
 #' \strong{Warning}
 #' This function is mainly for internal use of the program. Since it relies on a
@@ -51,7 +51,9 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   # Check x is a GCS (not projected)
   coord.system <- .epsgs[.epsgs$epsg==x$epsg, "type"]
   if (coord.system != "GCS")
-    stop("This routine only only accepts Geodetic Coordinate Systems")
+    stop("This routine only accepts Geodetic Coordinate Systems")
+  if (to %in% c(27700, 7405, 3035, 3857))
+    stop("This routine only transforms to Geodetic Coordinate Systems")
 
   # If converting from 3D to 2D in the same datum, just remove the z coordinate
   # and return
@@ -351,7 +353,7 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   lonlat <- .cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
-  lonlat$z <- round(lonlat$z, 1) #round to decimeters
+  lonlat$z <- round(lonlat$z, 3) #round to mm
 
   # return sgs_points object
   if (num.elements > 0)

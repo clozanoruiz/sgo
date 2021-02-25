@@ -33,9 +33,8 @@ NULL
 #' to use a different package to do the conversion.
 #'
 #' \strong{Warning: }Coordinates defined in the Geodetic Coordinate System
-#' EPSG:4277 (with datum OSGB 1936) or transformations to this GCS depend on a
-#' single Helmert transformation. This GCS should only be used to convert to or
-#' from BNG coordinates and for historical reasons only.
+#' EPSG:4277 (with datum OSGB 1936) should only be used to convert to or from
+#' BNG coordinates and for historical reasons only.
 #' @return
 #' An object of class 'sgs_points'.
 #' @seealso \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
@@ -60,12 +59,12 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
   if (is.null(to)) stop("Parameter 'to' must be specified")
   if (x$epsg==to) return(x)
 
-  if ((x$epsg == 4277 && (!to %in% c(27700,7405))) ||
-      (to == 4277 && (!x$epsg %in% c(27700,7405)))) {
-    warning(paste("Loss of accuracy.",
-                  "Transformations from or to EPSG:4277",
-                  "rely on a single Helmert transformation."))
-  }
+  #if ((x$epsg == 4277 && (!to %in% c(27700,7405))) ||
+  #    (to == 4277 && (!x$epsg %in% c(27700,7405)))) {
+  #  warning(paste("Loss of accuracy.",
+  #                "Transformations from or to EPSG:4277",
+  #                "rely on a single Helmert transformation."))
+  #}
 
 
   if(x$dimension == "XYZ") {
@@ -331,7 +330,7 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
 .FUN_TO_4937 <- list(list(sgs_set_gcs),
                      list(sgs_en_wgs84, sgs_set_gcs),
-                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_set_gcs),
+                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_set_gcs),    #4277
                      list(sgs_bng_lonlat, sgs_set_gcs),                   #27700
                      list(sgs_set_gcs),                                    #4258
                      list(sgs_set_gcs),                                    #4979

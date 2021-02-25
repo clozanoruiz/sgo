@@ -68,9 +68,9 @@
 #' \code{x} must be defined as Longitude and Latitude values respectively. The
 #' defined datum for this set of coordinates is OSGB 1936
 #' (https://epsg.io/4277). \emph{Coordinates defined like this should only be
-#' used for historical reasons and to convert only to or from BNG coordinates
-#' (as it relies on a single Helmert transformation.} \strong{Height values
-#' will be discarded when working with this coordinate system.}
+#' used for historical reasons and to convert only to or from BNG coordinates.}
+#' \strong{Height values will be discarded when working with this coordinate
+#' system.}
 #'
 #' \item\code{27700}: British National Grid, projected coordinate system. The
 #' columns in \code{x} must be defined as Easting and Northing (\code{sgs} also

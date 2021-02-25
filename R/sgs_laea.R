@@ -193,8 +193,8 @@ sgs_laea_etrs.sgs_points <- function(x) {
     (761 * e6 / 45360) * sin(6 * beta.prime)
 
   # Round and Return
-  xy <- list(x=round(lambda * RAD.TO.GRAD, 7),
-             y=round(phi * RAD.TO.GRAD, 7))
+  xy <- list(x=round(lambda * RAD.TO.GRAD, 9),
+             y=round(phi * RAD.TO.GRAD, 9))
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 

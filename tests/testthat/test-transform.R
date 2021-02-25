@@ -23,11 +23,9 @@ test_that("Transform from 4326", {
 
   #to 4277
   #Meall a Phubuill
-  # accurate up to (at least) the seventh decimal
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
     sgs_points(list(-5.25118234, 56.91644979), epsg=4326), to=4277))
-    - c(-5.25, 56 + 55/60)) < 0.00000005), "Loss of accuracy")
-  expect_true(res)
+    - c(-5.25, 56 + 55/60)) < 0.00000001))
 
   #to 27700
   expect_equal(sgs_coordinates(sgs_transform(
@@ -83,10 +81,9 @@ test_that("Transform from 3857", {
 
   #to 4277
   # accurate up to (at least) the seventh decimal
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
     sgs_points(list(-344578.12, 7751020.42), epsg=3857), to=4277))
     - c(-3.09391468, 56.95564807)) < 0.00000005))
-  expect_true(res)
 
   #to 27700
   expect_equal(sgs_coordinates(sgs_transform(
@@ -129,8 +126,6 @@ test_that("Transform from 3857", {
     c(333476.069, 785447.995, 0), check.attributes=FALSE)
 })
 
-# 4277 to other than 27700/7405 are just a single Helmert transformation so
-# don't expect great accuracy!
 test_that("Transform from 4277", {
   #to itself
   expect_equal(sgs_coordinates(sgs_transform(
@@ -138,16 +133,14 @@ test_that("Transform from 4277", {
     c(-3.0939164, 56.9556359), check.attributes=FALSE)
 
   #to 4326
-  # accurate up to (at least) the seventh decimal
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4326))
-    - c(-3.09539967, 56.95544731)) < 0.00000005))
-  expect_true(res)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4326)),
+    c(-3.09539967, 56.95544731), check.attributes=FALSE)
 
   #to 3857
-  expect_warning(res <- sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3857)))
-  expect_equal(res, c(-344578.31, 7751017.93), check.attributes=FALSE)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3857)),
+    c(-344578.31, 7751017.93), check.attributes=FALSE)
 
   #to 27700
   expect_equal(sgs_coordinates(sgs_transform(
@@ -155,45 +148,37 @@ test_that("Transform from 4277", {
     c(333475.941, 785446.641), check.attributes=FALSE)
 
   #to 4258
-  # accurate up to (at least) the seventh decimal
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
     sgs_points(list(-5.25, 56 + 55/60), epsg=4277), to=4258))
-    - c(-5.25118234, 56.91644979)) < 0.00000005))
-  expect_true(res)
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.09391642, 56.95563593), epsg=4277), to=4258))
-    - c(-3.09539969, 56.95544732)) < 0.00000005))
-  expect_true(res)
+    - c(-5.25118234, 56.91644979)) < 0.00000001))
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.09391642, 56.95563593), epsg=4277), to=4258)),
+    c(-3.09539969, 56.95544732), check.attributes=FALSE)
 
   #to 4937
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4937))
-    - c(-3.09539967, 56.95544731, 0)) < 0.00000005))
-  expect_true(res)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4937)),
+    c(-3.09539967, 56.95544731, 0), check.attributes=FALSE)
 
   #to 4936
-  expect_warning(res <- sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=4936)))
-  expect_equal(res, c(3481063.368, -188247.337, 5323196.329),
-               check.attributes=FALSE)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=4936)),
+    c(3481063.368, -188247.337, 5323196.329), check.attributes=FALSE)
 
   #to 3035
-  expect_warning(res <- sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3035)))
-  expect_equal(res, c(3528573.580, 3834117.990),
-               check.attributes=FALSE)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3035)),
+    c(3528573.580, 3834117.990), check.attributes=FALSE)
 
   #to 4979
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4979))
-    - c(-3.09539967, 56.95544731, 0)) < 0.00000005))
-  expect_true(res)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.09391641, 56.95563591), epsg=4277), to=4979)),
+    c(-3.09539967, 56.95544731, 0), check.attributes=FALSE)
 
   #to 4978
-  expect_warning(res <- sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=4978)))
-  expect_equal(res, c(3481063.368, -188247.337, 5323196.329),
-               check.attributes=FALSE)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=4978)),
+    c(3481063.368, -188247.337, 5323196.329), check.attributes=FALSE)
 
   #to 7405
   expect_equal(sgs_coordinates(sgs_transform(
@@ -267,11 +252,9 @@ test_that("Transform from 4258", {
     sgs_points(list(-3.93692340, 56.11651350), epsg=4258), to=3857)),
     c(-438256.31, 7581645.25), check.attributes=FALSE)
   #to 4277
-  # accurate up to (at least) the seventh decimal
-  expect_warning(res <- all(abs(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=4277))
-    - c(-3.93559444, 56.11660784)) < 0.00000005))
-  expect_true(res)
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=4277)),
+    c(-3.93559444, 56.11660784), check.attributes=FALSE)
   #to 27700
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(-3.93692340, 56.11651350), epsg=4258), to=27700)),
@@ -303,14 +286,34 @@ test_that("Transform from 4258", {
 })
 
 test_that("Transform from 4937", {
-
   #to itself
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4937)), c(-1.6644422222, 53.6119903611, 299.800), check.attributes=FALSE)
   #to 4326
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4326)), c(-1.6644422222, 53.6119903611), check.attributes=FALSE)
   #to 3857
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=3857)), c(-185284.86, 7097011.72), check.attributes=FALSE)
   #to 4277
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4277)), c(-1.662925215, 53.61173358), check.attributes=FALSE)
   #to 27700
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=27700)), c(422298.000, 412877.001), check.attributes=FALSE)
   #to 4258
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4258)), c(-1.6644422222, 53.6119903611), check.attributes=FALSE)
   #to 4936
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4936)), c(3790644.900, -110149.210, 5111482.970), check.attributes=FALSE)
   #to 3035
   #to 4979
   #to 4978
@@ -319,7 +322,6 @@ test_that("Transform from 4937", {
 })
 
 test_that("Transform from 4936", {
-
   #to itself
   #to 4326
   #to 3857
@@ -335,7 +337,6 @@ test_that("Transform from 4936", {
 })
 
 test_that("Transform from 3035", {
-
   #to itself
   #to 4326
   #to 3857
@@ -351,7 +352,6 @@ test_that("Transform from 3035", {
 })
 
 test_that("Transform from 4979", {
-
   #to itself
   #to 4326
   #to 3857
@@ -367,7 +367,6 @@ test_that("Transform from 4979", {
 })
 
 test_that("Transform from 4978", {
-
   #to itself
   #to 4326
   #to 3857
