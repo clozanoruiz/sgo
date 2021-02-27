@@ -11,19 +11,20 @@ test_that("Convert from WGS84 to Pseudo-Mercator", {
                fixed = TRUE,
     "This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
 
-  expect_equal(sgs_coordinates(sgs_wgs84_en(sgs_points(list(18.5, 54.2),
-                                                     epsg=4326))),
-               c(2059410.58, 7208125.26), check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_wgs84_en(sgs_points(list(113.4, 46.78),
-                                                     epsg=4326))),
-               c(12623630.26, 5906238.11), check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_wgs84_en(sgs_points(list(16.9, 67.8),
-                                                     epsg=4326))),
-               c(1881299.39, 10387819.72), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_wgs84_en(
+    sgs_points(list(18.5, 54.2), epsg=4326))) -
+      c(2059410.5797, 7208125.2609)) < c(0.0001, 0.0001)))
+  expect_true(all(abs(sgs_coordinates(sgs_wgs84_en(
+    sgs_points(list(113.4, 46.78), epsg=4326))) -
+      c(12623630.2560, 5906238.1135)) < c(0.0001, 0.0001)))
+  expect_true(all(abs(sgs_coordinates(sgs_wgs84_en(
+    sgs_points(list(16.9, 67.8), epsg=4326))) -
+      c(1881299.3944, 10387819.7211)) < c(0.0001, 0.0001)))
+
   #3D input
-  expect_equal(sgs_coordinates(sgs_wgs84_en(sgs_points(list(18.5, 54.2, 47),
-                                                       epsg=4326))),
-               c(2059410.58, 7208125.26), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_wgs84_en(
+    sgs_points(list(18.5, 54.2, 47), epsg=4979))) -
+      c(2059410.5797, 7208125.2609)) < c(0.0001, 0.0001)))
 
   # Additional elements
   ln <- c(-4.22472, -2.09908)
@@ -32,11 +33,13 @@ test_that("Convert from WGS84 to Pseudo-Mercator", {
   country <- c("Scotland", "Scotland")
   df <- data.frame(N, ln, lt, country, stringsAsFactors = FALSE)
   p1 <- sgs_wgs84_en(sgs_points(df, coords=c("ln", "lt"), epsg=4326))
-  e <- c(-470293.68, -233668.52)
-  n <- c(7858404.23, 7790767.54)
+  e <- c(-470293.6791, -233668.5167)
+  n <- c(7858404.2287, 7790767.5442)
   df2 <- data.frame(N, country, e, n, stringsAsFactors = FALSE)
   p2 <- sgs_points(df2, coords=c("e", "n"), epsg=3857)
-  expect_true(all(as.data.frame(p1) == as.data.frame(p2)))
+  expect_true(all(abs(as.data.frame(p1[1:2]) -
+                        as.data.frame(p2[1:2])) < 0.0001))
+  expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
 
 })
 

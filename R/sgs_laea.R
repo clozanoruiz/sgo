@@ -93,7 +93,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
 
   # Return values
   en <- list(x=E, y=N)
-  en <- lapply(en, round, 2) #round to cm
+  #en <- lapply(en, round, 2) #round to cm
   if (num.elements > 0) en <- c(en, x[additional.elements])
 
   structure(c(en, epsg = 3035, datum = .epsgs[.epsgs$epsg == 3035, "datum"],
@@ -192,9 +192,8 @@ sgs_laea_etrs.sgs_points <- function(x) {
     (23 * e4 / 360 + 251 * e6 / 3780) * sin(4 * beta.prime) +
     (761 * e6 / 45360) * sin(6 * beta.prime)
 
-  # Round and Return
-  xy <- list(x=round(lambda * RAD.TO.GRAD, 9),
-             y=round(phi * RAD.TO.GRAD, 9))
+  # Return
+  xy <- list(x=lambda * RAD.TO.GRAD, y=phi * RAD.TO.GRAD)
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 

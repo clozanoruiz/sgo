@@ -290,7 +290,7 @@ sgs_lonlat_cart.sgs_points <- function(x) {
     additional.elements <- !names(x) %in% .sgs_points.3d.core
     cartesian <- .lonlat_to_cartesian(x[.sgs_points.3d.core])
   }
-  cartesian <- lapply(cartesian, round, 3) #round to mm
+  #cartesian <- lapply(cartesian, round, 3) #round to mm
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   # return sgs_points object
@@ -353,7 +353,7 @@ sgs_cart_lonlat.sgs_points <- function(x) {
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   lonlat <- .cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
-  lonlat$z <- round(lonlat$z, 3) #round to mm
+  #lonlat$z <- round(lonlat$z, 3) #round to mm
 
   # return sgs_points object
   if (num.elements > 0)

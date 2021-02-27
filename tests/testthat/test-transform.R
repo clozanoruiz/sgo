@@ -48,9 +48,9 @@ test_that("Transform from 4326", {
     c(3555669.675, -244703.389, 5271685.677), check.attributes=FALSE)
 
   #to 3035
-  expect_equal(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=3035)),
-    c(3459763.30, 3751984.65), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.9369234, 56.1165135), epsg=4326), to=3035))
+    - c(3459763.300, 3751984.646)) < 0.001))
 
   #to 4979
   expect_equal(sgs_coordinates(sgs_transform(
@@ -106,9 +106,9 @@ test_that("Transform from 3857", {
     c(3481062.238, -188247.169, 5323197.068), check.attributes=FALSE)
 
   #to 3035
-  expect_equal(sgs_coordinates(sgs_transform(
-    sgs_points(list(-344578.12, 7751020.42), epsg=3857), to=3035)),
-    c(3528573.94, 3834119.30), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-344578.12, 7751020.42), epsg=3857), to=3035))
+    - c(3528573.939, 3834119.302)) < 0.001))
 
   #to 4979
   expect_true(all(abs(sgs_coordinates(sgs_transform(
@@ -166,9 +166,9 @@ test_that("Transform from 4277", {
     c(3481063.368, -188247.337, 5323196.329), check.attributes=FALSE)
 
   #to 3035
-  expect_equal(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3035)),
-    c(3528573.580, 3834117.990), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.0939164, 56.9556359), epsg=4277), to=3035))
+    - c(3528573.579, 3834117.987)) < 0.001))
 
   #to 4979
   expect_equal(sgs_coordinates(sgs_transform(
@@ -216,9 +216,9 @@ test_that("Transform from 27700", {
     sgs_points(list(166341.986, 788816.800), epsg=27700), to=4936)),
     c(3470270.538, -355065.122, 5321739.756), check.attributes=FALSE)
   #to 3035
-  expect_equal(sgs_coordinates(sgs_transform(
-    sgs_points(list(166341.986, 788816.800), epsg=27700), to=3035)),
-    c(3364671.81, 3865100.26), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(166341.986, 788816.800), epsg=27700), to=3035))
+    - c(3364671.806, 3865100.263)) < 0.001))
   #to 4979
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(166341.986, 788816.800), epsg=27700), to=4979)),
@@ -268,9 +268,9 @@ test_that("Transform from 4258", {
     sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=4936)),
     c(3555669.674, -244703.389, 5271685.677), check.attributes=FALSE)
   #to 3035
-  expect_equal(sgs_coordinates(sgs_transform(
-    sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=3035)),
-    c(3459763.30, 3751984.65), check.attributes=FALSE)
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=3035))
+    - c(3459763.300, 3751984.648)) < 0.001))
   #to 4979
   expect_equal(sgs_coordinates(sgs_transform(
     sgs_points(list(-3.93692341, 56.11651351), epsg=4258), to=4979)),
@@ -315,19 +315,43 @@ test_that("Transform from 4937", {
     sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
     to=4936)), c(3790644.900, -110149.210, 5111482.970), check.attributes=FALSE)
   #to 3035
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=3035)) - c(3552763.693, 3451397.456)) < 0.001))
   #to 4979
+  expect_true(all(abs(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4979)) - c(-1.6644422222, 53.6119903611, 299.800)) <
+      c(0.000000001, 0.000000001, 0.0001)))
   #to 4978
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=4978)), c(3790644.900, -110149.210, 5111482.970), check.attributes=FALSE)
   #to 7405
-
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4937),
+    to=7405)), c(422298.000, 412877.001, 250.004), check.attributes=FALSE)
 })
 
 test_that("Transform from 4936", {
   #to itself
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(3737197.092, -302954.150, 5142476.100), epsg=4936),
+    to=4936)), c(3737197.092, -302954.150, 5142476.100), check.attributes=FALSE)
   #to 4326
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(3737197.092, -302954.150, 5142476.100), epsg=4936),
+    to=4326)), c(-4.63452168103, 54.0866631817), check.attributes=FALSE)
   #to 3857
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(3737197.092, -302954.150, 5142476.100), epsg=4936),
+    to=3857)), c(-515912.59, 7186586.38), check.attributes=FALSE)
   #to 4277
   #to 27700
   #to 4258
+  expect_equal(sgs_coordinates(sgs_transform(
+    sgs_points(list(3737197.092, -302954.150, 5142476.100), epsg=4936),
+    to=4258)), c(-4.63452168103, 54.0866631826), check.attributes=FALSE)
   #to 4937
   #to 3035
   #to 4979
