@@ -43,8 +43,8 @@ install.packages("sgs")
 And the development version from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("clozanoruiz/sgs")
+# install.packages("remotes")
+remotes::install_github("clozanoruiz/sgs")
 ```
 ## Example
 

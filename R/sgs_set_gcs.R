@@ -73,7 +73,8 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
     return (x)
   }
 
-  coord.format <- .epsgs[.epsgs$epsg==x$epsg, "format"] # ll, c or en
+  coord.format <- .epsgs[.epsgs$epsg==x$epsg, "format"] # ll or c
+  coord.to.format <- .epsgs[.epsgs$epsg==to, "format"]
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
@@ -117,23 +118,25 @@ sgs_set_gcs.sgs_points <- function (x, to=NULL) {
   } else {
     old.cartesian <- list(x=x$x, y=x$y, z=x$z)
   }
-  new.cartesian <- .apply_transform(old.cartesian, transform)
-  new.lonlat <- .cartesian_to_lonlat(new.cartesian, to)
+  new.coords <- .apply_transform(old.cartesian, transform)
+
+  if (coord.to.format == "ll") {
+    new.coords <- .cartesian_to_lonlat(new.coords, to)
+  }
 
   if (.epsgs[.epsgs$epsg==to, "dimension"] != "XYZ") {
-    new.lonlat <- new.lonlat[1:2]
+    new.coords <- new.coords[1:2]
     dimension <- "XY"
   } else {
-    if (!x.3d)
-      new.lonlat$z <- rep(0, length(x$x))
+    if (!x.3d) new.coords$z <- rep(0, length(x$x))
     dimension <- "XYZ"
   }
 
   # return sgs_points object
   if (num.elements > 0)
-    new.lonlat <- c(new.lonlat, lst.additional.elements)
+    new.coords <- c(new.coords, lst.additional.elements)
 
-  structure(c(new.lonlat, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
+  structure(c(new.coords, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
               dimension = dimension),
             class = "sgs_points")
 
