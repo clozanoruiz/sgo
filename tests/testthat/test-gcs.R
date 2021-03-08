@@ -53,10 +53,41 @@ test_that("Main function sgs_set_gcs", {
 
 test_that("Testing sgs_lonlat_cart", {
   # wrong input
+  p <- sgs_points(list(-3.0939164, 56.9556359), epsg=4277)
+  expect_error(sgs_lonlat_cart(p),
+               "can only convert from epsg 4258, 4937, 4326 or 4979")
+
   # additional elements
+  ln <- c(-4.22472, -2.09908)
+  lt <- c(57.47777, 57.14965)
+  N <- c("Inverness", "Aberdeen")
+  country <- c("Scotland", "Scotland")
+  df <- data.frame(N, ln, lt, country, stringsAsFactors = FALSE)
+  p1 <- sgs_lonlat_cart(sgs_points(df, coords=c("ln", "lt"), epsg=4326))
+  x <- c(3427907.0081, 3465674.1815)
+  y <- c(-253216.7327, -127024.7800)
+  z <- c(5354692.0241, 5334958.3584)
+  df2 <- data.frame(N, country, x, y, z, stringsAsFactors = FALSE)
+  p2 <- sgs_points(df2, coords=c("x", "y", "z"), epsg=4978)
+  expect_true(all(abs(as.data.frame(p1[1:2]) -
+                        as.data.frame(p2[1:2])) < 0.0001))
+  expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
+  expect_true(all(abs(p1$z - z) < 0.0001))
 })
 
 test_that("Testing sgs_cart_lonlat", {
   # wrong input
+  p <- sgs_points(list(x=3737197.092, y=-302954.150, z=5142476.100,
+                       attr="attr1"), epsg=7405)
+  expect_error(sgs_cart_lonlat(p),
+               "can only convert from epsg 4936, 4978")
+
   # additional elements
+  p <- sgs_cart_lonlat(sgs_points(list(x=3737197.092, y=-302954.150,
+                                      z=5142476.100,
+                                      attr="attr1"), epsg=4936))
+  df <- data.frame(x=-4.63452168103, y=54.0866631826, z=84.3656614413,
+                   attr="attr1", stringsAsFactors = FALSE)
+  expect_true(all(abs(as.data.frame(p[1:3]) - df[1:3]) < 0.00000001))
+  expect_equal(as.data.frame(p[4], stringsAsFactors = FALSE), df[4])
 })

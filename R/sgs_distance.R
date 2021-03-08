@@ -30,7 +30,7 @@
 #' a millimetre. If such accuracy is not needed, \code{which} can also
 #' accept the string "Harvesine" which calculates great-circle distance between
 #' two points on a sphere. Harvesines are faster to compute than the Vicenty
-#' dsitances but can result in an error of up to 0.5\%.
+#' distances but can result in an error of up to 0.5\%.
 #'
 #' When working with planar coordinates the Local Scale Factor is the scale
 #' distortion inherent in the map projection at a point. When
@@ -178,7 +178,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     F <- .local.scale.factor(Em, Nm)
   }
 
-  round(s / F, 3) # S (true distance)
+  #round(s / F, 3) # S (true distance)
+  s / F
 
 }
 
@@ -263,7 +264,9 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   # precision is used.
   h <- pmin(h, 1)
   d <- 2 * R * asin(sqrt(h))
-  round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
+
+  #round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
+  d
 
 }
 #TODO in tests: antipodal points:
@@ -366,7 +369,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   alpha1[coincident.points] <- 0
   alpha2[coincident.points] <- PI
 
-  s <- round(unname(b * A * (sigma - delta.sigma)), 3) #round to mm
+  #s <- round(unname(b * A * (sigma - delta.sigma)), 3) #round to mm
+  s <- unname(b * A * (sigma - delta.sigma))
 
   if (any(no.convergence)) {
     s[no.convergence] <- NaN

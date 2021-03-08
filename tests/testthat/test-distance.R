@@ -12,6 +12,16 @@ test_that("Perimeters", {
   # position so that we can calculate easily the distance between vertices
   coords <- sgs_coordinates(pol)
   pol.shift.one <- sgs_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
-  expect_equal(sum(sgs_distance(pol, pol.shift.one, by.element=TRUE)), 2115.33)
+  perimeter <- sum(sgs_distance(pol, pol.shift.one, by.element=TRUE))
+  expect_equal(round(perimeter, 2), 2115.33)
 
+  # Stirling Parliament Constituency (> 10000 points)
+  stirling.p.const <- readRDS(file="stirling.p.const.rds")
+  stirling.sgs <- sgs_bng_lonlat(sgs_points(stirling.p.const, epsg=27700),
+                                 to=4326)
+  coords <- sgs_coordinates(stirling.sgs)
+  stir.shift.one <- sgs_points(rbind(coords[-1, ], coords[1, ]),
+                               epsg=stirling.sgs$epsg)
+  perimeter <- sum(sgs_distance(stirling.sgs, stir.shift.one, by.element=TRUE))
+  expect_equal(round(perimeter, 3), 331024.547)
 })

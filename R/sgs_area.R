@@ -159,8 +159,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   # (xi * yi+1 - xi+1 * yi)
   term <- p[, 1] * p.shift.one[, 2] - p.shift.one[, 1] * p[, 2]
 
-  area <- 0.5 * abs(sum(term))
-  round(area, 1)
+  #round(0.5 * abs(sum(term)), 1)
+  0.5 * abs(sum(term))
 
 }
 
@@ -189,7 +189,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 
   centroid[, 1] <- centroid[, 1] + min.x
   centroid[, 2] <- centroid[, 2] + min.y
-  round(centroid, 3)
+  #round(centroid, 3)
+  centroid
 
 }
 

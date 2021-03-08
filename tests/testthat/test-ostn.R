@@ -369,7 +369,6 @@ test_that("Input and internal conversions checks in BNG routines", {
 
 
   ## sgs_bng_lonlat:
-
   expect_error(sgs_bng_lonlat(sgs_points(
     list(-5.003508, 56.79685, 1345), epsg=4979), to=4258),
   "This routine only supports BNG Easting and Northing entries")
@@ -383,6 +382,4 @@ test_that("Input and internal conversions checks in BNG routines", {
   #                                         epsg=27700), to=4937),
   #               "Converted from 2D to 3D thus heights default to 0")
 
- #ostn.at.shifts
- #all.is.na
 })

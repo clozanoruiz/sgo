@@ -347,12 +347,7 @@ sgs_cart_lonlat.sgs_points <- function(x) {
     to.epsg <- 4979
   }
 
-  if (x$dimension == "XY") {
-    additional.elements <- !names(x) %in% .sgs_points.2d.core
-  } else {
-    additional.elements <- !names(x) %in% .sgs_points.3d.core
-  }
-
+  additional.elements <- !names(x) %in% .sgs_points.3d.core
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
   lonlat <- .cartesian_to_lonlat(list(x=x$x, y=x$y, z=x$z), to.epsg)
