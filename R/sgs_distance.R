@@ -162,7 +162,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   s <- sqrt(dE * dE + dN * dN)
 
   if (!grid.true.distance)
-    return(round(s, 3)) # round to mm
+    #return(round(s, 3)) # round to mm
+    return(s)
 
   Em <- E1 + (E2 - E1) / 2 # E at midpoint
   Nm <- N1 + (N2 - N1) / 2 # N at midpoint
@@ -170,8 +171,8 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     Ft <- .local.scale.factor(c(E1, E2, Em), c(N1, N2, Nm))
     len.E1 <- length(E1) # E1, E2, Em have the same length
     F1 <- Ft[(1:len.E1)]
-    F2 <- Ft[length(Ft) - (len.E1:0)]
     Fm <- Ft[((len.E1 + 1):(len.E1 * 2))]
+    F2 <- Ft[length(Ft) - ((len.E1-1):0)]
     F <- (F1 + 4 * Fm + F2) / 6
   } else {
     #F for mid point only
@@ -269,16 +270,6 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   d
 
 }
-#TODO in tests: antipodal points:
-#p1 <- sgs_points(list(-177.5,-5.5),epsg=4326)
-#p2 <- sgs_points(list(2.5,5.5),epsg=4326)
-#res <- .great.circle.harvesine(p1,p2)
-#res: 20015112
-
-#p1 <- sgs_points(list(0,0),epsg=4326)
-#p2 <- sgs_points(list(90,90),epsg=4326)
-#res <- .great.circle.harvesine(p1,p2)
-#res 10007556
 
 
 # Vicenty (inverse) iterative method to compute the geographical distance
@@ -376,18 +367,12 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     s[no.convergence] <- NaN
     alpha1[no.convergence] <- NaN
     alpha2[no.convergence] <- NaN
-    warning("Vicenty formula failed to converge. Check your results.")
+    warning("Vicenty formula failed to converge. Try to increase iterations.")
   }
 
   list(distance=s, initial.bearing=alpha1, final.bearing=alpha2)
 
 }
-#examples or better in tests TODO:
-#nearly antipodal points may need a higher number of iterations to converge
-#new.zealand <- sgs_points(list(174.35, -35.76),epsg=4326)
-#gibraltar <- sgs_points(list(-5.35, 36.13),epsg=4326)
-#sgs_distance(new.zealand, gibraltar, which="Vicenty", iterations=300)
-#TODO: test how it behaves with coincident points
 
 
 # Vicenty (direct) iterative method to compute a destination point from a given
@@ -477,4 +462,3 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   list(lon=lambda2, lat=phi2, final.bearing=alpha2)
 
 }
-# TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).

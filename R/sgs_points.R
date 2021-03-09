@@ -138,7 +138,7 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   len <- length(x)
-  if (len < 2) stop("This method accepts lists with at least 2 columns")
+  if (len < 2) stop("This method accepts lists with at least 2 elements")
 
   if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")

@@ -24,9 +24,9 @@
 #' The standard parallel and the projection origin are tied to the moment
 #' centroid of the polygon.
 #'
-#' To reduce the error introduced by boundary simplification and provide an
-#' even more accurate area computation for angular coordinates, the boundary
-#' segments can be divided by interpolating vertices on the projected geodesic.
+#' Boundary segments can be divided by interpolating vertices on the projected
+#' geodesic to reduce the error introduced by boundary simplification and to
+#' provide an even more accurate area computation for angular coordinates.
 #' For instance, if \code{interpolate = 500} then any segment between adjacent
 #' coordinates whose length is greater than \code{interpolate} will be split in
 #' parts no greater than \code{500 m} and new vertices will be added.
