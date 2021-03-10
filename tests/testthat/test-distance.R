@@ -66,7 +66,7 @@ test_that("Harvesine and Vicenty", {
                ncol = 2, byrow = FALSE) / RAD.TO.GRAD
   expect_equal(round(.great.circle.harvesine(m1, m2), 0), 10007556)
 
-  # inverse.vicenty
+  ## inverse.vicenty
   # nearly antipodal points may need a higher number of iterations to converge
   new.zealand <- sgs_points(list(174.35, -35.76), epsg=4326)
   gibraltar <- sgs_points(list(-5.35, 36.13), epsg=4326)
@@ -75,15 +75,38 @@ test_that("Harvesine and Vicenty", {
                                    by.element = TRUE),
     "Vicenty formula failed to converge. Try to increase iterations",
     fixed=TRUE)
-  expect_true(is.nan(s))
+  expect_true(is.na(s))
 
   expect_equal(round(sgs_distance(new.zealand, gibraltar, which="Vicenty",
                  by.element = TRUE, iterations=300), 3), 19958627.395)
 
-  #TODO: test how it behaves with coincident points
+  # testing coincident points
+  p <- sgs_points(list(x=c(-6.43698696, -6.43166843),
+                       y=c(58.21740316, 58.21930597)), epsg=4326)
+  expect_equal(sgs_distance(p, which="Vicenty", by.element=TRUE), c(0,0))
 
-  # direct.vicenty
-  # TODO: test how it behaves with s = 0 (and alpha1=0 or 90degrees?).
+  ## direct.vicenty
+  # when s = 0 (final bearing == initial bearing)
+  p <- matrix(c(-6.43698696/RAD.TO.GRAD, 58.21740316/RAD.TO.GRAD), ncol=2)
+  d.vicenty <- .direct.vicenty.ellipsoid(p, 0, 45/RAD.TO.GRAD, "WGS84")
+  expect_equal(d.vicenty$final.bearing * RAD.TO.GRAD, 45)
+
+  # alpha1 == 0
+  d.vicenty <- .direct.vicenty.ellipsoid(p, 500, 0, "WGS84")
+  expect_equal(unlist(d.vicenty, use.names = FALSE) * RAD.TO.GRAD,
+               c(-6.43698696, 58.22189224, 0))
+
+  # alpha1 == 90
+  d.vicenty <- .direct.vicenty.ellipsoid(p, 500, 90/RAD.TO.GRAD, "WGS84")
+  expect_equal(unlist(d.vicenty, use.names = FALSE) * RAD.TO.GRAD,
+               c(-6.428479802, 58.217402877, 90.007231532))
+
+  # force no convergence
+  expect_warning(d.vicenty <- .direct.vicenty.ellipsoid(p, 500, 45/RAD.TO.GRAD,
+                                "WGS84", iterations = 1),
+    "Vicenty formula failed to converge. Try to increase iterations")
+  expect_true(all(is.na(unlist(d.vicenty))))
+
 
 })
 

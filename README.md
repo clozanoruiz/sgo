@@ -6,7 +6,7 @@ sgs - Simple GIS (with OSGB)
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/clozanoruiz/sgs/workflows/R-CMD-check/badge.svg?branch=main)](https://github.com/clozanoruiz/sgs/actions?workflow=R-CMD-check)
-[![coverage](https://codecov.io/gh/clozanoruiz/sgs/branch/master/graph/badge.svg?token=Qd5gkpnxFc)](https://codecov.io/gh/clozanoruiz/sgs?branch=main)
+[![coverage](https://codecov.io/gh/clozanoruiz/sgs/branch/main/graph/badge.svg?token=Qd5gkpnxFc)](https://codecov.io/gh/clozanoruiz/sgs?branch=main)
 [![Latest
 release](https://img.shields.io/github/release/clozanoruiz/sgs.svg)](https://github.com/clozanoruiz/sgs/releases)
 [![license](https://img.shields.io/badge/license-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)

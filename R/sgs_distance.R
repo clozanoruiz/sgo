@@ -364,9 +364,9 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
   s <- unname(b * A * (sigma - delta.sigma))
 
   if (any(no.convergence)) {
-    s[no.convergence] <- NaN
-    alpha1[no.convergence] <- NaN
-    alpha2[no.convergence] <- NaN
+    s[no.convergence] <- NA_real_
+    alpha1[no.convergence] <- NA_real_
+    alpha2[no.convergence] <- NA_real_
     warning("Vicenty formula failed to converge. Try to increase iterations.")
   }
 
@@ -445,18 +445,23 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
                                 (-1 + 2 * cos2.2sigma.m)))
   lambda2 <- p1[, 1] + L
   alpha2 <- atan2(sin.alpha, -x)
-  p2 <- cbind(x=lambda2, y=phi2)
+  #p2 <- cbind(x=lambda2, y=phi2)
 
   if (any(no.convergence)) {
-    p2[no.convergence, ]<- NaN
-    alpha2[no.convergence] <- NaN
-    warning("Vicenty formula failed to converge. Check your results.")
+    #p2[no.convergence, ]<- NA_real_
+    lambda2[no.convergence]<- NA_real_
+    phi2[no.convergence]<- NA_real_
+    alpha2[no.convergence] <- NA_real_
+    warning("Vicenty formula failed to converge. Try to increase iterations.")
   }
 
+  # coincident points. Set alpha2 = alpha1
   p2.is.p1 <- (s == 0)
   if (any(p2.is.p1)) {
-    p2[p2.is.p1, ] <- p1[p2.is.p1, ]
-    alpha2[p2.is.p1] <- NA
+    #p2[p2.is.p1, ] <- p1[p2.is.p1, ]
+    lambda2[p2.is.p1] <- p1[p2.is.p1, 1]
+    phi2[p2.is.p1] <- p1[p2.is.p1, 2]
+    alpha2[p2.is.p1] <- alpha1[p2.is.p1]
   }
 
   list(lon=lambda2, lat=phi2, final.bearing=alpha2)
