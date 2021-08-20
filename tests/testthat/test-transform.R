@@ -1,8 +1,7 @@
 context("Testing sgs_transform wrapper")
 library(sgs)
 
-#TODO: add all the transformations! (many are left)
-#Laso using cs2cs 6.3.1 to compare results
+#Also using cs2cs 6.3.1 to compare results
 
 test_that("Check inputs", {
   expect_error(sgs_transform(

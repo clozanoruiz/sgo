@@ -352,7 +352,7 @@ sgs_coordinates.sgs_points <- function(x) {
 
 }
 
-#TODO (docs?)
+
 #' @export
 as.data.frame.sgs_points <- function(x, row.names = NULL, optional = FALSE,
       ..., cut.names = FALSE, col.names = names(x), fix.empty.names = TRUE,
@@ -369,7 +369,19 @@ as.data.frame.sgs_points <- function(x, row.names = NULL, optional = FALSE,
 }
 
 
-#TODO (docs? est with expect_output)
+#' @export
+as.list.sgs_points <- function(x, ...) {
+
+  #class(x) <- setdiff(class(x), "sgs_points")
+  x[setdiff(names(x), .sgs_points.attr)]
+
+}
+
+
+#' @rdname sgs_points
+#' @param ... Further arguments passed to or from other methods,
+#' see \link{print}.
+#' @param n Maximum number of features to print.
 #' @export
 print.sgs_points <- function(x, ..., n = 6L) {
 
@@ -400,7 +412,8 @@ print.sgs_points <- function(x, ..., n = 6L) {
       "\nEPSG:     ", x$epsg,
       msg, "\n")
 
-  print.data.frame(as.data.frame(lapply(x[print.cols], function(l) l[1:n])))
+  print.data.frame(as.data.frame(lapply(x[print.cols],
+                                        function(l) l[1:n])), ...)
   invisible(x)
 
 }

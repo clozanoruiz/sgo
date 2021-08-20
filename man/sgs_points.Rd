@@ -3,9 +3,12 @@
 \encoding{UTF-8}
 \name{sgs_points}
 \alias{sgs_points}
+\alias{print.sgs_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
 sgs_points(x, coords = NULL, epsg = NULL)
+
+\method{print}{sgs_points}(x, ..., n = 6L)
 }
 \arguments{
 \item{x}{A matrix, list or dataframe with at least 2 columns of either
@@ -30,6 +33,11 @@ of the following values:
 \code{7405}
 \item WGS84/Pseudo-Mercator (Google Maps, OpenStreetMap, etc.): \code{3857}
 }}
+
+\item{...}{Further arguments passed to or from other methods,
+see \link{print}.}
+
+\item{n}{Maximum number of features to print.}
 }
 \value{
 An object of class \code{sgs_points}. This object is a actually a list with

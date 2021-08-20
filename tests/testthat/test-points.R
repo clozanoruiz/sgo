@@ -26,33 +26,27 @@ test_that("sgs_points constructors", {
   df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
   p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
   expect_true(all(cols %in% names(p4)) && class(p4) == "sgs_points")
-  #sf
-
-  #sfc
 })
+
 #TODO
-## ADD a warning when convering netween e/n to latlon and viceversa when there
-# are points out of bounds of the grid. Perhaps add a parameter like in
-# sgs_ngr_bng to list those out of bounds.
+# as.data.frame, as.list, sgs_points_sfc, sgs_points_sf documented in a single help file called 'Coerce to other other types'!!
+
 # 1) Test multiple functions (sgs_bng_laton, sgs_set_gcs_etc, points_xy) with those
 # different types of sgs_points (dataframes, lists, single, etc.)
+
 # 2) Confirm all of those keep the 'sgs_points' class and the names in the class
-# are always (and only): x, y, epsg and datum
+# are always at least the (5-6) core columns
+
 # 3) Test all the extended operators '['. Check they do what is required from
-# them and they keep all attributes/class of sgs
-# 4) test taht the transformations, besides being correct keep all the additional
-# columns
+# them and they keep all attributes/class of sgs (or basically test multiple ways of manipulating sgs objects (subset, merging, etc and see how it works))
 
-#test transform function with extra arguments(like ODN.datum... to see if the new columns are maintaned through the conversions)
-#test that always, all sgs_points objects contain at least the (5-6) core columns
+# 4) test that the transformations, besides being correct keep all the additional
+# columns (just a couple of them)
 
-#test all the options that use sf (like converting from sgs to sf!)
 
-#confirm that I cannot improve accuracy/precision in test-trnasform to/from 4277
-
-#test bng where the OSGM heights are outside of the transformationa rea (flag16)
+#test bng where the OSGM heights are outside of the transformation area (flag16)
 #test cases when BNG is out of boundaries: ie. 1000000
-#add these tests: https://github.com/thruston/grid-banger/blob/master/test/test_some_more_places.py
+#add these tests too: https://github.com/thruston/grid-banger/blob/master/test/test_some_more_places.py
 
 #Write in documentation somewhre:
 #**Accuracy**: Grid references rounded to whole metres will give lat/lon that
