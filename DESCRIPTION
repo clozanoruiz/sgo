@@ -10,8 +10,11 @@ Description: A set of functions to help with spatial analysis mainly focused on
   the OSGB36/ETRS89 transformation (Great Britain and the Isle of Man) by using 
   the Ordnance Survey's OSTN15/OSGM15 transformation model without any other 
   package dependency.
-Depends: R (>= 3.4.0)
-Suggests: sf, testthat
+Depends:
+  R (>= 3.4.0)
+Suggests:
+  sf,
+  testthat (>= 3.0.0)
 License: BSD_2_clause + file LICENSE
 Copyright: OSTN transformation data included in this module is freely available
   from the Ordnance Survey but remains Crown Copyright (C) 2016 under the terms
@@ -21,14 +24,14 @@ ByteCompile: yes
 LazyData: true
 RoxygenNote: 7.1.1
 Collate: 
-    'sgs.R'
-    'sgs_area.R'
-    'sgs_bng.R'
-    'sgs_distance.R'
-    'sgs_laea.R'
-    'sgs_ngr.R'
-    'sgs_points.R'
-    'sgs_set_gcs.R'
-    'sgs_wgs84.R'
-    'sgs_transform.R'
+  'sgs.R'
+  'sgs_area.R'
+  'sgs_bng.R'
+  'sgs_distance.R'
+  'sgs_laea.R'
+  'sgs_ngr.R'
+  'sgs_points.R'
+  'sgs_set_gcs.R'
+  'sgs_wgs84.R'
+  'sgs_transform.R'
 Config/testthat/edition: 3
