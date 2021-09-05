@@ -1,10 +1,11 @@
-context("Helmert transformation routine and set_gcs")
 library(sgs)
 
 test_that("Main function sgs_set_gcs", {
+  dnames <- list(NULL, c("x","y"))
+
   # x == to
   p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
-  expect_equal(sgs_set_gcs(p, to=4326), p, check.attributes=FALSE)
+  expect_equal(sgs_set_gcs(p, to=4326), p)
 
   # wrong input
   expect_error(sgs_set_gcs(sgs_points(list(166341.986, 788816.800),
@@ -17,7 +18,7 @@ test_that("Main function sgs_set_gcs", {
   # input 'll', 'c'
   expect_equal(sgs_coordinates(sgs_set_gcs(
     sgs_points(list(18.5, 54.2), epsg=4326), to=4258)),
-    c(18.5, 54.2), check.attributes=FALSE)
+    matrix(c(18.5, 54.2), ncol=2, dimnames=dnames))
   expect_true(all(abs(sgs_coordinates(sgs_set_gcs(
     sgs_points(list(18.5, 54.2, 20), epsg=4937), to=4936)) -
     c(3545966.25772, 1186463.71294, 5149813.49954)) < 0.00001))
@@ -35,7 +36,7 @@ test_that("Main function sgs_set_gcs", {
   df2 <- data.frame(N, country, ln, lt, stringsAsFactors = FALSE)
   p2 <- sgs_points(df2, coords=c("ln", "lt"), epsg=4258)
   expect_equal(as.data.frame(p1[1:2]),
-                        as.data.frame(p2[1:2]), check.attributes=FALSE)
+                        as.data.frame(p2[1:2]))
   expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
 
   # 'x' and 'to' different to ETRS89
@@ -44,10 +45,12 @@ test_that("Main function sgs_set_gcs", {
     - c(-3.93558807, 56.11660085)) < 0.00000001))
   p <- sgs_points(list(3737197.092, -302954.150, 5142476.100), epsg=4978)
   expect_equal(sgs_coordinates(sgs_set_gcs(p, to=4277)),
-               c(-4.63335099411, 54.0865177713), check.attributes=FALSE)
+               matrix(c(-4.63335099411, 54.0865177713),
+                      ncol=2, dimnames=dnames))
   p <- sgs_points(list(-1.6644422222, 53.6119903611, 299.800), epsg=4979)
   expect_equal(sgs_coordinates(sgs_set_gcs(p, to=4277)),
-               c(-1.66292822467, 53.6117492333), check.attributes=FALSE)
+               matrix(c(-1.66292822467, 53.6117492333),
+                      ncol=2, dimnames=dnames))
 
 })
 

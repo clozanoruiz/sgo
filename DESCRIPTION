@@ -31,3 +31,4 @@ Collate:
     'sgs_set_gcs.R'
     'sgs_wgs84.R'
     'sgs_transform.R'
+Config/testthat/edition: 3

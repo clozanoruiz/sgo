@@ -1,4 +1,3 @@
-context("Planar, harvesine and great circle distances")
 library(sgs)
 
 test_that("Inputs and BNG", {

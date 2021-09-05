@@ -1,41 +1,41 @@
-context("Parsing and Getting Grid References")
 library(sgs)
 
 test_that("Grid References are correctly parsed", {
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA15")),         c(510000, 450000),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA1256")),       c(512000, 456000),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA123567")),     c(512300, 456700),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA12345678")),   c(512340, 456780),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA1234567890")), c(512345, 467890),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 1 5")),       c(510000, 450000),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 12 56")),     c(512000, 456000),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 123 567")),   c(512300, 456700),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 1234 5678")), c(512340, 456780),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 12345 67890")),c(512345, 467890),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 123567")),    c(512300, 456700),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("TA123 567")),    c(512300, 456700),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("SV9055710820")), c(90557, 10820),
-               check.attributes=FALSE)
-  expect_equal(sgs_coordinates(sgs_ngr_bng("HU4795841283")), c(447958, 1141283),
-               check.attributes=FALSE)
+  dnames <- list(NULL, c("x","y"))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA15")),
+               matrix(c(510000, 450000), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA1256")),
+               matrix(c(512000, 456000), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA123567")),
+               matrix(c(512300, 456700), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA12345678")),
+               matrix(c(512340, 456780), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA1234567890")),
+               matrix(c(512345, 467890), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 1 5")),
+               matrix(c(510000, 450000), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 12 56")),
+               matrix(c(512000, 456000), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 123 567")),
+               matrix(c(512300, 456700), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 1234 5678")),
+               matrix(c(512340, 456780), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 12345 67890")),
+               matrix(c(512345, 467890), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA 123567")),
+               matrix(c(512300, 456700), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("TA123 567")),
+               matrix(c(512300, 456700), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("SV9055710820")),
+               matrix(c(90557, 10820), ncol=2, dimnames=dnames))
+  expect_equal(sgs_coordinates(sgs_ngr_bng("HU4795841283")),
+               matrix(c(447958, 1141283), ncol=2, dimnames=dnames))
 
   # Lists:
   expect_equal(sgs_coordinates(sgs_ngr_bng(
     c("TA1234 5678", "TA1234567890", "TA 123 567"))),
     matrix(c(512340, 456780, 512345, 467890, 512300, 456700),
-           ncol=2, byrow=TRUE), check.attributes=FALSE)
+           ncol=2, byrow=TRUE, dimnames=(dnames)))
 
   # Error messages:
   expect_error(sgs_ngr_bng("WE950950"), "Invalid grid reference.*")

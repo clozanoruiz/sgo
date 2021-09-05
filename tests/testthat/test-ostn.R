@@ -1,4 +1,3 @@
-context("Conversion from/to OS coordinates")
 library(sgs)
 
 # Degrees of longitude get significantly smaller in northern latitudes.

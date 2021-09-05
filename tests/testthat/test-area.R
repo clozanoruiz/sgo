@@ -1,4 +1,3 @@
-context("Planar, and geodetic area")
 library(sgs)
 
 # Comparing also against geographiclib (https://geographiclib.sourceforge.io/)

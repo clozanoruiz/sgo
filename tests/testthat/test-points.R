@@ -1,4 +1,3 @@
-context("Routines related to the construction and transformation of points")
 library(sgs)
 
 cols <- c("x", "y", "epsg", "datum")
@@ -26,6 +25,41 @@ test_that("sgs_points constructors", {
   df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
   p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
   expect_true(all(cols %in% names(p4)) && class(p4) == "sgs_points")
+
+  #matrix
+
+})
+
+test_that("Wrong inputa data", {
+  n <- c("Inverness", "Aberdeen")
+  ln <- c(-4.22472, -2.09908)
+  lt <- c(57.47777, 57.14965)
+
+  #lists
+  expect_error(sgs_points(list(ln), epsg=4326),
+               "method accepts lists with at least 2 elements")
+  expect_error(sgs_points(list(-4.22472, 57.47777)),
+               "'epsg' must be entered as one of the accepted numbers")
+  expect_error(sgs_points(list(-4.22472, 57.47777), epsg=-1),
+               "'epsg' must be entered as one of the accepted numbers")
+  #sgs_points(list(c(1,3),ln,lt), epsg=4326) <- arreglar en el codigo cuando vienen sin nombre de columna!
+
+  #data.frame
+  df <- data.frame(ln, stringsAsFactors = FALSE)
+  expect_error(sgs_points(df, epsg=4326),
+               "method accepts dataframes with at least 2 columns")
+
+  df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
+  expect_error(sgs_points(df),
+               "'epsg' must be entered as one of the accepted numbers")
+  expect_error(sgs_points(df, epsg=-1),
+               "'epsg' must be entered as one of the accepted numbers")
+
+  df <- data.frame(n, ln, stringsAsFactors = FALSE)
+  #sgs_points(df, epsg=4326)
+
+  #matrix
+
 })
 
 #TODO

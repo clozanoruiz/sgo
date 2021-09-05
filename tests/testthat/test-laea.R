@@ -1,4 +1,3 @@
-context("Conversion from/to LAEA EPSG:3035")
 library(sgs)
 
 test_that("sgs_etrs_laea Input", {

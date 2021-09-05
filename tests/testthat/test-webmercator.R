@@ -1,4 +1,3 @@
-context("Pseudo-Mercator to/from WGS84")
 library(sgs)
 
 #http://epsg.io/transform#s_srs=4326&t_srs=3857
