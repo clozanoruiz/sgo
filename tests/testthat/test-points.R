@@ -64,15 +64,28 @@ test_that("Wrong inputa data", {
 })
 
 test_that("Print output", {
+  #print all elements
   p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
 
   expect_output(print(p), "An sgs object with 1 feature (point)", fixed = TRUE)
-  #An sgs object with 1 feature (point)
-  #dimension: XY
-  #EPSG:      4326
-  #x       y
-  #1 56.1165 -3.9369
+  expect_output(print(p), "dimension: XY", fixed = TRUE)
+  expect_output(print(p), "EPSG:      4326", fixed = TRUE)
 
+  #print n first elements only
+  N <- c("Inverness", "Aberdeen")
+  country <- c("Scotland", "Scotland")
+  x <- c(3427907.0081, 3465674.1815)
+  y <- c(-253216.7327, -127024.7800)
+  z <- c(5354692.0241, 5334958.3584)
+  df <- data.frame(N, country, x, y, z, stringsAsFactors = FALSE)
+  p <- sgs_points(df, coords=c("x", "y", "z"), epsg=4978)
+
+  expect_output(print(p, n=1),
+                "An sgs object with 1 feature (point) and 2 fields ",
+                fixed = TRUE)
+  expect_output(print(p, n=1), "dimension: XYZ", fixed = TRUE)
+  expect_output(print(p, n=1), "EPSG:      4978", fixed = TRUE)
+  expect_output(print(p, n=1), "First 1 feature:",  fixed = TRUE)
 })
 
 #TODO

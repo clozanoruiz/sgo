@@ -404,7 +404,7 @@ print.sgs_points <- function(x, ..., n = 6L) {
     msg <- ""
     n <- len
   } else {
-    msg <- paste("\nFirst", n, "features:")
+    msg <- paste("\nFirst", n, ifelse(n == 1L, "feature:", "features:"))
   }
 
   # print coordinates always first
