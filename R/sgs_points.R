@@ -8,8 +8,8 @@
 #' @name sgs_points
 #' @usage sgs_points(x, coords = NULL, epsg = NULL)
 #' @param x A matrix, list or dataframe with at least 2 columns of either
-#' easting/northing or longitude/latitude coordinates per row. A third column
-#' with height values is optional.
+#' easting/northing or longitude/latitude coordinates per row. A column with
+#' height values is optional.
 #' \strong{Please note} that the order is important when \code{x} has only 2 or
 #' 3 columns and \code{coords} is not informed: lat/lon or northing/easting
 #' (and height) will produce wrong results.
@@ -138,34 +138,48 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   len <- length(x)
+  names <- names(x)
   if (len < 2) stop("This method accepts lists with at least 2 elements")
 
-  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
+  if (is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
-  if (len < 4 && is.null(names(x)) ) {
-    coords <- .coordinates.names[1, 1:len] #c(x,y,(z)) just because
-    names(x) <- coords
+  if ((!is.null(coords) && is.null(names)) || !all(coords %in% names)) {
+    stop(paste("'x' must have at least",
+               length(coords),
+               "named elements (coordinates)"))
   }
 
-  if(is.null(coords)) {
-    lnames <- tolower(names(x))
+  if (len < 4 && is.null(coords) && !is.null(names)) {
+    lnames <- tolower(names)
     known.coords <- .coordinates.names[match(lnames, .coordinates.names)]
     known.coords <- known.coords[!is.na(known.coords)]
-    len.known <- length(known.coords)
-    if (len.known < 4 && any(apply(.coordinates.names, 1,
-                                   function(n,x) all(n[1:len.known]==x),
-                                   x=known.coords))) {
-      coords <- names(x)[lnames %in% known.coords]
-    } else {
-      stop("Must specify the coordinate columns using the 'coords' parameter")
+    if (length(known.coords) == len) {
+      coords <- known.coords
+      names(x) <- coords
     }
+  }
+
+  # don't try to guess too much the coords...
+  if (is.null(coords) && is.null(names)) {
+    if ((epsg %in% .epsgs[.epsgs$dimension != "XYZ", "epsg"] && len == 2) ||
+        (epsg %in% .epsgs[.epsgs$dimension != "XY", "epsg"] && len == 3)){
+      coords <- .coordinates.names[1, 1:len] #c(x,y,(z)) just because
+      names(x) <- coords
+    }
+  }
+
+  if (is.null(names(x))) {
+    stop("'x' must have at least two named elements (coordinates)")
+  }
+  if (is.null(coords)) {
+    stop("Must specify the coordinate columns using the 'coords' parameter")
   }
 
   num.coords <- length(coords)
 
-  #check those epsgs that ONLY admit 2 and have 3, and viceversa
+  # check those epsgs that ONLY admit 2 and have 3, and viceversa
   if ((epsg %in% .epsgs[.epsgs$dimension=="XY", "epsg"] && num.coords > 2) ||
       (epsg %in% .epsgs[.epsgs$dimension=="XYZ", "epsg"] && num.coords < 3)) {
     stop("Wrong number of coordinates for the The specified 'epsg'")

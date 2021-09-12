@@ -163,7 +163,9 @@ test_that("Different inputs for BNG to NGR routines", {
                           digits = 0)$ngr == "512345, 467890")
   expect_true(all(unlist(sgs_bng_ngr(sgs_points(list(x=512345, y=467890,
                                                  name="name1"),
-                                            epsg=27700), digits = 0)) ==
+                                                coords=c("x", "y"),
+                                                epsg=27700),
+                                     digits = 0)) ==
                     unlist(list(ngr="512345, 467890", name="name1"))) == TRUE)
 
   # Out of bounds warning (and NA)
@@ -173,8 +175,10 @@ test_that("Different inputs for BNG to NGR routines", {
 
   # Additional elements
   expect_true(all(unlist(sgs_bng_ngr(sgs_points(list(x=512345, y=467890,
-                              name="name1"),
-                         epsg=27700), digits = 6)) ==
+                                                     name="name1"),
+                                                coords=c("x", "y"),
+                                                epsg=27700),
+                                     digits = 6)) ==
                     unlist(list(ngr="TA 123 678", name="name1"))) == TRUE)
 
 })

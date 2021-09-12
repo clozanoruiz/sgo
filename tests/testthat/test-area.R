@@ -19,7 +19,7 @@ test_that("Geodetic area", {
            58.21849188, 58.21853606, 58.21824033, 58.21748949)
   # Fake heights in metres
   h <- c(32, 87.5, 0, 32, 76.7, 45,7, 87.4, 26.87)
-  expect_true(all(abs(sgs_area(sgs_points(list(lon, lat, h),
+  expect_true(all(abs(sgs_area(sgs_points(list(lon=lon, lat=lat, h=h),
                                    coords=c("lon", "lat", "h"), epsg=4979)) -
                133610.63495) < 0.00001))
 

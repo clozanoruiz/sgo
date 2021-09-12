@@ -56,9 +56,22 @@ test_that("Wrong inputa data", {
                "'epsg' must be entered as one of the accepted numbers")
 
   df <- data.frame(n, ln, stringsAsFactors = FALSE)
-  #sgs_points(df, epsg=4326)
+  #sgs_points(df, epsg=4326) <- debe dar error
 
   #matrix
+  m <- cbind(ln)
+  #sgs_points(m, epsg=4326)
+})
+
+test_that("Print output", {
+  p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
+
+  expect_output(print(p), "An sgs object with 1 feature (point)", fixed = TRUE)
+  #An sgs object with 1 feature (point)
+  #dimension: XY
+  #EPSG:      4326
+  #x       y
+  #1 56.1165 -3.9369
 
 })
 

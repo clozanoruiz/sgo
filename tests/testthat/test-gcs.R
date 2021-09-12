@@ -81,14 +81,16 @@ test_that("Testing sgs_lonlat_cart", {
 test_that("Testing sgs_cart_lonlat", {
   # wrong input
   p <- sgs_points(list(x=3737197.092, y=-302954.150, z=5142476.100,
-                       attr="attr1"), epsg=7405)
+                       attr="attr1"), coords=c("x", "y", "z"), epsg=7405)
   expect_error(sgs_cart_lonlat(p),
                "can only convert from epsg 4936, 4978")
 
   # additional elements
   p <- sgs_cart_lonlat(sgs_points(list(x=3737197.092, y=-302954.150,
                                       z=5142476.100,
-                                      attr="attr1"), epsg=4936))
+                                      attr="attr1"),
+                                  coords=c("x", "y", "z"),
+                                  epsg=4936))
   df <- data.frame(x=-4.63452168103, y=54.0866631826, z=84.3656614413,
                    attr="attr1", stringsAsFactors = FALSE)
   expect_true(all(abs(as.data.frame(p[1:3]) - df[1:3]) < 0.00000001))
