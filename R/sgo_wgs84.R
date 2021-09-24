@@ -4,9 +4,9 @@
 #' @description
 #' Converts WGS84 coordinates to Easting/Northing (Pseudo-Mercator)
 #'
-#' @name sgs_wgs84_en
-#' @usage sgs_wgs84_en(x, to = 3857)
-#' @param x A \code{sgs_points} object describing a set of points in the
+#' @name sgo_wgs84_en
+#' @usage sgo_wgs84_en(x, to = 3857)
+#' @param x A \code{sgo_points} object describing a set of points in the
 #' geodetic coordinate system EPSG=4326 or 4979.
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
 #' Coordinate System. 3857 (WGS84) by default. And currently doesn't support any
@@ -21,19 +21,19 @@
 #' Usually, those include Google, Bing, OpenStreetMap and several other webmap
 #' applications including the MapChart in Spotfire.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Easting/Northing.
 #' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_en_wgs84}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_en_wgs84}}.
 #' @examples
-#' p <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
-#' res <- sgs_wgs84_en(p)
+#' p <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
+#' res <- sgo_wgs84_en(p)
 #' @export
-sgs_wgs84_en <- function(x, to=3857) UseMethod("sgs_wgs84_en")
+sgo_wgs84_en <- function(x, to=3857) UseMethod("sgo_wgs84_en")
 
 #' @export
-sgs_wgs84_en.sgs_points <- function(x, to=3857) {
+sgo_wgs84_en.sgo_points <- function(x, to=3857) {
 
   if (!x$epsg %in% c(4326, 4979, 4258, 4937))
     stop("This routine only supports WGS84 or ETRS89 polar entries")
@@ -42,9 +42,9 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
     stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
 
   if (x$dimension == "XY") {
-    core.cols <- .sgs_points.2d.core
+    core.cols <- .sgo_points.2d.core
   } else {
-    core.cols <- .sgs_points.3d.core
+    core.cols <- .sgo_points.3d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -71,7 +71,7 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 
   structure(c(en, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
               dimension = "XY"),
-            class = "sgs_points")
+            class = "sgo_points")
 
 }
 
@@ -82,9 +82,9 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 #' @description
 #' Converts Pseudo - Mercator coordinates to WGS84 (EPSG=4326)
 #'
-#' @name sgs_en_wgs84
-#' @usage sgs_en_wgs84(x, to = 4326)
-#' @param x A \code{sgs_points} object describing a set of points in the
+#' @name sgo_en_wgs84
+#' @usage sgo_en_wgs84(x, to = 4326)
+#' @param x A \code{sgo_points} object describing a set of points in the
 #' geodetic coordinate system EPSG=3857.
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
 #' Coordinate System. 4326 (WGS84) by default. And currently doesn't support any
@@ -92,26 +92,26 @@ sgs_wgs84_en.sgs_points <- function(x, to=3857) {
 #' @details
 #' Currently converts ONLY from EPSG 3857 to 4326 (Longitude/Latitude).
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Longitude/Latitude.
 #' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_wgs84_en}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_wgs84_en}}.
 #' @examples
-#' p <- sgs_points(list(-11169055.58, 2810000.00), epsg=3857)
-#' res <- sgs_en_wgs84(p)
+#' p <- sgo_points(list(-11169055.58, 2810000.00), epsg=3857)
+#' res <- sgo_en_wgs84(p)
 #' @export
-sgs_en_wgs84 <- function(x, to=4326) UseMethod("sgs_en_wgs84")
+sgo_en_wgs84 <- function(x, to=4326) UseMethod("sgo_en_wgs84")
 
 #' @export
-sgs_en_wgs84.sgs_points <- function(x, to=4326) {
+sgo_en_wgs84.sgo_points <- function(x, to=4326) {
 
   if (x$epsg != 3857) stop("This routine only supports EPSG:3857 entries")
 
   if(to != 4326)
     stop("This routine only supports converting to EPSG:4326")
 
-  core.cols <- .sgs_points.2d.core
+  core.cols <- .sgo_points.2d.core
 
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
@@ -136,6 +136,6 @@ sgs_en_wgs84.sgs_points <- function(x, to=4326) {
 
   structure(c(xy, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
               dimension="XY"),
-            class="sgs_points")
+            class="sgo_points")
 
 }

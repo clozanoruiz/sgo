@@ -5,14 +5,14 @@
 #' Calculates the distance between OS National Grid Reference points or using
 #' the Harvesine or Vicenty formulae for points with angular coordinates.
 #'
-#' @name sgs_distance
-#' @usage sgs_distance(x, y, by.element = FALSE,
+#' @name sgo_distance
+#' @usage sgo_distance(x, y, by.element = FALSE,
 #'   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
 #'   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
 #'   TRUE, FALSE), iterations = 100L)
-#' @param x A \code{sgs_points} object describing a set of points in a geodetic
+#' @param x A \code{sgo_points} object describing a set of points in a geodetic
 #' coordinate system.
-#' @param y A \code{sgs_points} object, defaults to \code{x}.
+#' @param y A \code{sgo_points} object, defaults to \code{x}.
 #' @param by.element Logical variable. If \code{TRUE}, return a vector with
 #' distance between the first elements of \code{x} and \code{y}, the second,
 #' etc. If \code{FALSE}, return the dense matrix with all pairwise distances.
@@ -39,7 +39,7 @@
 #' scale factor using Simpson's Rule to achieve greater accuracy and
 #' approximate the distance to the true geodesic distance.
 #' @return
-#' If \code{by.element} is \code{FALSE} \code{sgs_distance} returns a dense
+#' If \code{by.element} is \code{FALSE} \code{sgo_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
 #' numeric vector of length \code{x} or \code{y}, the shorter one being
 #' recycled. Distances involving empty geometries are \code{NA}.
@@ -49,32 +49,32 @@
 #' the Ellipsoid with application of nested equations}. Survey Review, 23:176,
 #' 88-93, DOI: 10.1179/sre.1975.23.176.88
 #' @examples
-#' p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
+#' p1 <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
 #' lon <- c(-4.25181,-3.18827)
 #' lat <- c(55.86424, 55.95325)
-#' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#' p1.to.pts <- sgs_distance(p1, pts, by.element = TRUE)
+#' pts <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
+#' p1.to.pts <- sgo_distance(p1, pts, by.element = TRUE)
 #'
 #' ## Perimeter of a polygon defined as a series of ordered points:
 #' lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
 #' -6.42248238, -6.42639092, -6.42998435, -6.43321409)
 #' lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
 #' 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#' pol <- sgs_points(list(lon, lat), epsg=4326)
+#' pol <- sgo_points(list(lon, lat), epsg=4326)
 #' # Create a copy of the polygon with its coordinates shifted one
 #' # position so that we can calculate easily the distance between vertices
-#' coords <- sgs_coordinates(pol)
-#' pol.shift.one <- sgs_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
-#' perimeter <- sum(sgs_distance(pol, pol.shift.one, by.element=TRUE))
+#' coords <- sgo_coordinates(pol)
+#' pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
+#' perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
 #' @export
-sgs_distance <- function (x, y, by.element=FALSE,
+sgo_distance <- function (x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
                               TRUE, FALSE), iterations = 100L)
-    UseMethod("sgs_distance")
+    UseMethod("sgo_distance")
 
 #' @export
-sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
+sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
   which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
   grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
                               TRUE, FALSE), iterations = 100L) {
@@ -89,7 +89,7 @@ sgs_distance.sgs_points <- function(x, y, by.element=FALSE,
     stop("This function doesn't support the input's EPSG")
 
   default.simpson <- 20 #20 km
-  coords <- .sgs_points.2d.coords
+  coords <- .sgo_points.2d.coords
   if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
 
     p1 <- matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE)

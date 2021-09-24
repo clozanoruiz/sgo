@@ -26,11 +26,11 @@ PI <- 3.141592653589793238462643383279503
 
 
 # Vector with all the main elements a sgs_points object contains
-.sgs_points.attr <- c("epsg", "datum", "dimension")
-.sgs_points.2d.coords <- c("x", "y")
-.sgs_points.3d.coords <- c("x", "y", "z")
-.sgs_points.2d.core <- c(.sgs_points.2d.coords, .sgs_points.attr)
-.sgs_points.3d.core <- c(.sgs_points.3d.coords, .sgs_points.attr)
+.sgo_points.attr <- c("epsg", "datum", "dimension")
+.sgo_points.2d.coords <- c("x", "y")
+.sgo_points.3d.coords <- c("x", "y", "z")
+.sgo_points.2d.core <- c(.sgo_points.2d.coords, .sgo_points.attr)
+.sgo_points.3d.core <- c(.sgo_points.3d.coords, .sgo_points.attr)
 
 .coordinates.names <- cbind(x=c("x", "lon", "longitude", "e", "easting"),
                             y=c("y", "lat", "latitude","n", "northing"),
@@ -113,8 +113,8 @@ colnames(.ostn.shifts) <- c("e", "n", "g", "f")
 
 
 #SAVE EVERYTHING IN sysdata.rda
-save(RAD.TO.GRAD, PI, .epsgs, .sgs_points.attr, .sgs_points.2d.coords,
-     .sgs_points.3d.coords, .sgs_points.2d.core, .sgs_points.3d.core,
+save(RAD.TO.GRAD, PI, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
+     .sgo_points.3d.coords, .sgo_points.2d.core, .sgo_points.3d.core,
      .coordinates.names, lonlat.ellipsoid, lonlat.datum, datum.flags,
      .ostn.shifts, file = "./R/sysdata.rda", compress = "xz")
 #load(file = "./R/sysdata.rda")

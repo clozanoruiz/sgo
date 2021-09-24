@@ -1,30 +1,30 @@
-library(sgs)
+library(sgo)
 
 cols <- c("x", "y", "epsg", "datum")
 
-test_that("sgs_points constructors", {
+test_that("sgo_points constructors", {
   #lists
-  p1 <- sgs_points(list(56.1165, -3.9369), epsg=4326)
-  expect_true(all(cols %in% names(p1)) && class(p1) == "sgs_points")
+  p1 <- sgo_points(list(56.1165, -3.9369), epsg=4326)
+  expect_true(all(cols %in% names(p1)) && class(p1) == "sgo_points")
 
   lon <- c(-4.25181,-3.18827)
   lat <- c(55.86424, 55.95325)
-  p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-  expect_true(all(cols %in% names(p2)) && class(p2) == "sgs_points")
+  p2 <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
+  expect_true(all(cols %in% names(p2)) && class(p2) == "sgo_points")
 
-  p3 <- sgs_points(list(255005, 749423), epsg=27700)
-  expect_true(all(cols %in% names(p3)) && class(p3) == "sgs_points")
+  p3 <- sgo_points(list(255005, 749423), epsg=27700)
+  expect_true(all(cols %in% names(p3)) && class(p3) == "sgo_points")
 
   #data.frame
-  p1b <- sgs_points(data.frame(-3.9369, 56.1165), epsg=4326)
-  expect_true(all(cols %in% names(p1)) && class(p1) == "sgs_points")
+  p1b <- sgo_points(data.frame(-3.9369, 56.1165), epsg=4326)
+  expect_true(all(cols %in% names(p1)) && class(p1) == "sgo_points")
 
   ln <- c(-4.22472, -2.09908)
   lt <- c(57.47777, 57.14965)
   n <- c("Inverness", "Aberdeen")
   df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
-  p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
-  expect_true(all(cols %in% names(p4)) && class(p4) == "sgs_points")
+  p4 <- sgo_points(df, coords=c("ln", "lt"), epsg=4326)
+  expect_true(all(cols %in% names(p4)) && class(p4) == "sgo_points")
 
   #matrix
 
@@ -36,38 +36,38 @@ test_that("Wrong inputa data", {
   lt <- c(57.47777, 57.14965)
 
   #lists
-  expect_error(sgs_points(list(ln), epsg=4326),
+  expect_error(sgo_points(list(ln), epsg=4326),
                "method accepts lists with at least 2 elements")
-  expect_error(sgs_points(list(-4.22472, 57.47777)),
+  expect_error(sgo_points(list(-4.22472, 57.47777)),
                "'epsg' must be entered as one of the accepted numbers")
-  expect_error(sgs_points(list(-4.22472, 57.47777), epsg=-1),
+  expect_error(sgo_points(list(-4.22472, 57.47777), epsg=-1),
                "'epsg' must be entered as one of the accepted numbers")
-  #sgs_points(list(c(1,3),ln,lt), epsg=4326) <- arreglar en el codigo cuando vienen sin nombre de columna!
+  #sgo_points(list(c(1,3),ln,lt), epsg=4326) <- arreglar en el codigo cuando vienen sin nombre de columna!
 
   #data.frame
   df <- data.frame(ln, stringsAsFactors = FALSE)
-  expect_error(sgs_points(df, epsg=4326),
+  expect_error(sgo_points(df, epsg=4326),
                "method accepts dataframes with at least 2 columns")
 
   df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
-  expect_error(sgs_points(df),
+  expect_error(sgo_points(df),
                "'epsg' must be entered as one of the accepted numbers")
-  expect_error(sgs_points(df, epsg=-1),
+  expect_error(sgo_points(df, epsg=-1),
                "'epsg' must be entered as one of the accepted numbers")
 
   df <- data.frame(n, ln, stringsAsFactors = FALSE)
-  #sgs_points(df, epsg=4326) <- debe dar error
+  #sgo_points(df, epsg=4326) <- debe dar error
 
   #matrix
   m <- cbind(ln)
-  #sgs_points(m, epsg=4326)
+  #sgo_points(m, epsg=4326)
 })
 
 test_that("Print output", {
   #print all elements
-  p <- sgs_points(list(56.1165, -3.9369), epsg=4326)
+  p <- sgo_points(list(56.1165, -3.9369), epsg=4326)
 
-  expect_output(print(p), "An sgs object with 1 feature (point)", fixed = TRUE)
+  expect_output(print(p), "An sgo object with 1 feature (point)", fixed = TRUE)
   expect_output(print(p), "dimension: XY", fixed = TRUE)
   expect_output(print(p), "EPSG:      4326", fixed = TRUE)
 
@@ -78,10 +78,10 @@ test_that("Print output", {
   y <- c(-253216.7327, -127024.7800)
   z <- c(5354692.0241, 5334958.3584)
   df <- data.frame(N, country, x, y, z, stringsAsFactors = FALSE)
-  p <- sgs_points(df, coords=c("x", "y", "z"), epsg=4978)
+  p <- sgo_points(df, coords=c("x", "y", "z"), epsg=4978)
 
   expect_output(print(p, n=1),
-                "An sgs object with 1 feature (point) and 2 fields ",
+                "An sgo object with 1 feature (point) and 2 fields ",
                 fixed = TRUE)
   expect_output(print(p, n=1), "dimension: XYZ", fixed = TRUE)
   expect_output(print(p, n=1), "EPSG:      4978", fixed = TRUE)
@@ -89,16 +89,16 @@ test_that("Print output", {
 })
 
 #TODO
-# as.data.frame, as.list, sgs_points_sfc, sgs_points_sf documented in a single help file called 'Coerce to other other types'!!
+# as.data.frame, as.list, sgo_points_sfc, sgo_points_sf documented in a single help file called 'Coerce to other other types'!!
 
-# 1) Test multiple functions (sgs_bng_laton, sgs_set_gcs_etc, points_xy) with those
-# different types of sgs_points (dataframes, lists, single, etc.)
+# 1) Test multiple functions (sgo_bng_laton, sgo_set_gcs_etc, points_xy) with those
+# different types of sgo_points (dataframes, lists, single, etc.)
 
-# 2) Confirm all of those keep the 'sgs_points' class and the names in the class
+# 2) Confirm all of those keep the 'sgo_points' class and the names in the class
 # are always at least the (5-6) core columns
 
 # 3) Test all the extended operators '['. Check they do what is required from
-# them and they keep all attributes/class of sgs (or basically test multiple ways of manipulating sgs objects (subset, merging, etc and see how it works))
+# them and they keep all attributes/class of sgo (or basically test multiple ways of manipulating sgo objects (subset, merging, etc and see how it works))
 
 # 4) test that the transformations, besides being correct keep all the additional
 # columns (just a couple of them)
@@ -137,12 +137,12 @@ test_that("Print output", {
 #e <- c(139533, 139859, 140135, 140491, 140392, 140163, 139950, 139755)
 #n <- c(933991, 934182, 934257, 934256, 934056, 934076, 934057, 933986)
 
-#bng - sgs   : 133733 (without last being the same as first) 133733 (first and last are the same)
+#bng - sgo   : 133733 (without last being the same as first) 133733 (first and last are the same)
 #bng - raster: 133733
 
 
 #lon = c(-6.43698696, -6.43166843, -6.42706831, -6.42102546, -6.42248238, -6.42639092, -6.42998435, -6.43321409)
 #lat = c(58.21740316, 58.21930597, 58.22014035, 58.22034112, 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#etrs89 - sgs:       133610.63 ("%.2f" and without last being the same as first) 133610.63 ("%.2f" last being same as first) (ok?)
+#etrs89 - sgo:       133610.63 ("%.2f" and without last being the same as first) 133610.63 ("%.2f" last being same as first) (ok?)
 #wgs84 - geosphere: 133610.64 ("%.2f" and without last being the same as first) 133610.64 ("%.2f" last being same as first)
 #wgs84 - geodlib:   133610.6 (https://geographiclib.sourceforge.io/cgi-bin/Planimeter)

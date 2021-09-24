@@ -1,4 +1,4 @@
-#' @include sgs_wgs84.R
+#' @include sgo_wgs84.R
 NULL
 
 #' @encoding UTF-8
@@ -8,21 +8,21 @@ NULL
 #' Transforms the coordinate system of a set of points to any supported
 #' coordinate system.
 #'
-#' @name sgs_transform
-#' @usage sgs_transform(x, to = NULL, ...)
-#' @param x A \code{sgs_points} object.
+#' @name sgo_transform
+#' @usage sgo_transform(x, to = NULL, ...)
+#' @param x A \code{sgo_points} object.
 #' @param to Specifies the EPSG code to convert the coordinates to. See
-#' \code{\link{sgs_points}} for a list of supported EPSG codes.
+#' \code{\link{sgo_points}} for a list of supported EPSG codes.
 #' @param ... Additional parameters passed to internal functions. Currently it
-#' supports the additional arguments seen in \code{sgs_bng_lonlat} and
-#' \code{sgs_lonlat_bng}.
+#' supports the additional arguments seen in \code{sgo_bng_lonlat} and
+#' \code{sgo_lonlat_bng}.
 #' this description and which parameters may admit...
 #' @details
 #' This function is a wrapper of specific transformation functions
-#' (\code{\link{sgs_bng_lonlat}}, \code{\link{sgs_en_wgs84}},
-#' \code{\link{sgs_lonlat_bng}}, \code{\link{sgs_wgs84_en}},
-#' \code{\link{sgs_laea_etrs}}, \code{\link{sgs_etrs_laea}},
-#' \code{\link{sgs_cart_lonlat}}, \code{\link{sgs_lonlat_cart}}) that transforms
+#' (\code{\link{sgo_bng_lonlat}}, \code{\link{sgo_en_wgs84}},
+#' \code{\link{sgo_lonlat_bng}}, \code{\link{sgo_wgs84_en}},
+#' \code{\link{sgo_laea_etrs}}, \code{\link{sgo_etrs_laea}},
+#' \code{\link{sgo_cart_lonlat}}, \code{\link{sgo_lonlat_cart}}) that transforms
 #' the coordinate system of a set of points to any of the supported coordinate
 #' systems by this package.
 #'
@@ -36,25 +36,25 @@ NULL
 #' EPSG:4277 (with datum OSGB 1936) should only be used to convert to or from
 #' BNG coordinates and for historical reasons only.
 #' @return
-#' An object of class 'sgs_points'.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_coordinates}},
-#' \code{\link{sgs_set_gcs}}, \code{\link{sgs_bng_ngr}}
+#' An object of class 'sgo_points'.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_coordinates}},
+#' \code{\link{sgo_set_gcs}}, \code{\link{sgo_bng_ngr}}
 #' @examples
 #' ln <- c(-4.22472, -2.09908)
 #' lt <- c(57.47777, 57.14965)
 #' n <- c("Inverness", "Aberdeen")
 #' df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
-#' locations <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
+#' locations <- sgo_points(df, coords=c("ln", "lt"), epsg=4326)
 #'
-#' locations.bng <- sgs_transform(locations, to=27700)
-#' locations.osgb36 <- sgs_transform(locations, to=4277)
-#' locations.ngr <- sgs_bng_ngr(sgs_transform(locations, to=27700))
-#' locations.wgs84EN <- sgs_transform(locations.bng, to=3857)
+#' locations.bng <- sgo_transform(locations, to=27700)
+#' locations.osgb36 <- sgo_transform(locations, to=4277)
+#' locations.ngr <- sgo_bng_ngr(sgo_transform(locations, to=27700))
+#' locations.wgs84EN <- sgo_transform(locations.bng, to=3857)
 #' @export
-sgs_transform <- function(x, to=NULL, ...) UseMethod("sgs_transform")
+sgo_transform <- function(x, to=NULL, ...) UseMethod("sgo_transform")
 
 #' @export
-sgs_transform.sgs_points <- function(x, to=NULL, ...) {
+sgo_transform.sgo_points <- function(x, to=NULL, ...) {
 
   if (is.null(to)) stop("Parameter 'to' must be specified")
   if (x$epsg==to) return(x)
@@ -68,9 +68,9 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
 
   if(x$dimension == "XYZ") {
-    core.elements <- .sgs_points.3d.core
+    core.elements <- .sgo_points.3d.core
   } else  {
-    core.elements <- .sgs_points.2d.core
+    core.elements <- .sgo_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.elements
@@ -79,7 +79,7 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
   # Don't need all the extra columns it might have while doing calculations
   if (num.elements > 0)
-    x <- structure(x[core.elements], class = "sgs_points")
+    x <- structure(x[core.elements], class = "sgo_points")
 
   input.args <- c(list(x=x), list(...))
   input.args <- input.args[unique(names(input.args))] # remove repeated args
@@ -98,12 +98,12 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
     input.args$x <- do.call(func, args)
   }
 
-  # Return sgs_points
+  # Return sgo_points
   ret <- input.args$x
   if (num.elements > 0) {
-    ret <- structure(c(ret[setdiff(names(ret), .sgs_points.attr)],
+    ret <- structure(c(ret[setdiff(names(ret), .sgo_points.attr)],
                        lst.additional.elements,
-                       ret[.sgs_points.attr]), class = "sgs_points")
+                       ret[.sgo_points.attr]), class = "sgo_points")
   }
   ret
 
@@ -122,9 +122,9 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
   x$z <- rep(0, length(x$x))
   x$dimension <- "XYZ"
   x$epsg <- 7405
-  structure(x[c(.sgs_points.3d.coords,
-                names(x)[!names(x) %in% .sgs_points.3d.coords])],
-            class="sgs_points")
+  structure(x[c(.sgo_points.3d.coords,
+                names(x)[!names(x) %in% .sgo_points.3d.coords])],
+            class="sgo_points")
 }
 
 #Dataframes of operations and their arguments
@@ -146,16 +146,16 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 
                                                            #FROM:
 .FUN_TO_4326 <-   list(NULL,                                 #4326
-                       list(sgs_en_wgs84),                   #3857
-                       list(sgs_lonlat_bng, sgs_bng_lonlat), #4277
-                       list(sgs_bng_lonlat),                #27700
-                       list(sgs_set_gcs),                    #4258
-                       list(sgs_set_gcs),                    #4979
-                       list(sgs_cart_lonlat, sgs_set_gcs),   #4978
-                       list(sgs_set_gcs),                    #4937
-                       list(sgs_cart_lonlat, sgs_set_gcs),   #4936
-                       list(sgs_bng_lonlat),                 #7405
-                       list(sgs_laea_etrs, sgs_set_gcs)      #3035
+                       list(sgo_en_wgs84),                   #3857
+                       list(sgo_lonlat_bng, sgo_bng_lonlat), #4277
+                       list(sgo_bng_lonlat),                #27700
+                       list(sgo_set_gcs),                    #4258
+                       list(sgo_set_gcs),                    #4979
+                       list(sgo_cart_lonlat, sgo_set_gcs),   #4978
+                       list(sgo_set_gcs),                    #4937
+                       list(sgo_cart_lonlat, sgo_set_gcs),   #4936
+                       list(sgo_bng_lonlat),                 #7405
+                       list(sgo_laea_etrs, sgo_set_gcs)      #3035
 )
 .ARGS_TO_4326 <-  list(NULL,                                 #4326
                        list(to=4326),                        #3857
@@ -171,17 +171,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
                                                                          #FROM:
-.FUN_TO_3857 <-   list(list(sgs_wgs84_en),                                 #4326
+.FUN_TO_3857 <-   list(list(sgo_wgs84_en),                                 #4326
                        NULL,                                               #3857
-                       list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_wgs84_en), #4277
-                       list(sgs_bng_lonlat, sgs_wgs84_en),
-                       list(sgs_wgs84_en),                                 #4258
-                       list(sgs_wgs84_en),                                 #4979
-                       list(sgs_cart_lonlat, sgs_wgs84_en),                #4978
-                       list(sgs_wgs84_en),                                 #4937
-                       list(sgs_cart_lonlat, sgs_wgs84_en),                #4936
-                       list(sgs_bng_lonlat, sgs_wgs84_en),                 #7405
-                       list(sgs_laea_etrs, sgs_wgs84_en)                   #3035
+                       list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_wgs84_en), #4277
+                       list(sgo_bng_lonlat, sgo_wgs84_en),
+                       list(sgo_wgs84_en),                                 #4258
+                       list(sgo_wgs84_en),                                 #4979
+                       list(sgo_cart_lonlat, sgo_wgs84_en),                #4978
+                       list(sgo_wgs84_en),                                 #4937
+                       list(sgo_cart_lonlat, sgo_wgs84_en),                #4936
+                       list(sgo_bng_lonlat, sgo_wgs84_en),                 #7405
+                       list(sgo_laea_etrs, sgo_wgs84_en)                   #3035
 )
 .ARGS_TO_3857 <-  list(list(to=3857),
                        NULL,
@@ -197,17 +197,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
                                                                          #FROM:
-.FUN_TO_4277 <-   list(list(sgs_lonlat_bng, sgs_bng_lonlat),               #4326
-                       list(sgs_en_wgs84, sgs_lonlat_bng, sgs_bng_lonlat), #3857
+.FUN_TO_4277 <-   list(list(sgo_lonlat_bng, sgo_bng_lonlat),               #4326
+                       list(sgo_en_wgs84, sgo_lonlat_bng, sgo_bng_lonlat), #3857
                        NULL,                                               #4277
-                       list(sgs_bng_lonlat),                              #27700
-                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4258
-                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4979
-                       list(sgs_cart_lonlat, sgs_lonlat_bng, sgs_bng_lonlat),
-                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4937
-                       list(sgs_cart_lonlat, sgs_lonlat_bng, sgs_bng_lonlat),
-                       list(sgs_bng_lonlat),                               #7405
-                       list(sgs_laea_etrs, sgs_lonlat_bng, sgs_bng_lonlat) #3035
+                       list(sgo_bng_lonlat),                              #27700
+                       list(sgo_lonlat_bng, sgo_bng_lonlat),               #4258
+                       list(sgo_lonlat_bng, sgo_bng_lonlat),               #4979
+                       list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),
+                       list(sgo_lonlat_bng, sgo_bng_lonlat),               #4937
+                       list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),
+                       list(sgo_bng_lonlat),                               #7405
+                       list(sgo_laea_etrs, sgo_lonlat_bng, sgo_bng_lonlat) #3035
 )
 .ARGS_TO_4277 <-  list(list(list(to=27700),list(to=4277)),                 #4326
                        list(list(to=4326), list(to=27700), list(to=4277)), #3857
@@ -223,17 +223,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_27700 <-  list(list(sgs_lonlat_bng),                               #4326
-                       list(sgs_en_wgs84, sgs_lonlat_bng),                 #3857
-                       list(sgs_lonlat_bng),
+.FUN_TO_27700 <-  list(list(sgo_lonlat_bng),                               #4326
+                       list(sgo_en_wgs84, sgo_lonlat_bng),                 #3857
+                       list(sgo_lonlat_bng),
                        NULL,                                              #27700
-                       list(sgs_lonlat_bng),                               #4258
-                       list(sgs_lonlat_bng),                               #4979
-                       list(sgs_cart_lonlat, sgs_lonlat_bng),              #4978
-                       list(sgs_lonlat_bng),                               #4937
-                       list(sgs_cart_lonlat, sgs_lonlat_bng),              #4936
+                       list(sgo_lonlat_bng),                               #4258
+                       list(sgo_lonlat_bng),                               #4979
+                       list(sgo_cart_lonlat, sgo_lonlat_bng),              #4978
+                       list(sgo_lonlat_bng),                               #4937
+                       list(sgo_cart_lonlat, sgo_lonlat_bng),              #4936
                        list(.remove.z),                                    #7405
-                       list(sgs_laea_etrs, sgs_lonlat_bng)                 #3035
+                       list(sgo_laea_etrs, sgo_lonlat_bng)                 #3035
 )
 .ARGS_TO_27700 <- list(list(to=27700),
                        list(list(to=4326), list(to=27700)),
@@ -249,17 +249,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_4258 <-   list(list(sgs_set_gcs),
-                       list(sgs_en_wgs84, sgs_set_gcs),                    #3857
-                       list(sgs_lonlat_bng, sgs_bng_lonlat),               #4277
-                       list(sgs_bng_lonlat),
+.FUN_TO_4258 <-   list(list(sgo_set_gcs),
+                       list(sgo_en_wgs84, sgo_set_gcs),                    #3857
+                       list(sgo_lonlat_bng, sgo_bng_lonlat),               #4277
+                       list(sgo_bng_lonlat),
                        NULL,                                               #4258
-                       list(sgs_set_gcs),                                  #4979
-                       list(sgs_cart_lonlat, sgs_set_gcs),                 #4978
-                       list(sgs_set_gcs),                                  #4937
-                       list(sgs_cart_lonlat, sgs_set_gcs),                 #4936
-                       list(sgs_bng_lonlat),                               #7405
-                       list(sgs_laea_etrs)                                 #3035
+                       list(sgo_set_gcs),                                  #4979
+                       list(sgo_cart_lonlat, sgo_set_gcs),                 #4978
+                       list(sgo_set_gcs),                                  #4937
+                       list(sgo_cart_lonlat, sgo_set_gcs),                 #4936
+                       list(sgo_bng_lonlat),                               #7405
+                       list(sgo_laea_etrs)                                 #3035
 )
 .ARGS_TO_4258 <-  list(list(to=4258),                                      #4326
                        list(list(to=4326), list(to=4258)),                 #3857
@@ -275,17 +275,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
                                                                          #FROM:
-.FUN_TO_4979 <- list(list(sgs_set_gcs),                                    #4326
-                     list(sgs_en_wgs84, sgs_set_gcs),                      #3857
-                     list(sgs_lonlat_bng, sgs_bng_lonlat),                 #4277
-                     list(sgs_bng_lonlat),                                #27700
-                     list(sgs_set_gcs),                                    #4258
+.FUN_TO_4979 <- list(list(sgo_set_gcs),                                    #4326
+                     list(sgo_en_wgs84, sgo_set_gcs),                      #3857
+                     list(sgo_lonlat_bng, sgo_bng_lonlat),                 #4277
+                     list(sgo_bng_lonlat),                                #27700
+                     list(sgo_set_gcs),                                    #4258
                      NULL,                                                 #4979
-                     list(sgs_cart_lonlat),                                #4978
-                     list(sgs_set_gcs),                                    #4937
-                     list(sgs_cart_lonlat, sgs_set_gcs),                   #4936
-                     list(sgs_bng_lonlat),                                 #7405
-                     list(sgs_laea_etrs, sgs_set_gcs)                      #3035
+                     list(sgo_cart_lonlat),                                #4978
+                     list(sgo_set_gcs),                                    #4937
+                     list(sgo_cart_lonlat, sgo_set_gcs),                   #4936
+                     list(sgo_bng_lonlat),                                 #7405
+                     list(sgo_laea_etrs, sgo_set_gcs)                      #3035
 
 )
 .ARGS_TO_4979 <- list(list(to=4979),                                       #4326
@@ -302,17 +302,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
                                                                          #FROM:
-.FUN_TO_4978 <- list(list(sgs_lonlat_cart),                                #4326
-                     list(sgs_en_wgs84, sgs_lonlat_cart),                  #3857
-                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_lonlat_cart),#4277
-                     list(sgs_bng_lonlat, sgs_lonlat_cart),               #27700
-                     list(sgs_set_gcs, sgs_lonlat_cart),                   #4258
-                     list(sgs_lonlat_cart),                                #4979
+.FUN_TO_4978 <- list(list(sgo_lonlat_cart),                                #4326
+                     list(sgo_en_wgs84, sgo_lonlat_cart),                  #3857
+                     list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart),#4277
+                     list(sgo_bng_lonlat, sgo_lonlat_cart),               #27700
+                     list(sgo_set_gcs, sgo_lonlat_cart),                   #4258
+                     list(sgo_lonlat_cart),                                #4979
                      NULL,                                                 #4978
-                     list(sgs_set_gcs, sgs_lonlat_cart),                   #4937
-                     list(sgs_cart_lonlat, sgs_set_gcs, sgs_lonlat_cart),  #4936
-                     list(sgs_bng_lonlat, sgs_lonlat_cart),                #7405
-                     list(sgs_laea_etrs, sgs_set_gcs, sgs_lonlat_cart)     #3035
+                     list(sgo_set_gcs, sgo_lonlat_cart),                   #4937
+                     list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart),  #4936
+                     list(sgo_bng_lonlat, sgo_lonlat_cart),                #7405
+                     list(sgo_laea_etrs, sgo_set_gcs, sgo_lonlat_cart)     #3035
 )
 .ARGS_TO_4978 <- list(list(),                                              #4326
                       list(list(to=4326), list()),                         #3857
@@ -328,17 +328,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_4937 <- list(list(sgs_set_gcs),
-                     list(sgs_en_wgs84, sgs_set_gcs),
-                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_set_gcs),    #4277
-                     list(sgs_bng_lonlat, sgs_set_gcs),                   #27700
-                     list(sgs_set_gcs),                                    #4258
-                     list(sgs_set_gcs),                                    #4979
-                     list(sgs_cart_lonlat, sgs_set_gcs),                   #4978
+.FUN_TO_4937 <- list(list(sgo_set_gcs),
+                     list(sgo_en_wgs84, sgo_set_gcs),
+                     list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_set_gcs),    #4277
+                     list(sgo_bng_lonlat, sgo_set_gcs),                   #27700
+                     list(sgo_set_gcs),                                    #4258
+                     list(sgo_set_gcs),                                    #4979
+                     list(sgo_cart_lonlat, sgo_set_gcs),                   #4978
                      NULL,
-                     list(sgs_cart_lonlat),                                #4936
-                     list(sgs_bng_lonlat),                                 #7405
-                     list(sgs_laea_etrs, sgs_set_gcs)                      #3035
+                     list(sgo_cart_lonlat),                                #4936
+                     list(sgo_bng_lonlat),                                 #7405
+                     list(sgo_laea_etrs, sgo_set_gcs)                      #3035
 )
 .ARGS_TO_4937 <- list(list(to=4937),                                       #4326
                       list(list(to=4326), list(to=4937)),                  #3857
@@ -354,17 +354,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_4936 <- list(list(sgs_set_gcs, sgs_lonlat_cart),
-                     list(sgs_en_wgs84, sgs_set_gcs, sgs_lonlat_cart),     #3857
-                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_lonlat_cart),#4277
-                     list(sgs_bng_lonlat, sgs_lonlat_cart),
-                     list(sgs_lonlat_cart),                                #4258
-                     list(sgs_set_gcs, sgs_lonlat_cart),                   #4979
-                     list(sgs_cart_lonlat, sgs_set_gcs, sgs_lonlat_cart),  #4978
-                     list(sgs_lonlat_cart),
+.FUN_TO_4936 <- list(list(sgo_set_gcs, sgo_lonlat_cart),
+                     list(sgo_en_wgs84, sgo_set_gcs, sgo_lonlat_cart),     #3857
+                     list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart),#4277
+                     list(sgo_bng_lonlat, sgo_lonlat_cart),
+                     list(sgo_lonlat_cart),                                #4258
+                     list(sgo_set_gcs, sgo_lonlat_cart),                   #4979
+                     list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart),  #4978
+                     list(sgo_lonlat_cart),
                      NULL,
-                     list(sgs_bng_lonlat,sgs_lonlat_cart),                 #7405
-                     list(sgs_laea_etrs, sgs_lonlat_cart)                  #3035
+                     list(sgo_bng_lonlat,sgo_lonlat_cart),                 #7405
+                     list(sgo_laea_etrs, sgo_lonlat_cart)                  #3035
 )
 .ARGS_TO_4936 <- list(list(list(to=4258), list()),
                       list(list(to=4326), list(to=4258), list()),
@@ -380,17 +380,17 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_7405 <- list(list(sgs_lonlat_bng),                                 #4326
-                     list(sgs_en_wgs84, sgs_lonlat_bng),                   #3857
-                     list(sgs_lonlat_bng),                                 #4277
+.FUN_TO_7405 <- list(list(sgo_lonlat_bng),                                 #4326
+                     list(sgo_en_wgs84, sgo_lonlat_bng),                   #3857
+                     list(sgo_lonlat_bng),                                 #4277
                      list(.add.z),                                        #27700
-                     list(sgs_lonlat_bng),                                 #4258
-                     list(sgs_lonlat_bng),                                 #4979
-                     list(sgs_cart_lonlat, sgs_lonlat_bng),                #4978
-                     list(sgs_lonlat_bng),                                 #4937
-                     list(sgs_cart_lonlat, sgs_lonlat_bng),                #4936
+                     list(sgo_lonlat_bng),                                 #4258
+                     list(sgo_lonlat_bng),                                 #4979
+                     list(sgo_cart_lonlat, sgo_lonlat_bng),                #4978
+                     list(sgo_lonlat_bng),                                 #4937
+                     list(sgo_cart_lonlat, sgo_lonlat_bng),                #4936
                      NULL,                                                 #7405
-                     list(sgs_laea_etrs, sgs_lonlat_bng)                   #3035
+                     list(sgo_laea_etrs, sgo_lonlat_bng)                   #3035
 )
 .ARGS_TO_7405 <- list(list(list(to=7405)),                                 #4326
                       list(list(to=4326), list(to=7405)),
@@ -406,16 +406,16 @@ sgs_transform.sgs_points <- function(x, to=NULL, ...) {
 )
 
 
-.FUN_TO_3035 <- list(list(sgs_set_gcs, sgs_etrs_laea),                     #4326
-                     list(sgs_en_wgs84, sgs_set_gcs, sgs_etrs_laea),       #3857
-                     list(sgs_lonlat_bng, sgs_bng_lonlat, sgs_etrs_laea),  #4277
-                     list(sgs_bng_lonlat, sgs_etrs_laea),                 #27700
-                     list(sgs_etrs_laea),                                  #4258
-                     list(sgs_set_gcs, sgs_etrs_laea),                     #4979
-                     list(sgs_cart_lonlat, sgs_set_gcs, sgs_etrs_laea),    #4978
-                     list(sgs_etrs_laea),                                  #4937
-                     list(sgs_etrs_laea),                                  #4936
-                     list(sgs_bng_lonlat, sgs_etrs_laea),                  #7405
+.FUN_TO_3035 <- list(list(sgo_set_gcs, sgo_etrs_laea),                     #4326
+                     list(sgo_en_wgs84, sgo_set_gcs, sgo_etrs_laea),       #3857
+                     list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_etrs_laea),  #4277
+                     list(sgo_bng_lonlat, sgo_etrs_laea),                 #27700
+                     list(sgo_etrs_laea),                                  #4258
+                     list(sgo_set_gcs, sgo_etrs_laea),                     #4979
+                     list(sgo_cart_lonlat, sgo_set_gcs, sgo_etrs_laea),    #4978
+                     list(sgo_etrs_laea),                                  #4937
+                     list(sgo_etrs_laea),                                  #4936
+                     list(sgo_bng_lonlat, sgo_etrs_laea),                  #7405
                      NULL                                                  #3035
 )
 .ARGS_TO_3035 <- list(list(list(to=4258), list()),                         #4326

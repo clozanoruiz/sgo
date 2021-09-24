@@ -7,9 +7,9 @@
 #' (mean sea level) heights on the relevant Ordnance Survey mapping datum, using
 #' the National Geoid Model OSGM15.
 #'
-#' @name sgs_lonlat_bng
-#' @usage sgs_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
-#' @param x A \code{sgs_points} object with coordinates defined in a Geodetic
+#' @name sgo_lonlat_bng
+#' @usage sgo_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
+#' @param x A \code{sgo_points} object with coordinates defined in a Geodetic
 #' Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
 #' 4326, 4979 or 4277)
 #' @param to Specifies the EPSG code to convert the coordinates to. It can only
@@ -28,7 +28,7 @@
 #' as ETRS89 (or WGS84) most of the times.
 #'
 #' Note: When transforming from EPSG=4277 any height included in the input
-#' will be simply discarded (see \code{\link{sgs_points}}).
+#' will be simply discarded (see \code{\link{sgo_points}}).
 #'
 #' According to the Transformations and OSGM15 User Guide, p. 8:
 #' \emph{"...ETRS89 is a precise version of the better known WGS84 reference
@@ -51,25 +51,25 @@
 #' around, due to the iterative nature of the algorithm that is built into
 #' OSTN15.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Easting/Northing (epsg=27700 or 7405). They are adjusted to the SW corner of
 #' 1m grid square. If \code{OD=TRUE} a column named \code{height.datum} is
 #' added to the resulting object.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_lonlat}},
-#' \code{\link{sgs_set_gcs}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}},
+#' \code{\link{sgo_set_gcs}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples
 #' lon <- c(-4.25181,-3.18827)
 #' lat <- c(55.86424, 55.95325)
-#' pts <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
-#' bng.pts <- sgs_lonlat_bng(pts)
+#' pts <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
+#' bng.pts <- sgo_lonlat_bng(pts)
 #' @export
-sgs_lonlat_bng <- function(x, to=27700, OSTN=TRUE, OD=FALSE)
-  UseMethod("sgs_lonlat_bng")
+sgo_lonlat_bng <- function(x, to=27700, OSTN=TRUE, OD=FALSE)
+  UseMethod("sgo_lonlat_bng")
 
 #' @export
-sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
+sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   coord.system <- .epsgs[.epsgs$epsg==x$epsg, c("type", "format")]
   if (coord.system$type != "GCS" || coord.system$format != "ll")
@@ -81,11 +81,11 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
     out.dimension <- "XY"
 
   if (x.3d) {
-    x.coords <- .sgs_points.3d.coords
-    core.cols <- .sgs_points.3d.core
+    x.coords <- .sgo_points.3d.coords
+    core.cols <- .sgo_points.3d.core
   } else {
-    x.coords <- .sgs_points.2d.coords
-    core.cols <- .sgs_points.2d.core
+    x.coords <- .sgo_points.2d.coords
+    core.cols <- .sgo_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -131,9 +131,9 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         out.of.bounds <- TRUE
-        out.x <- sgs_points(lapply(x[x.coords], function(el) el[shifts$out]),
+        out.x <- sgo_points(lapply(x[x.coords], function(el) el[shifts$out]),
                             coords = x.coords, epsg = x$epsg)
-        helmert.x <- sgs_set_gcs(out.x, to = 4277)
+        helmert.x <- sgo_set_gcs(out.x, to = 4277)
         helmert.projected <- .project.onto.grid(helmert.x$x,
                                                 helmert.x$y,
                                                 helmert.x$datum)
@@ -148,7 +148,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   } else {  # single Helmert transformation
 
-    helmert.x <- sgs_set_gcs(sgs_points(x[x.coords], coords = x.coords,
+    helmert.x <- sgo_set_gcs(sgo_points(x[x.coords], coords = x.coords,
                                         epsg = x$epsg), to = 4277)
     helmert.projected <- .project.onto.grid(helmert.x$x,
                                             helmert.x$y,
@@ -182,7 +182,7 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   structure(c(en, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
               dimension=out.dimension),
-            class="sgs_points")
+            class="sgo_points")
 
 }
 
@@ -194,9 +194,9 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' Converts Ordnance Survey grid reference easting/northing coordinates to GCS
 #' longitude/latitude (SW corner of grid square).
 #'
-#' @name sgs_bng_lonlat
-#' @usage sgs_bng_lonlat(x, to = 4258, OSTN = TRUE, OD = FALSE)
-#' @param x A \code{sgs_points} object with coordinates defined in the projected
+#' @name sgo_bng_lonlat
+#' @usage sgo_bng_lonlat(x, to = 4258, OSTN = TRUE, OD = FALSE)
+#' @param x A \code{sgo_points} object with coordinates defined in the projected
 #' coordinate system BNG (EPSGs 27700 or 7405)
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
 #' Coordinate System. 4258 (ETRS89) by default.
@@ -233,23 +233,23 @@ sgs_lonlat_bng.sgs_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' around, due to the iterative nature of the algorithm that is built into
 #' OSTN15.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Longitude/Latitude.If \code{OD=TRUE} a column named \code{height.datum} is
 #' added to the resulting object.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_lonlat_bng}},
-#' \code{\link{sgs_set_gcs}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_lonlat_bng}},
+#' \code{\link{sgo_set_gcs}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples
-#' p <- sgs_points(list(651409.903, 313177.270), epsg=27700)
-#' p.84 <- sgs_bng_lonlat(p) #ETRS89 lon/lat
-#' p.36 <- sgs_bng_lonlat(p, to=4277) #OSGB36 lon/lat
+#' p <- sgo_points(list(651409.903, 313177.270), epsg=27700)
+#' p.84 <- sgo_bng_lonlat(p) #ETRS89 lon/lat
+#' p.36 <- sgo_bng_lonlat(p, to=4277) #OSGB36 lon/lat
 #' @export
-sgs_bng_lonlat <- function(x, to=4258, OSTN=TRUE, OD=FALSE)
-  UseMethod("sgs_bng_lonlat")
+sgo_bng_lonlat <- function(x, to=4258, OSTN=TRUE, OD=FALSE)
+  UseMethod("sgo_bng_lonlat")
 
 #' @export
-sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
+sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
   if (!x$epsg %in% c(27700, 7405))
     stop("This routine only supports BNG Easting and Northing entries")
@@ -263,9 +263,9 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
     out.dimension <- "XY"
 
   if (has.z) {
-    core.cols <- .sgs_points.3d.core
+    core.cols <- .sgo_points.3d.core
   } else {
-    core.cols <- .sgs_points.2d.core
+    core.cols <- .sgo_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -320,8 +320,8 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
         out.of.bounds <- TRUE
         os.ll <- .unproject.onto.ellipsoid(x$x[shifts$out],
                                            x$y[shifts$out], x$datum)
-        os.ll.points <- sgs_set_gcs(sgs_points(list(x=os.ll[, 1], y=os.ll[, 2]),
-                                               coords=.sgs_points.2d.coords,
+        os.ll.points <- sgo_set_gcs(sgo_points(list(x=os.ll[, 1], y=os.ll[, 2]),
+                                               coords=.sgo_points.2d.coords,
                                                epsg=4277),
                                     to=to)
         unprojected[shifts$out, ] <- cbind(x=os.ll.points$x, y=os.ll.points$y)
@@ -368,11 +368,11 @@ sgs_bng_lonlat.sgs_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   if (OSTN) {
     structure(c(unprojected, epsg=to,
               datum=.epsgs[.epsgs$epsg==to, "datum"],
-              dimension=out.dimension), class="sgs_points")
+              dimension=out.dimension), class="sgo_points")
   } else {
-    sgs_set_gcs(structure(c(unprojected, epsg=4277,
+    sgo_set_gcs(structure(c(unprojected, epsg=4277,
         datum=.epsgs[.epsgs$epsg==4277, "datum"],
-        dimension="XY"), class="sgs_points"), to=to)
+        dimension="XY"), class="sgo_points"), to=to)
   }
 
 }

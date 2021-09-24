@@ -5,8 +5,8 @@
 #' 2D or 3D coordinates (and other attributes) of a point or collection of
 #' points
 #'
-#' @name sgs_points
-#' @usage sgs_points(x, coords = NULL, epsg = NULL)
+#' @name sgo_points
+#' @usage sgo_points(x, coords = NULL, epsg = NULL)
 #' @param x A matrix, list or dataframe with at least 2 columns of either
 #' easting/northing or longitude/latitude coordinates per row. A column with
 #' height values is optional.
@@ -34,7 +34,7 @@
 #' coordinates. Currently it only supports the following \code{epsg}s:
 #' \itemize{
 #' \item\code{4258}: ETRS89, geodetic coordinate system. The columns in
-#' \code{x} must be defined as Longitude and Latitude (\code{sgs} also accepts
+#' \code{x} must be defined as Longitude and Latitude (\code{sgo} also accepts
 #' a third column for ellipsoid heights). The defined datum for this set of
 #' coordinates is ETRS89 (https://epsg.io/4258).
 #'
@@ -52,7 +52,7 @@
 #' datum for this set of coordinates is WGS84 (https://epsg.io/3035)
 #'
 #' \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
-#' must be defined as Longitude and Latitude (\code{sgs} also accepts a
+#' must be defined as Longitude and Latitude (\code{sgo} also accepts a
 #' third column for ellipsoid heights). The defined datum for this set of
 #' coordinates is WGS84 (https://epsg.io/4326).
 #'
@@ -73,13 +73,13 @@
 #' system.}
 #'
 #' \item\code{27700}: British National Grid, projected coordinate system. The
-#' columns in \code{x} must be defined as Easting and Northing (\code{sgs} also
+#' columns in \code{x} must be defined as Easting and Northing (\code{sgo} also
 #' accepts a third column for orthometric heights). The defined datum for this
 #' set of coordinates is OSGB 1936 (https://epsg.io/27700).
 #'
 #' \item\code{7405}: British National Grid, projected coordinate system. The
 #' columns in \code{x} must be defined as Easting, Northing and ODN Orthometric
-#' height respectively (\code{sgs} accepts heights from other datums like
+#' height respectively (\code{sgo} accepts heights from other datums like
 #' Orkney, Lerwick, Stornoway, Douglas, St.Marys and 'Newlyn offshore').
 #' The defined datum for this set of coordinates is OSGB 1936
 #' (https://epsg.io/7405).
@@ -90,8 +90,8 @@
 #' }
 #'
 #' @return
-#' An object of class \code{sgs_points}. This object is a actually a list with
-#' class \code{sgs_points} and 5 elements (or 6 elements if it is 3D):
+#' An object of class \code{sgo_points}. This object is a actually a list with
+#' class \code{sgo_points} and 5 elements (or 6 elements if it is 3D):
 #' \itemize{
 #' \item\code{x}: A numeric vector containing easting or longitude coordinates.
 #' \item\code{y}: A numeric vector with northing or latitude coordintes.
@@ -104,23 +104,23 @@
 #' \item\code{dimension}: A string describing whether the object is 2D or 3D.
 #' It can take the values "XY" or "XYZ".
 #' }
-#' @seealso \code{\link{sgs_coordinates}}, \code{\link{sgs_transform}}.
+#' @seealso \code{\link{sgo_coordinates}}, \code{\link{sgo_transform}}.
 #' @examples
 #' # lists:
-#' p1 <- sgs_points(list(-3.9369, 56.1165), epsg=4326)
+#' p1 <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
 #' lon <- c(-4.25181,-3.18827)
 #' lat <- c(55.86424, 55.95325)
-#' p2 <- sgs_points(list(longitude=lon, latitude=lat), epsg=4326)
+#' p2 <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' #p3 will fill up the list 'desc' with NA's to have the same number of
 #' #elements as coordinates in the list:
-#' p3 <- sgs_points(list(longitude=lon, latitude=lat, desc="c1"),
+#' p3 <- sgo_points(list(longitude=lon, latitude=lat, desc="c1"),
 #'                  coords=c("longitude", "latitude"), epsg=4326)
 #' # dataframe:
 #' ln <- c(-4.22472, -2.09908)
 #' lt <- c(57.47777, 57.14965)
 #' n <- c("Inverness", "Aberdeen")
 #' df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
-#' p4 <- sgs_points(df, coords=c("ln", "lt"), epsg=4326)
+#' p4 <- sgo_points(df, coords=c("ln", "lt"), epsg=4326)
 #'
 #' \dontrun{
 #' library(maps)
@@ -130,11 +130,11 @@
 #' text(p4, labels=p4$n, pos=1, cex=0.9)
 #' }
 #' @export
-sgs_points <- function (x, coords=NULL, epsg=NULL)
-  UseMethod("sgs_points")
+sgo_points <- function (x, coords=NULL, epsg=NULL)
+  UseMethod("sgo_points")
 
 #' @export
-sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
+sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   len <- length(x)
@@ -218,13 +218,13 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   if (length(other.columns)==0) {
     other.columns <- NULL
   } else {
-    # if other.columns contains column names from sgs_points.core, rename them
+    # if other.columns contains column names from sgo_points.core, rename them
     # and warn the user about it.
 
     if(dimension == "XY") {
-      cols.to.check <- .sgs_points.2d.core
+      cols.to.check <- .sgo_points.2d.core
     } else  {
-      cols.to.check <- .sgs_points.3d.core
+      cols.to.check <- .sgo_points.3d.core
     }
 
     to.rename <- names(other.columns) %in% cols.to.check
@@ -246,12 +246,12 @@ sgs_points.list <- function (x, coords=NULL, epsg=NULL) {
   structure(c(point.coords, other.columns, epsg=epsg,
               datum=.epsgs[.epsgs$epsg==epsg, "datum"],
               dimension=dimension),
-            class="sgs_points")
+            class="sgo_points")
 
 }
 
 #' @export
-sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
+sgo_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   cols <- ncol(x)
@@ -268,12 +268,12 @@ sgs_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
     names(x) <- coords
   }
 
-  sgs_points(as.list(x), coords=coords, epsg=epsg)
+  sgo_points(as.list(x), coords=coords, epsg=epsg)
 
 }
 
 #' @export
-sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
+sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   cols <- ncol(x)
@@ -292,73 +292,36 @@ sgs_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 
   lst <- lapply(seq_len(ncol(x)), function(i) x[, i])
   names(lst) <- colnames(x)
-  sgs_points(lst, coords = coords, epsg = epsg)
+  sgo_points(lst, coords = coords, epsg = epsg)
 
 }
 
 #' @encoding UTF-8
-#' @title Extracts coordinates from an \code{sgs_points} object
+#' @title Extracts coordinates from an \code{sgo_points} object
 #'
 #' @description
-#' Extract the coordinates of an \code{sgs_points} object expressed as a matrix.
+#' Extract the coordinates of an \code{sgo_points} object expressed as a matrix.
 #'
-#' @name sgs_points_xy-deprecated
-#' @usage sgs_points_xy(x)
-#' @param x An instance of \code{sgs_points}.
-#' @return
-#' A matrix with 2 named columns.
-#' @seealso \code{\link{sgs-deprecated}}
-#' @keywords internal
-#' @examples
-#' \dontrun{
-#' p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
-#' coords <- sgs_points_xy(p)
-#' }
-NULL
-
-#' @rdname sgs-deprecated
-#' @section \code{sgs_points_xy}:
-#' For \code{sgs_points_xy}, use \code{\link{sgs_coordinates}}.
-#'
-#' @export
-sgs_points_xy <- function (x) UseMethod("sgs_points_xy")
-
-#' @export
-sgs_points_xy.sgs_points <-function(x) {
-  .Deprecated("sgs_coordinates")
-
-  coords <- .sgs_points.2d.coords
-  matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE,
-         dimnames = list(NULL, coords))
-
-}
-
-#' @encoding UTF-8
-#' @title Extracts coordinates from an \code{sgs_points} object
-#'
-#' @description
-#' Extract the coordinates of an \code{sgs_points} object expressed as a matrix.
-#'
-#' @name sgs_coordinates
-#' @usage sgs_coordinates(x)
-#' @param x An instance of \code{sgs_points}.
+#' @name sgo_coordinates
+#' @usage sgo_coordinates(x)
+#' @param x An instance of \code{sgo_points}.
 #' @return
 #' A matrix with 2 or 3 named columns.
 #' @examples
-#' p <- sgs_points(list(57.47777, -4.22472), epsg=4326)
-#' coords <- sgs_coordinates(p)
+#' p <- sgo_points(list(57.47777, -4.22472), epsg=4326)
+#' coords <- sgo_coordinates(p)
 #'
 #' @export
-sgs_coordinates <- function (x) UseMethod("sgs_coordinates")
+sgo_coordinates <- function (x) UseMethod("sgo_coordinates")
 
 #' @export
-sgs_coordinates.sgs_points <- function(x) {
+sgo_coordinates.sgo_points <- function(x) {
 
   if(x$dimension == "XY") {
-    coords <- .sgs_points.2d.coords
+    coords <- .sgo_points.2d.coords
     cols <- 2
   } else  {
-    coords <- .sgs_points.3d.coords
+    coords <- .sgo_points.3d.coords
     cols <- 3
   }
   matrix(unlist(x[coords], use.names = FALSE), ncol = cols, byrow = FALSE,
@@ -368,12 +331,12 @@ sgs_coordinates.sgs_points <- function(x) {
 
 
 #' @export
-as.data.frame.sgs_points <- function(x, row.names = NULL, optional = FALSE,
+as.data.frame.sgo_points <- function(x, row.names = NULL, optional = FALSE,
       ..., cut.names = FALSE, col.names = names(x), fix.empty.names = TRUE,
       stringsAsFactors = default.stringsAsFactors()) {
 
-  class(x) <- setdiff(class(x), "sgs_points")
-  col.names <- setdiff(col.names, .sgs_points.attr)
+  class(x) <- setdiff(class(x), "sgo_points")
+  col.names <- setdiff(col.names, .sgo_points.attr)
 
   as.data.frame.list(x[col.names], row.names = row.names, optional = optional,
                      ..., cut.names = cut.names, col.names = col.names,
@@ -384,20 +347,20 @@ as.data.frame.sgs_points <- function(x, row.names = NULL, optional = FALSE,
 
 
 #' @export
-as.list.sgs_points <- function(x, ...) {
+as.list.sgo_points <- function(x, ...) {
 
-  #class(x) <- setdiff(class(x), "sgs_points")
-  x[setdiff(names(x), .sgs_points.attr)]
+  #class(x) <- setdiff(class(x), "sgo_points")
+  x[setdiff(names(x), .sgo_points.attr)]
 
 }
 
 
-#' @rdname sgs_points
+#' @rdname sgo_points
 #' @param ... Further arguments passed to or from other methods,
 #' see \link{print}.
 #' @param n Maximum number of features to print.
 #' @export
-print.sgs_points <- function(x, ..., n = 6L) {
+print.sgo_points <- function(x, ..., n = 6L) {
 
   len <- length(x$x)
   if (n >= len) {
@@ -410,16 +373,16 @@ print.sgs_points <- function(x, ..., n = 6L) {
   # print coordinates always first
   x.2d <- x$dimension == "XY"
   if (x.2d) {
-    coords <- .sgs_points.2d.coords
-    print.cols <- c(coords, setdiff(names(x), .sgs_points.2d.core))
+    coords <- .sgo_points.2d.coords
+    print.cols <- c(coords, setdiff(names(x), .sgo_points.2d.core))
   } else {
-    coords <- .sgs_points.3d.coords
-    print.cols <- c(coords, setdiff(names(x), .sgs_points.3d.core))
+    coords <- .sgo_points.3d.coords
+    print.cols <- c(coords, setdiff(names(x), .sgo_points.3d.core))
   }
 
   num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)
   and <- paste("and", num.fields, ifelse(num.fields == 1L, "field", "fields"))
-  cat("An sgs object with", n, ifelse(n == 1L,
+  cat("An sgo object with", n, ifelse(n == 1L,
                                       "feature (point)", "features (points)"),
       if (num.fields == 0L) NULL else and,
       "\ndimension:", x$dimension,

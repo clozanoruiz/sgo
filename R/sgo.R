@@ -1,6 +1,6 @@
-#' sgs: Simple GIS (with OSGB).
+#' sgo: Simple geographical operations (with OSGB36).
 #'
-#' The sgs package aims to provide a set of functions that will help with
+#' The sgo package aims to provide a set of functions that will help with
 #' spatial or geographic analysis in Open Source R and derivatives. Its main
 #' purpose is to perform OSGB36/ETRS89 transformations using the Ordnance
 #' Survey's OSTN15 transformation model for Great Britain and the Isle of Man.
@@ -22,35 +22,35 @@
 #' @encoding UTF-8
 #' @section Object constructors:
 #' \itemize{
-#' \item\code{\link{sgs_points}}: 2D/3D point coordinates
+#' \item\code{\link{sgo_points}}: 2D/3D point coordinates
 #' }
 #'
 #' @section Transformation and Conversion functions:
 #' Functions to provide coordinate transformations:
 #' \itemize{
-#' \item\code{\link{sgs_bng_lonlat}}: British National Grid (E/N) to Lon/Lat
-#' \item\code{\link{sgs_lonlat_bng}}: Lon/Lat to British National Grid (E/N)
-#' \item\code{\link{sgs_bng_ngr}}: British National Grid (E/N) to National Grid
+#' \item\code{\link{sgo_bng_lonlat}}: British National Grid (E/N) to Lon/Lat
+#' \item\code{\link{sgo_lonlat_bng}}: Lon/Lat to British National Grid (E/N)
+#' \item\code{\link{sgo_bng_ngr}}: British National Grid (E/N) to National Grid
 #' References
-#' \item\code{\link{sgs_ngr_bng}}: National Grid References to British National
+#' \item\code{\link{sgo_ngr_bng}}: National Grid References to British National
 #' Grid (E/N)
-#' \item\code{\link{sgs_laea_etrs}}: ETRS89-LAEA Easting/Northing to ETRS89
-#' \item\code{\link{sgs_etrs_laea}}: ETRS89 to ETRS89-LAEA Easting/Northing
-#' \item\code{\link{sgs_cart_lonlat}}: 3D Earth Centred Earth Fixed (ECEF)
+#' \item\code{\link{sgo_laea_etrs}}: ETRS89-LAEA Easting/Northing to ETRS89
+#' \item\code{\link{sgo_etrs_laea}}: ETRS89 to ETRS89-LAEA Easting/Northing
+#' \item\code{\link{sgo_cart_lonlat}}: 3D Earth Centred Earth Fixed (ECEF)
 #' Cartesian coordinates to polar coordinates
-#' \item\code{\link{sgs_lonlat_cart}}: Polar coordinates to 3D ECEF
+#' \item\code{\link{sgo_lonlat_cart}}: Polar coordinates to 3D ECEF
 #' Cartesian coordinates
-#' \item\code{\link{sgs_wgs84_en}}: WGS84 Lon/Lat to Pseudo-Mercator (E/N)
-#' \item\code{\link{sgs_en_wgs84}}: Pseudo-Mercator (E/N) to WGS84 Lon/Lat
-#' \item\code{\link{sgs_transform}}: Wrapper for all the transformations above
-#' \item\code{\link{sgs_coordinates}}: Extract coordinates from a
-#' \code{sgs_points} object
+#' \item\code{\link{sgo_wgs84_en}}: WGS84 Lon/Lat to Pseudo-Mercator (E/N)
+#' \item\code{\link{sgo_en_wgs84}}: Pseudo-Mercator (E/N) to WGS84 Lon/Lat
+#' \item\code{\link{sgo_transform}}: Wrapper for all the transformations above
+#' \item\code{\link{sgo_coordinates}}: Extract coordinates from a
+#' \code{sgo_points} object
 #' }
 #'
 #' @section Geometric measurements:
 #' \itemize{
-#' \item\code{\link{sgs_area}}: Calculate area from an ordered set of points
-#' \item\code{\link{sgs_distance}}: Calculate distance(s) between points
+#' \item\code{\link{sgo_area}}: Calculate area from an ordered set of points
+#' \item\code{\link{sgo_distance}}: Calculate distance(s) between points
 #' }
 #'
 #' @section Disclaimer:
@@ -60,16 +60,5 @@
 #' copyright and database rights Land & Property Services 2016 and/or ©
 #' Ordnance Survey Ireland, 2016. All rights reserved.}
 #' @docType package
-#' @name sgs
-NULL
-
-
-#' @encoding UTF-8
-#' @title Deprecated functions in package \pkg{sgs}.
-#' @description The functions listed below are deprecated and will be defunct in
-#'   the near future. When possible, alternative functions with similar
-#'   functionality are also mentioned. Help pages for deprecated functions are
-#'   available at \code{help("-deprecated")}.
-#' @name sgs-deprecated
-#' @keywords internal
+#' @name sgo
 NULL

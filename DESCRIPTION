@@ -1,10 +1,10 @@
-Package: sgs
-Title: Simple GIS (with OSGB)
+Package: sgo
+Title: Simple geographical operations (with OSGB36)
 Version: 0.4.0
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))
-URL: https://github.com/clozanoruiz/sgs
-BugReports: https://github.com/clozanoruiz/sgs/issues
+URL: https://github.com/clozanoruiz/sgo
+BugReports: https://github.com/clozanoruiz/sgo/issues
 Language: en-GB
 Description: A set of functions to help with spatial analysis mainly focused on 
   the OSGB36/ETRS89 transformation (Great Britain and the Isle of Man) by using 
@@ -24,14 +24,14 @@ ByteCompile: yes
 LazyData: true
 RoxygenNote: 7.1.1
 Collate: 
-  'sgs.R'
-  'sgs_area.R'
-  'sgs_bng.R'
-  'sgs_distance.R'
-  'sgs_laea.R'
-  'sgs_ngr.R'
-  'sgs_points.R'
-  'sgs_set_gcs.R'
-  'sgs_wgs84.R'
-  'sgs_transform.R'
+  'sgo.R'
+  'sgo_area.R'
+  'sgo_bng.R'
+  'sgo_distance.R'
+  'sgo_laea.R'
+  'sgo_ngr.R'
+  'sgo_points.R'
+  'sgo_set_gcs.R'
+  'sgo_wgs84.R'
+  'sgo_transform.R'
 Config/testthat/edition: 3

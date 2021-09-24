@@ -12,8 +12,8 @@
 #' @description
 #' Converts OS National Grid References to Easting/Northing coordinates
 #'
-#' @name sgs_ngr_bng
-#' @usage sgs_ngr_bng(x, col = NULL, check.only = FALSE)
+#' @name sgo_ngr_bng
+#' @usage sgo_ngr_bng(x, col = NULL, check.only = FALSE)
 #' @param x A data.frame, list or vector containing strings describing OS
 #' National Grid References, with or without whitespace separators.
 #' (e.g. 'SU 387 148').
@@ -29,38 +29,38 @@
 #' to inform the function which of the elements contains the NGR strings. The
 #' rest of the elements will be appended to the resulting object. See examples.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Easting/Northing when \code{check.only} is kept as FALSE. Otherwise, it
 #' returns a logical vector indicating which grid references are correct and
 #' which ones are not.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_bng_ngr}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_bng_ngr}}.
 #' @examples
 #' vec <- c("NN 166 712", "HU38637653")
 #' lst <- list(vec)
-#' v <- sgs_ngr_bng(vec)
-#' l <- sgs_ngr_bng(lst)
+#' v <- sgo_ngr_bng(vec)
+#' l <- sgo_ngr_bng(lst)
 #'
 #' # any additional column (here 'attr') will be added to the result
 #' extra <- list(p=c("NN 166712", "HU38637653"),
 #'               attr=c("name1","name2"))
-#' res <- sgs_ngr_bng(extra, col="p")
+#' res <- sgo_ngr_bng(extra, col="p")
 #' res
 #'
-#' # grid references returned by sgs_bng_ngr are within an
+#' # grid references returned by sgo_bng_ngr are within an
 #' # element (column) named 'ngr'
-#' grid <- sgs_bng_ngr(sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+#' grid <- sgo_bng_ngr(sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 #'                                coords=c("x","y"),
 #'                                epsg=27700))
-#' bng <- sgs_ngr_bng(grid, col="ngr")
+#' bng <- sgo_ngr_bng(grid, col="ngr")
 #'
 #' # test
 #' bad <- c("NN 166 712", "AA 3863 7653")
-#' check <- sgs_ngr_bng(bad, check.only=TRUE) #returns a logical vector
+#' check <- sgo_ngr_bng(bad, check.only=TRUE) #returns a logical vector
 #' @export
-sgs_ngr_bng <- function(x, col=NULL, check.only=FALSE) UseMethod("sgs_ngr_bng")
+sgo_ngr_bng <- function(x, col=NULL, check.only=FALSE) UseMethod("sgo_ngr_bng")
 
 #' @export
-sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
+sgo_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
 
   err.msg <- "Invalid grid reference(s)"
   old.x <- x
@@ -144,24 +144,24 @@ sgs_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
   }
   structure(c(lst, epsg=27700, datum=.epsgs[.epsgs$epsg==27700, "datum"],
               dimension="XY"),
-            class="sgs_points")
+            class="sgo_points")
 
 }
 
 #' @export
-sgs_ngr_bng.data.frame <- function(x, col=NULL, check.only=FALSE) {
+sgo_ngr_bng.data.frame <- function(x, col=NULL, check.only=FALSE) {
 
-  sgs_ngr_bng(as.list(x), col=col, check.only=check.only)
+  sgo_ngr_bng(as.list(x), col=col, check.only=check.only)
 
 }
 
 #' @export
-sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
+sgo_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 
   if (is.atomic(x)) {
-    sgs_ngr_bng(list(x), col=col, check.only=check.only)
+    sgo_ngr_bng(list(x), col=col, check.only=check.only)
   } else {
-    stop("sgs_ngr_bng only accepts lists, dataframes or atomic types")
+    stop("sgo_ngr_bng only accepts lists, dataframes or atomic types")
   }
 
 }
@@ -173,9 +173,9 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' @description
 #' Converts BNG Easting/Northing coordinates to National Grid References
 #'
-#' @name sgs_bng_ngr
-#' @usage sgs_bng_ngr(x, digits = 10)
-#' @param x A \code{sgs_points} object with coordinates defined as
+#' @name sgo_bng_ngr
+#' @usage sgo_bng_ngr(x, digits = 10)
+#' @param x A \code{sgo_points} object with coordinates defined as
 #' \code{epsg=27700} or \code{epsg=7405}.
 #' @param digits Numeric. It defines the precision of the resulting grid
 #' references.
@@ -192,19 +192,19 @@ sgs_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' of the less precise polygon.
 #' @return
 #' A list with at least one element named 'ngr'.
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_ngr_bng}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_ngr_bng}}.
 #' @examples
-#' sgs <- sgs_points(list(x=247455, y=706338, name="Ben Venue"),
+#' sgo <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 #' coords=c("x", "y"), epsg=27700)
-#' grid10 <- sgs_bng_ngr(sgs)
-#' grid8 <- sgs_bng_ngr(sgs, digits=8)
+#' grid10 <- sgo_bng_ngr(sgo)
+#' grid8 <- sgo_bng_ngr(sgo, digits=8)
 #' #and notice the truncating, not rounding, of grid8 regarding grid10.
 #' @export
-sgs_bng_ngr <- function(x, digits=10) UseMethod("sgs_bng_ngr")
+sgo_bng_ngr <- function(x, digits=10) UseMethod("sgo_bng_ngr")
 
 
 #' @export
-sgs_bng_ngr.sgs_points <- function(x, digits=10) {
+sgo_bng_ngr.sgo_points <- function(x, digits=10) {
 
   if (!x$epsg %in% c(27700, 7405))
     stop("This routine only supports BNG projected coordinate system")
@@ -214,9 +214,9 @@ sgs_bng_ngr.sgs_points <- function(x, digits=10) {
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
-    core.cols <- .sgs_points.3d.core
+    core.cols <- .sgo_points.3d.core
   } else {
-    core.cols <- .sgs_points.2d.core
+    core.cols <- .sgo_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols

@@ -5,40 +5,40 @@
 #' Converts ETRS89 geodetic coordinates to ETRS89-LAEA Easting/Northing
 #' (EPSG:3035)
 #'
-#' @name sgs_etrs_laea
-#' @usage sgs_etrs_laea(x)
-#' @param x A \code{sgs_points} object describing a set of points in the
+#' @name sgo_etrs_laea
+#' @usage sgo_etrs_laea(x)
+#' @param x A \code{sgo_points} object describing a set of points in the
 #' geodetic coordinate system EPSG=4258, 4937 or 4936.
 #' @details
 #' ETRS89-LAEA (EPSG:3035) is a CRS for pan-European statistical mapping at all
 #' scales or other purposes where true area representation is required.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Easting/Northing in the EPSG:3035 Projected Coordinate System.
 #' @references
 #' IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_area}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_area}}.
 #' @examples
-#' p <- sgs_points(list(-3.9369, 56.1165), epsg=4258)
-#' prj <- sgs_etrs_laea(p)
+#' p <- sgo_points(list(-3.9369, 56.1165), epsg=4258)
+#' prj <- sgo_etrs_laea(p)
 #' @export
-sgs_etrs_laea <- function(x) UseMethod("sgs_etrs_laea")
+sgo_etrs_laea <- function(x) UseMethod("sgo_etrs_laea")
 
 #' @export
-sgs_etrs_laea.sgs_points <- function(x) {
+sgo_etrs_laea.sgo_points <- function(x) {
 
   if (!x$epsg %in% c(4258, 4937, 4936))
     stop("This routine only supports ETRS89 coordinates.")
 
   if (x$epsg == 4936)
-    x <- sgs_cart_lonlat(x)
+    x <- sgo_cart_lonlat(x)
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
-    core.cols <- .sgs_points.3d.core
+    core.cols <- .sgo_points.3d.core
   } else {
-    core.cols <- .sgs_points.2d.core
+    core.cols <- .sgo_points.2d.core
   }
 
   additional.elements <- !names(x) %in% core.cols
@@ -98,7 +98,7 @@ sgs_etrs_laea.sgs_points <- function(x) {
 
   structure(c(en, epsg = 3035, datum = .epsgs[.epsgs$epsg == 3035, "datum"],
               dimension = "XY"),
-            class = "sgs_points")
+            class = "sgo_points")
 
 }
 
@@ -110,32 +110,32 @@ sgs_etrs_laea.sgs_points <- function(x) {
 #' Converts ETRS89-LAEA Easting/Northing to ETRS89 geodetic coordinates
 #' (EPSG:4258)
 #'
-#' @name sgs_laea_etrs
-#' @usage sgs_laea_etrs(x)
-#' @param x A \code{sgs_points} object describing a set of points in the
+#' @name sgo_laea_etrs
+#' @usage sgo_laea_etrs(x)
+#' @param x A \code{sgo_points} object describing a set of points in the
 #' projected coordinate system EPSG=3035.
 #' @details
 #' ETRS89-LAEA (EPSG:3035) is a CRS for pan-European statistical mapping at all
 #' scales or other purposes where true area representation is required.
 #' @return
-#' An object of class \code{sgs_points} whose coordinates are defined as
+#' An object of class \code{sgo_points} whose coordinates are defined as
 #' Longitude/Latitude in the ETRS89 Coordinate Reference System.
 #' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
 #' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
-#' @seealso \code{\link{sgs_points}}, \code{\link{sgs_area}}.
+#' @seealso \code{\link{sgo_points}}, \code{\link{sgo_area}}.
 #' @examples
-#' prj <- sgs_points(list(3962799.45, 2999718.85), epsg=3035)
-#' p <- sgs_laea_etrs(prj)
+#' prj <- sgo_points(list(3962799.45, 2999718.85), epsg=3035)
+#' p <- sgo_laea_etrs(prj)
 #' @export
-sgs_laea_etrs <- function(x) UseMethod("sgs_laea_etrs")
+sgo_laea_etrs <- function(x) UseMethod("sgo_laea_etrs")
 
 #' @export
-sgs_laea_etrs.sgs_points <- function(x) {
+sgo_laea_etrs.sgo_points <- function(x) {
 
   if (x$epsg != 3035)
     stop("This routine only supports coordinates in EPSG:3035.")
 
-  core.cols <- .sgs_points.2d.core
+  core.cols <- .sgo_points.2d.core
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
@@ -199,6 +199,6 @@ sgs_laea_etrs.sgs_points <- function(x) {
 
   structure(c(xy, epsg = 4258, datum = .epsgs[.epsgs$epsg == 4258, "datum"],
               dimension = "XY"),
-            class = "sgs_points")
+            class = "sgo_points")
 
 }

@@ -6,9 +6,9 @@
 #' ETRS89-LAEA. An accurate approximation of the geodetic area is calculated
 #' when points are expressed in angular coordinates.
 #'
-#' @name sgs_area
-#' @usage sgs_area(x, interpolate = NULL, ...)
-#' @param x A \code{sgs_points} object describing an ordered set of points.
+#' @name sgo_area
+#' @usage sgo_area(x, interpolate = NULL, ...)
+#' @param x A \code{sgo_points} object describing an ordered set of points.
 #' @param interpolate Numeric variable. If not \code{NULL}, defines the maximum
 #' distance in metres between adjacent coordinates. It is only used with
 #' angular coordinates.
@@ -45,18 +45,18 @@
 #' -6.42248238, -6.42639092, -6.42998435, -6.43321409)
 #' lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
 #' 58.21849188, 58.21853606, 58.21824033, 58.21748949)
-#' A <- sgs_area(sgs_points(list(lon, lat), epsg=4326))
+#' A <- sgo_area(sgo_points(list(lon, lat), epsg=4326))
 #' @export
-sgs_area <- function (x, interpolate = NULL, ...)
-  UseMethod("sgs_area")
+sgo_area <- function (x, interpolate = NULL, ...)
+  UseMethod("sgo_area")
 
 #' @export
-sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
+sgo_area.sgo_points <- function(x, interpolate = NULL, ...) {
 
   if (isTRUE(x$epsg %in% c(4936, 4978, 3857)))
     stop("This function doesn't support the input's EPSG")
 
-  coords <- .sgs_points.2d.coords
+  coords <- .sgo_points.2d.coords
 
   if(isTRUE(.epsgs[.epsgs$epsg == x$epsg, "type"] == "PCS")) {
 
@@ -67,12 +67,12 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
   } else {
 
     # Don't need all the extra columns it might have
-    x <- structure(x[c(coords, .sgs_points.attr)], class = "sgs_points")
+    x <- structure(x[c(coords, .sgo_points.attr)], class = "sgo_points")
 
     # Geodetic area
     # 1- transform to BNG (which is conformal: keeps angles - and shapes)
     # we could also just use a mercator transformation
-    x.bng <- sgs_lonlat_bng(x, OSTN=TRUE, OD=FALSE)
+    x.bng <- sgo_lonlat_bng(x, OSTN=TRUE, OD=FALSE)
 
     # 2- calculate centroid from BNG points and convert back to lonlat
     mc <- unname(.moment.centroid(matrix(unlist(x.bng[coords], use.names=FALSE),
@@ -80,8 +80,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
     mc <- lapply(seq_len(ncol(mc)), function(i) mc[, i])
     names(mc) <- coords
     mc <- structure(c(mc, epsg = x.bng$epsg, datum = x.bng$datum,
-                      dimension = x.bng$dimension), class = "sgs_points")
-    mc <- sgs_bng_lonlat(mc, to=x$epsg, OSTN=TRUE)
+                      dimension = x.bng$dimension), class = "sgo_points")
+    mc <- sgo_bng_lonlat(mc, to=x$epsg, OSTN=TRUE)
 
     # 3- if we need to interpolate
     if (is.numeric(interpolate)) {
@@ -129,7 +129,7 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
       res.lst <- lapply(seq_len(ncol(res.matrix)), function(i) res.matrix[, i])
       names(res.lst) <- coords
       x <- structure(c(res.lst, epsg = x$epsg, datum = x$datum,
-                       dimension = x$dimension), class = "sgs_points")
+                       dimension = x$dimension), class = "sgo_points")
 
     }
 
@@ -195,8 +195,8 @@ sgs_area.sgs_points <- function(x, interpolate = NULL, ...) {
 }
 
 #' @noRd
-#' @param p An sgs_points object containing a set of ordered angular coordinates
-#' @param c An sgs_points object containing the coordinates of the centroid
+#' @param p An sgo_points object containing a set of ordered angular coordinates
+#' @param c An sgo_points object containing the coordinates of the centroid
 .geod.area <- function(p, c) {
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==p$datum, "ellipsoid"]

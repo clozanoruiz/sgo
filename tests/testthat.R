@@ -1,4 +1,4 @@
 library(testthat)
-library(sgs)
+library(sgo)
 
-test_check("sgs")
+test_check("sgo")
