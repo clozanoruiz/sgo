@@ -12,7 +12,7 @@ SemVer)](https://img.shields.io/github/v/release/clozanoruiz/sgo.svg)](https://g
 [![license](https://img.shields.io/badge/license-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
 
-The goal of sgs is to provide a set of methods to transform ETRS89
+The goal of sgo is to provide a set of methods to transform ETRS89
 coordinates to the equivalent OSGB36 National Grid coordinates, and
 vice-versa, using [Ordnance Survey’s National Grid Transformation
 OSTN15](https://www.ordnancesurvey.co.uk/blog/2016/09/ostn15-new-geoid-britain/).

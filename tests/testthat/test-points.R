@@ -42,7 +42,9 @@ test_that("Wrong inputa data", {
                "'epsg' must be entered as one of the accepted numbers")
   expect_error(sgo_points(list(-4.22472, 57.47777), epsg=-1),
                "'epsg' must be entered as one of the accepted numbers")
-  #sgo_points(list(c(1,3),ln,lt), epsg=4326) <- arreglar en el codigo cuando vienen sin nombre de columna!
+  expect_error(sgo_points(list(n, ln=ln, lt=lt),
+                          coords=c("ln", "lt"), epsg=4326),
+               "All elements in 'x' must be named")
 
   #data.frame
   df <- data.frame(ln, stringsAsFactors = FALSE)
@@ -60,10 +62,14 @@ test_that("Wrong inputa data", {
 
   #matrix
   m <- cbind(ln)
-  #sgo_points(m, epsg=4326)
+  expect_error(sgo_points(m, epsg=4326),
+               "method accepts matrices with at least 2 columns")
+  m <- cbind(ln, lt)
+  expect_error(sgo_points(m),
+               "'epsg' must be entered as one of the accepted numbers")
 })
 
-test_that("Print output", {
+test_that("Outputs", {
   #print all elements
   p <- sgo_points(list(56.1165, -3.9369), epsg=4326)
 
@@ -86,6 +92,11 @@ test_that("Print output", {
   expect_output(print(p, n=1), "dimension: XYZ", fixed = TRUE)
   expect_output(print(p, n=1), "EPSG:      4978", fixed = TRUE)
   expect_output(print(p, n=1), "First 1 feature:",  fixed = TRUE)
+
+  #export to list
+  l <- list(x=x, y=y, z=z, N=N)
+  p <- sgo_points(list(N=N, z=z, x=x, y=y), coords=c("x", "y", "z"), epsg=4978)
+  expect_identical(as.list(p), l)
 })
 
 #TODO

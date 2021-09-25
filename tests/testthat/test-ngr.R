@@ -70,32 +70,42 @@ test_that("Eastings are correctly converted to NGR", {
 })
 
 test_that("3D Eastings are correctly converted to NGR", {
+  coords.3d <- c("x", "y", "z")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=510000, y=450000, z=53),
+                                      coords=coords.3d,
                                       epsg=27700), digits=2)$ngr, "TA 1 5")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512000, y=456000, z=47),
+                                      coords=coords.3d,
                                       epsg=27700), digits=4)$ngr, "TA 12 56")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345, y=467890, z=61),
+                                      coords=coords.3d,
                                       epsg=27700))$ngr, "TA 12345 67890")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345, y=467890, z=61),
+                                      coords=coords.3d,
                                       epsg=27700), digits=10)$ngr,
                "TA 12345 67890")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345, y=467890, z=47),
+                                      coords=coords.3d,
                                       epsg=27700), digits=8)$ngr,
                "TA 1234 6789")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345, y=467890, z=47),
+                                      coords=coords.3d,
                                       epsg=27700), digits=6)$ngr, "TA 123 678")
 
   # Lists:
   expect_equal(sgo_bng_ngr(sgo_points(list(easting=c(512000, 512345),
                                            northing=c(456000, 467890),
                                            height=c(47, 61)),
+                                      coords=c("easting", "northing", "height"),
                                       epsg=27700), digits= 6)$ngr,
                c("TA 120 560", "TA 123 678"))
 
   # Truncate, not rounding:
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345.387, y=467890.456, z=61.32),
+                                      coords=coords.3d,
                                       epsg=27700))$ngr, "TA 12345 67890")
   expect_equal(sgo_bng_ngr(sgo_points(list(x=512345.998, y=467890.656, z=61.47),
+                                      coords=coords.3d,
                                       epsg=27700))$ngr, "TA 12345 67890")
 
 })

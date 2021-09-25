@@ -138,41 +138,32 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   # Checks
   len <- length(x)
-  names <- names(x)
   if (len < 2) stop("This method accepts lists with at least 2 elements")
 
   if (is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
-  if ((!is.null(coords) && is.null(names)) || !all(coords %in% names)) {
-    stop(paste("'x' must have at least",
-               length(coords),
-               "named elements (coordinates)"))
-  }
-
-  if (len < 4 && is.null(coords) && !is.null(names)) {
-    lnames <- tolower(names)
-    known.coords <- .coordinates.names[match(lnames, .coordinates.names)]
-    known.coords <- known.coords[!is.na(known.coords)]
-    if (length(known.coords) == len) {
-      coords <- known.coords
-      names(x) <- coords
-    }
-  }
-
   # don't try to guess too much the coords...
-  if (is.null(coords) && is.null(names)) {
-    if ((epsg %in% .epsgs[.epsgs$dimension != "XYZ", "epsg"] && len == 2) ||
-        (epsg %in% .epsgs[.epsgs$dimension != "XY", "epsg"] && len == 3)){
+  if (is.null(coords)) {
+    if ((epsg %in% .epsgs[.epsgs$dimension %in% c("XY", "XY/Z"), "epsg"]
+         && len == 2) ||
+        (epsg %in% .epsgs[.epsgs$dimension == "XYZ", "epsg"]
+         && len == 3)){
       coords <- .coordinates.names[1, 1:len] #c(x,y,(z)) just because
       names(x) <- coords
     }
   }
 
-  if (is.null(names(x))) {
-    stop("'x' must have at least two named elements (coordinates)")
+  names <- names(x)
+  if (is.null(names) || any(names == "")) {
+    stop("All elements in 'x' must be named")
   }
+
+  if (!is.null(coords) && !all(coords %in% names)) {
+    stop("'x' must include all the coordinates defined in 'coords'")
+  }
+
   if (is.null(coords)) {
     stop("Must specify the coordinate columns using the 'coords' parameter")
   }
@@ -213,7 +204,7 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
                          z = x[[coords[3]]])
   }
 
-  other.columns <- x[!(names(x) %in% coords)]
+  other.columns <- x[!(names %in% coords)]
 
   if (length(other.columns)==0) {
     other.columns <- NULL

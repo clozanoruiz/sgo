@@ -9,7 +9,7 @@ test_that("Geodetic area", {
            -6.42248238, -6.42639092, -6.42998435, -6.43321409)
   lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
            58.21849188, 58.21853606, 58.21824033, 58.21748949)
-  expect_true(all(abs(sgo_area(sgo_points(list(lon, lat), epsg=4326)) -
+  expect_true(all(abs(sgo_area(sgo_points(list(lon=lon, lat=lat), epsg=4326)) -
                         133610.63495) < 0.00001))
 
   # 3D input (should just ignre the heights)
