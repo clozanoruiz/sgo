@@ -170,10 +170,9 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   num.coords <- length(coords)
 
-  # check those epsgs that ONLY admit 2 and have 3, and viceversa
-  if ((epsg %in% .epsgs[.epsgs$dimension=="XY", "epsg"] && num.coords > 2) ||
-      (epsg %in% .epsgs[.epsgs$dimension=="XYZ", "epsg"] && num.coords < 3)) {
-    stop("Wrong number of coordinates for the The specified 'epsg'")
+  # check those epsgs that need 3 coordinates and there are only 2 defined
+  if (epsg %in% .epsgs[.epsgs$dimension=="XYZ", "epsg"] && num.coords < 3) {
+    stop("Wrong number of coordinates for the the specified 'epsg'")
   }
 
   for (i in 1:num.coords) {
@@ -219,13 +218,14 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
     }
 
     to.rename <- names(other.columns) %in% cols.to.check
-    names(other.columns)[to.rename] <- paste0(
-      names(other.columns)[to.rename], ".2")
+    if (any(to.rename)) {
+      o.names <- names(other.columns)[to.rename]
+      names(other.columns)[to.rename] <- paste0(o.names, ".1")
+      warning(paste0("The column(s) from input data named ",
+                     paste(o.names, collapse = ", "),
+                     " has(have) been renamed appending the suffix '.1'"))
+    }
 
-    if (any(to.rename))
-      warning(paste0("All columns from input data named ",
-                     paste(cols.to.check, collapse = ", "),
-                     " have been renamed appending the suffix '.2'"))
 
     # all additional columns will be expanded to contain the same number of
     # elements as coordinates in the object

@@ -67,6 +67,43 @@ test_that("Wrong inputa data", {
   m <- cbind(ln, lt)
   expect_error(sgo_points(m),
                "'epsg' must be entered as one of the accepted numbers")
+
+  #parameter 'coords' is not informed
+  expect_error(sgo_points(list(n=n, ln=ln, lt=lt), epsg=4326),
+    "Must specify the coordinate columns using the 'coords' parameter")
+
+  #all coords must be in x
+  expect_error(sgo_points(list(lon=ln, lt=lt), coords=c("ln", "lt"), epsg=4326),
+               "'x' must include all the coordinates defined in 'coords'")
+
+  #epsg corresponds with the number of coordinates
+  expect_error(sgo_points(list(x=-1.6644422222, y=53.6119903611, z=299.800),
+                          coords=c("x", "y"), epsg=4937),
+               "Wrong number of coordinates for the the specified 'epsg'")
+
+  #all coordinates must be numeric
+  lt.t <- c(57.47777, "57.14965")
+  expect_error(sgo_points(list(ln, lt.t), epsg=4326),
+               "All coordinates must be numeric")
+
+  #fix 3D EPSG codes if needed
+  m <- cbind(ln,lt, h=c(1.0, 1.1))
+  expect_true(sgo_points(m, coords=c("ln", "lt", "h"),
+                         epsg=4326)$epsg == 4979)
+  expect_true(sgo_points(list(x=-1.6644422222, y=53.6119903611, z=299.800),
+                         coords=c("x", "y", "z"),
+                         epsg=4258)$epsg == 4937)
+
+  #rename columns with identical names as the ones in sgo_points core
+  expect_warning(sgo_points(list(ln=ln, lt=lt, epsg=c(4326, 4326)),
+                            coords=c("ln", "lt"), epsg=4326),
+             paste("The column\\(s\\) from input data named epsg",
+                   "has\\(have\\) been renamed appending the suffix '.1'"))
+  expect_warning(sgo_points(list(ln=ln, lt=lt, epsg=c(4326, 4326),
+                                 dimension=c("XY", "XY")),
+                            coords=c("ln", "lt"), epsg=4326),
+             paste("The column\\(s\\) from input data named epsg, dimension",
+                   "has\\(have\\) been renamed appending the suffix '.1'"))
 })
 
 test_that("Outputs", {
