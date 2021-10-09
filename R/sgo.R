@@ -62,3 +62,4 @@
 #' @docType package
 #' @name sgo
 NULL
+#> NULL

@@ -321,34 +321,9 @@ sgo_coordinates.sgo_points <- function(x) {
 }
 
 
-#' @export
-as.data.frame.sgo_points <- function(x, row.names = NULL, optional = FALSE,
-      ..., cut.names = FALSE, col.names = names(x), fix.empty.names = TRUE,
-      stringsAsFactors = default.stringsAsFactors()) {
-
-  class(x) <- setdiff(class(x), "sgo_points")
-  col.names <- setdiff(col.names, .sgo_points.attr)
-
-  as.data.frame.list(x[col.names], row.names = row.names, optional = optional,
-                     ..., cut.names = cut.names, col.names = col.names,
-                     fix.empty.names = fix.empty.names,
-                     stringsAsFactors = stringsAsFactors)
-
-}
-
-
-#' @export
-as.list.sgo_points <- function(x, ...) {
-
-  #class(x) <- setdiff(class(x), "sgo_points")
-  x[setdiff(names(x), .sgo_points.attr)]
-
-}
-
-
 #' @rdname sgo_points
 #' @param ... Further arguments passed to or from other methods,
-#' see \link{print}.
+#' see \link{print}, \link{as.data.frame} or \link{as.list} .
 #' @param n Maximum number of features to print.
 #' @export
 print.sgo_points <- function(x, ..., n = 6L) {
@@ -383,5 +358,28 @@ print.sgo_points <- function(x, ..., n = 6L) {
   print.data.frame(as.data.frame(lapply(x[print.cols],
                                         function(l) l[1:n])), ...)
   invisible(x)
+
+}
+
+
+#' @rdname sgo_points
+#' @param row.names	NULL or a character vector giving the row names for the
+#' data frame. Missing values are not allowed.
+#' @param optional Logical. See \link{as.data.frame}
+#' @export
+as.data.frame.sgo_points <- function(x,
+                                     row.names = NULL, optional = FALSE, ...) {
+
+  col.names <- setdiff(names(x), .sgo_points.attr)
+  as.data.frame.list(x[col.names], col.names = col.names)
+
+}
+
+
+#' @rdname sgo_points
+#' @export
+as.list.sgo_points <- function(x, ...) {
+
+  x[setdiff(names(x), .sgo_points.attr)]
 
 }

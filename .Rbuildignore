@@ -10,6 +10,7 @@ codecov\.yml$
 ^cran-comments\.md$
 ^LICENSE\.md$
 ^README\.Rmd$
+^TODO\.md$
 data-raw
 backup
 dev

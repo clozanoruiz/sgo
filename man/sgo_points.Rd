@@ -4,11 +4,17 @@
 \name{sgo_points}
 \alias{sgo_points}
 \alias{print.sgo_points}
+\alias{as.data.frame.sgo_points}
+\alias{as.list.sgo_points}
 \title{Object containing 2D or 3D point coordinates}
 \usage{
 sgo_points(x, coords = NULL, epsg = NULL)
 
 \method{print}{sgo_points}(x, ..., n = 6L)
+
+\method{as.data.frame}{sgo_points}(x, row.names = NULL, optional = FALSE, ...)
+
+\method{as.list}{sgo_points}(x, ...)
 }
 \arguments{
 \item{x}{A matrix, list or dataframe with at least 2 columns of either
@@ -35,9 +41,14 @@ of the following values:
 }}
 
 \item{...}{Further arguments passed to or from other methods,
-see \link{print}.}
+see \link{print}, \link{as.data.frame} or \link{as.list} .}
 
 \item{n}{Maximum number of features to print.}
+
+\item{row.names}{NULL or a character vector giving the row names for the
+data frame. Missing values are not allowed.}
+
+\item{optional}{Logical. See \link{as.data.frame}}
 }
 \value{
 An object of class \code{sgo_points}. This object is a actually a list with
