@@ -66,16 +66,9 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
-
-      - name: Install dependencies
         run: |    
           Rscript -e "if (getRversion() <= '3.6') {remotes::install_deps(dependencies = TRUE, type = 'binary')} else {remotes::install_deps(dependencies = TRUE)}"
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
+          Rscript -e "remotes::install_cran('rcmdcheck')"
 
       - name: Check
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
