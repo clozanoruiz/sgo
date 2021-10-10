@@ -1,5 +1,5 @@
 Package: sgo
-Title: Simple geographical operations (with OSGB36)
+Title: Simple Geographical Operations (with OSGB36)
 Version: 0.4.0
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))

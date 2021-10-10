@@ -1,4 +1,4 @@
-sgo - Simple geographical operations (with OSGB36)
+sgo - Simple Geographical Operations (with OSGB36)
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->

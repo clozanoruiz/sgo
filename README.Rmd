@@ -1,5 +1,5 @@
 ---
-title: "sgo - Simple geographical operations (with OSGB36)"
+title: "sgo - Simple Geographical Operations (with OSGB36)"
 output: github_document
 ---
 
