@@ -67,7 +67,7 @@ jobs:
 
       - name: Install dependencies
         run: |    
-          Rscript -e "if (getRversion() <= '3.6') {remotes::install_deps(dependencies = TRUE, type = 'binary')} else {remotes::install_deps(dependencies = TRUE)}"
+          Rscript -e "if (getRversion() <= '3.6.3') {remotes::install_deps(dependencies = TRUE, type = 'binary')} else {remotes::install_deps(dependencies = TRUE)}"
           Rscript -e "remotes::install_cran('rcmdcheck')"
 
       - name: Check
