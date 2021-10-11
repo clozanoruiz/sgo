@@ -4,7 +4,7 @@
 \encoding{UTF-8}
 \name{sgo}
 \alias{sgo}
-\title{sgo: Simple geographical operations (with OSGB36).}
+\title{sgo: Simple Geographical Operations (with OSGB36).}
 \description{
 The sgo package aims to provide a set of functions that will help with
 spatial or geographic analysis in Open Source R and derivatives. Its main
