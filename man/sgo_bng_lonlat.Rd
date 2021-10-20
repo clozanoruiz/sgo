@@ -52,7 +52,11 @@ considered equivalent by this routine.
 If, for historical reasons, longitude/latitude coordinates must have the old
 OSGB36 datum, then the parameter \code{to} must be set to 4277.
 
-\strong{Note}: All those coordinates outside the rectangle covered by OSTN15
+\strong{Note}: Grid references rounded to whole metres will give
+latitude/logitude that are accurate to about 5 decimal places. In the UK,
+0.00001 of a degree of latitude is about 70cm and 0.00001 of a degree of
+longitude is about 1m.
+All those coordinates outside the rectangle covered by OSTN15
 will be automatically computed using the small Helmert transformation. Such
 coordinates will be accurate up to about +/-5 metres.
 Converting from BNG to lon/lat coordinates is slower than the other way
@@ -69,5 +73,5 @@ Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 }
 \seealso{
 \code{\link{sgo_points}}, \code{\link{sgo_lonlat_bng}},
-\code{\link{sgo_set_gcs}}.
+\code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
 }

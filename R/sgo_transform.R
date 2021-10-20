@@ -32,6 +32,14 @@ NULL
 #' transformation between WGS84 and ETRS89 is required then it is recommended
 #' to use a different package to do the conversion.
 #'
+#' According to the Transformations and OSGM15 User Guide, p. 8:
+#' \emph{"...ETRS89 is a precise version of the better known WGS84 reference
+#' system optimised for use in Europe; however, for most purposes it can be
+#' considered equivalent to WGS84."} and \emph{"For all navigation, mapping,
+#' GIS, and engineering applications within the tectonically stable parts of
+#' Europe (including UK and Ireland), the term ETRS89 should be taken as
+#' synonymous with WGS84."}.
+#'
 #' \strong{Warning: }Coordinates defined in the Geodetic Coordinate System
 #' EPSG:4277 (with datum OSGB 1936) should only be used to convert to or from
 #' BNG coordinates and for historical reasons only.

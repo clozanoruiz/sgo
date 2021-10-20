@@ -77,5 +77,5 @@ Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 }
 \seealso{
 \code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}},
-\code{\link{sgo_set_gcs}}.
+\code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
 }

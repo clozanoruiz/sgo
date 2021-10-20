@@ -32,12 +32,21 @@
 #' two points on a sphere. Harvesines are faster to compute than the Vicenty
 #' distances but can result in an error of up to 0.5\%.
 #'
-#' When working with planar coordinates the Local Scale Factor is the scale
-#' distortion inherent in the map projection at a point. When
+#' When working with (BNG) planar coordinates the Local Scale Factor is the
+#' scale distortion inherent in the map projection at a point. When
 #' \code{grid.true.distance} is \code{FALSE} the Euclidean distance in the
 #' plane is calculated. When it is \code{TRUE} the function computes a line
 #' scale factor using Simpson's Rule to achieve greater accuracy and
 #' approximate the distance to the true geodesic distance.
+#'
+#' \strong{Note}: Considering F as the scale factor, we have that
+#' True distance (S) = grid distance(s) / F\cr
+#' For most purposes the scale factor can be taken as constant for distances up
+#' to 20km (errors not exceeding 1 or 2 parts er million) and equal to the mid
+#' point of the line. For longer lines, this routine computes a scale factor for
+#' both ends (F1 and F2) and the mid point (Fm) and uses Simpson's Rule:\cr
+#' F = 1/6(F1 + 4Fm + F2)
+#'
 #' @return
 #' If \code{by.element} is \code{FALSE} \code{sgo_distance} returns a dense
 #' numeric matrix of dimension length(x) by length(y). Otherwise it returns a
