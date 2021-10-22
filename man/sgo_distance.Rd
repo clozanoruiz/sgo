@@ -78,8 +78,8 @@ lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
 lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
 58.21849188, 58.21853606, 58.21824033, 58.21748949)
 pol <- sgo_points(list(lon, lat), epsg=4326)
-# Create a copy of the polygon with its coordinates shifted one
-# position so that we can calculate easily the distance between vertices
+# Create a copy of the polygon with its coordinates shifted one position
+# so that we can calculate easily the distance between vertices
 coords <- sgo_coordinates(pol)
 pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
 perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
