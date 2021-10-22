@@ -23,8 +23,9 @@ jobs:
       matrix:
         config:
           - { os: macOS-latest,   r: "release" }
-          - { os: ubuntu-latest,  r: "devel" }
+          #- { os: ubuntu-latest,  r: "devel" }
           - { os: ubuntu-20.04,   r: "release" }
+          - { os: windows-latest, r: "devel" }
           - { os: windows-latest, r: "release" }
           - { os: windows-latest, r: "3.6" }
           - { os: windows-latest, r: "3.5" }
@@ -45,7 +46,7 @@ jobs:
       - name: "[Linux] Install spatial libraries"
         if: runner.os == 'Linux'
         run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
-        
+
       - name: "[macOS] Install spatial libraries"
         if: runner.os == 'macOS'
         run: brew install pkg-config gdal proj geos
@@ -66,7 +67,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install dependencies
-        run: |    
+        run: |
           Rscript -e "if (getRversion() <= '3.6.3') {remotes::install_deps(dependencies = TRUE, type = 'binary')} else {remotes::install_deps(dependencies = TRUE)}"
           Rscript -e "remotes::install_cran('rcmdcheck')"
 
