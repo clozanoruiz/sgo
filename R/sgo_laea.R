@@ -17,7 +17,7 @@
 #' Easting/Northing in the EPSG:3035 Projected Coordinate System.
 #' @references
 #' IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
-#' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
+#' part 2 (October 2020). https://epsg.org/guidance-notes.html)
 #' @seealso \code{\link{sgo_points}}, \code{\link{sgo_area}}.
 #' @examples
 #' p <- sgo_points(list(-3.9369, 56.1165), epsg=4258)
@@ -121,7 +121,7 @@ sgo_etrs_laea.sgo_points <- function(x) {
 #' An object of class \code{sgo_points} whose coordinates are defined as
 #' Longitude/Latitude in the ETRS89 Coordinate Reference System.
 #' @references IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
-#' part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
+#' part 2 (October 2020). https://epsg.org/guidance-notes.html
 #' @seealso \code{\link{sgo_points}}, \code{\link{sgo_area}}.
 #' @examples
 #' prj <- sgo_points(list(3962799.45, 2999718.85), epsg=3035)

@@ -38,7 +38,7 @@ res <- sgo_wgs84_en(p)
 }
 \references{
 IOGP Publication 373-7-2 - Geomatics Guidance Note number 7,
-part 2 (October 2020) \url{https://epsg.org/guidance-notes.html}
+part 2 (October 2020). https://epsg.org/guidance-notes.html
 }
 \seealso{
 \code{\link{sgo_points}}, \code{\link{sgo_en_wgs84}}.

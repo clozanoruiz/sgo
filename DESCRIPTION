@@ -21,7 +21,6 @@ Copyright: OSTN transformation data included in this module is freely available
   of the BSD licence.
 Encoding: UTF-8
 ByteCompile: yes
-LazyData: true
 RoxygenNote: 7.1.1
 Collate: 
   'sgo.R'
