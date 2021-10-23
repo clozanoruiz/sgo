@@ -30,6 +30,11 @@
 #' For instance, if \code{interpolate = 500} then any segment between adjacent
 #' coordinates whose length is greater than \code{interpolate} will be split in
 #' parts no greater than \code{500 m} and new vertices will be added.
+#'
+#' The area calculation in this package is best suited for features that would
+#' be represented in a large or medium scale (like plots or council boundaries).
+#' It will provide much less accurate results for features usually represented
+#' at smalle scale (countries, continents, etc.).
 #' @return
 #' Value of the area in squared metres round up to the first decimal.
 #' @references

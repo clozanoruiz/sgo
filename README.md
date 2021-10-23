@@ -27,6 +27,20 @@ The Coordinate Systems supported by `sgo` are:
   - WGS84: EPSGs 4326, 4979, 4978 and 3857
   - OSGB36: EPSGs 27700, 7405 and 4277
 
+Please note that this package assumes that the Coordinate Reference
+Systems (CRS) ETRS89 and WGS84 are the same within the UK, but this
+shouldn’t be a problem for most civilian use of GPS satellites. If a
+high-precision transformation between WGS84 and ETRS89 is required then
+it is recommended to use a different package to do the conversion.
+
+According to the Transformations and OSGM15 User Guide, p. 8: *“…ETRS89
+is a precise version of the better known WGS84 system optimised for use
+in Europe; however, for most purposes it can be considered equivalent to
+WGS84.”* and *“For all navigation, mapping, GIS, and engineering
+applications within the tectonically stable parts of Europe (including
+UK and Ireland), the term ETRS89 should be taken as synonymous with
+WGS84.”*.
+
 ## Installation
 
 You can install the released version of `sgo` from
