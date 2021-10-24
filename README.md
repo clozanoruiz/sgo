@@ -109,8 +109,8 @@ sgo_lonlat_bng(pts)
 #> 1 259174.4 665744.8
 #> 2 325899.1 673996.1
 
-## sgs_transform is a wrapper for all the conversions available
-# to BNG
+## sgo_transform is a wrapper for all the conversions available
+# to BNG:
 sgo_transform(locs, to=27700)
 #> An sgo object with 2 features (points) and 1 field 
 #> dimension: XY 
@@ -118,7 +118,7 @@ sgo_transform(locs, to=27700)
 #>          x        y         n
 #> 1 266698.8 845243.9 Inverness
 #> 2 394104.5 806535.9  Aberdeen
-# to OSGB36 (historical)
+# to OSGB36 (historical):
 sgo_transform(locs, to=4277)
 #> An sgo object with 2 features (points) and 1 field 
 #> dimension: XY 
@@ -126,7 +126,7 @@ sgo_transform(locs, to=4277)
 #>           x        y         n
 #> 1 -4.223366 57.47804 Inverness
 #> 2 -2.097450 57.14985  Aberdeen
-# to Pseudo-Mercator
+# to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
 #> An sgo object with 2 features (points) and 1 field 
 #> dimension: XY 
@@ -136,7 +136,7 @@ sgo_transform(locs, to=3857)
 #> 2 -233668.5 7790768  Aberdeen
 
 ## Calculate distances
-# Distance from one point to 2 other points
+# Distance in metres from one point to 2 other points
 p1 <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
 lon <- c(-4.25181,-3.18827)
 lat <- c(55.86424, 55.95325)
@@ -160,15 +160,11 @@ perimeter
 #> [1] 2115.33
 
 ## Area of an ordered set of points
-lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
--6.42248238, -6.42639092, -6.42998435, -6.43321409)
-lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
-58.21849188, 58.21853606, 58.21824033, 58.21748949)
-A <- sgo_area(sgo_points(list(lon, lat), epsg=4326))
-sprintf("%1.5f", A)
-#> [1] "133610.63495"
-# If needed, higher accuracy when we interpolate vertices
-A <- sgo_area(sgo_points(list(lon, lat), epsg=4326), interpolate=10)
-sprintf("%1.5f", A)
-#> [1] "133610.63502"
+A <- sgo_area(pol)
+sprintf("%1.2f", A)
+#> [1] "133610.63"
+# Interpolate new vertices if more accuracy is needed
+A <- sgo_area(pol, interpolate=10)
+sprintf("%1.2f", A)
+#> [1] "133610.64"
 ```

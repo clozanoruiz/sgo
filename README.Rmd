@@ -91,16 +91,16 @@ lat <- c(55.86424, 55.95325)
 pts <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
 sgo_lonlat_bng(pts)
 
-## sgs_transform is a wrapper for all the conversions available
-# to BNG
+## sgo_transform is a wrapper for all the conversions available
+# to BNG:
 sgo_transform(locs, to=27700)
-# to OSGB36 (historical)
+# to OSGB36 (historical):
 sgo_transform(locs, to=4277)
-# to Pseudo-Mercator
+# to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
 
 ## Calculate distances
-# Distance from one point to 2 other points
+# Distance in metres from one point to 2 other points
 p1 <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
 lon <- c(-4.25181,-3.18827)
 lat <- c(55.86424, 55.95325)
@@ -122,13 +122,9 @@ perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
 perimeter
 
 ## Area of an ordered set of points
-lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
--6.42248238, -6.42639092, -6.42998435, -6.43321409)
-lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
-58.21849188, 58.21853606, 58.21824033, 58.21748949)
-A <- sgo_area(sgo_points(list(lon, lat), epsg=4326))
-sprintf("%1.5f", A)
-# If needed, higher accuracy when we interpolate vertices
-A <- sgo_area(sgo_points(list(lon, lat), epsg=4326), interpolate=10)
-sprintf("%1.5f", A)
+A <- sgo_area(pol)
+sprintf("%1.2f", A)
+# Interpolate new vertices if more accuracy is needed
+A <- sgo_area(pol, interpolate=10)
+sprintf("%1.2f", A)
 ```
