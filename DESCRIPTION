@@ -6,7 +6,7 @@ Authors@R: person("Carlos", "Lozano Ruiz",
 URL: https://github.com/clozanoruiz/sgo
 BugReports: https://github.com/clozanoruiz/sgo/issues
 Language: en-GB
-Description: A set of functions to help with spatial analysis mainly focused on 
+Description: A package to help with spatial analysis mainly focused on 
   the OSGB36/ETRS89 transformation (Great Britain and the Isle of Man) by using 
   the Ordnance Survey's OSTN15/OSGM15 transformation model without any other 
   package dependency.
