@@ -1,12 +1,11 @@
 #' sgo: Simple Geographical Operations (with OSGB36).
 #'
-#' The sgo package aims to provide a set of functions that will help with
-#' spatial or geographic analysis in Open Source R and derivatives. Its main
-#' purpose is to perform OSGB36/ETRS89 transformations using the Ordnance
-#' Survey's OSTN15 transformation model for Great Britain and the Isle of Man.
-#' It also transforms GPS ellipsoid heights to orthometric (mean sea level)
-#' heights on the relevant Ordnance Survey mapping datum, using the National
-#' Geoid Model OSGM15.
+#' The sgo package aims to help with spatial or geographic analysis in Open
+#' Source R and derivatives. Its main purpose is to perform OSGB36/ETRS89
+#' transformations using the Ordnance Survey's OSTN15 transformation model for
+#' Great Britain and the Isle of Man. It also transforms GPS ellipsoid heights
+#' to orthometric (mean sea level) heights on the relevant Ordnance Survey
+#' mapping datum, using the National Geoid Model OSGM15.
 #'
 #' Most of the functions available in this package will become much less
 #' accurate if used outside the coverage of OSTN, therefore it is adviced to

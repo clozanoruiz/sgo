@@ -122,12 +122,12 @@
 #' df <- data.frame(n, ln, lt, stringsAsFactors = FALSE)
 #' p4 <- sgo_points(df, coords=c("ln", "lt"), epsg=4326)
 #'
-#' \dontrun{
-#' library(maps)
-#' map('world', regions=('uk'), xlim=c(-9, 0), ylim=c(54.5, 60.9))
-#' points(x=p1$x, y=p1$y, pch=0, col="green") #Stirling
-#' points(p4, pch=0, col="red")
-#' text(p4, labels=p4$n, pos=1, cex=0.9)
+#' # plotting on a map:
+#' if (require(maps)) {
+#'   map('world', regions=('uk'), xlim=c(-9, 0), ylim=c(54.5, 60.9))
+#'   points(x=p1$x, y=p1$y, pch=0, col="green") #Stirling
+#'   points(p4, pch=0, col="red")
+#'   text(p4, labels=p4$n, pos=1, cex=0.9)
 #' }
 #' @export
 sgo_points <- function (x, coords=NULL, epsg=NULL)

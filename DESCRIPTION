@@ -1,6 +1,6 @@
 Package: sgo
 Title: Simple Geographical Operations (with OSGB36)
-Version: 0.9.1
+Version: 0.9.0
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))
 URL: https://github.com/clozanoruiz/sgo
@@ -13,12 +13,14 @@ Description: A set of functions to help with spatial analysis mainly focused on
 Depends:
   R (>= 3.4.0)
 Suggests:
-  sf,
+  maps,
   testthat (>= 3.0.0)
 License: BSD_2_clause + file LICENSE
-Copyright: OSTN transformation data included in this module is freely available
-  from the Ordnance Survey but remains Crown Copyright (C) 2016 under the terms
-  of the BSD licence.
+Copyright: OSTN transformation data included in this module remains Crown 
+  Copyright (C) 2016 under the terms of the BSD licence:
+  (c) Copyright and database rights Ordnance Survey Limited 2016,
+  (c) Crown copyright and database rights Land & Property Services 2016 and/or 
+  (c) Ordnance Survey Ireland, 2016. All rights reserved.
 Encoding: UTF-8
 ByteCompile: yes
 RoxygenNote: 7.1.1
