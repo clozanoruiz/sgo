@@ -6,10 +6,11 @@ Authors@R: person("Carlos", "Lozano Ruiz",
 URL: https://github.com/clozanoruiz/sgo
 BugReports: https://github.com/clozanoruiz/sgo/issues
 Language: en-GB
-Description: A package to help with spatial analysis mainly focused on 
-  the OSGB36/ETRS89 transformation (Great Britain and the Isle of Man) by using 
-  the Ordnance Survey's OSTN15/OSGM15 transformation model without any other 
-  package dependency.
+Description: Methods focused in performing the OSGB36/ETRS89 transformation 
+  (Great Britain and the Isle of Man only) by using the Ordnance Survey's 
+  OSTN15/OSGM15 transformation model. Calculation of distances and areas from 
+  sets of points defined in any of the supported Corrdinated Systems is also is
+  also available.
 Depends:
   R (>= 3.4.0)
 Suggests:
