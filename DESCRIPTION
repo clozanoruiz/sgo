@@ -9,8 +9,8 @@ Language: en-GB
 Description: Methods focused in performing the OSGB36/ETRS89 transformation 
   (Great Britain and the Isle of Man only) by using the Ordnance Survey's 
   OSTN15/OSGM15 transformation model. Calculation of distances and areas from 
-  sets of points defined in any of the supported Corrdinated Systems is also is
-  also available.
+  sets of points defined in any of the supported Coordinated Systems is also
+  available.
 Depends:
   R (>= 3.4.0)
 Suggests:
