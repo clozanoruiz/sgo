@@ -550,8 +550,10 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   }
 
   # OSTN15 covers grid point (0, 0) to (700000, 1250000)
-  out.of.bounds <- (e < 0 | e > 700000) |
-                   (n < 0 | n > 1250000) #| (is.na(e) | is.na(n))
+  # NA's are checked in case there are stored coordinates as BNG that are
+  # actually outside of the OSTN15 rectangle.
+  out.of.bounds <- (e < 0 | e >= 700000) |
+                   (n < 0 | n >= 1250000) | (is.na(e) | is.na(n))
   shifts$out <- out.of.bounds
 
 

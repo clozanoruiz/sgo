@@ -125,7 +125,7 @@ test_that("Outputs", {
   p <- sgo_points(df, coords=c("x", "y", "z"), epsg=4978)
 
   expect_output(print(p, n=1),
-                "An sgo object with 1 feature (point) and 2 fields ",
+                "An sgo object with 2 features (points) and 2 fields ",
                 fixed = TRUE)
   expect_output(print(p, n=1), "dimension: XYZ", fixed = TRUE)
   expect_output(print(p, n=1), "EPSG:      4978", fixed = TRUE)

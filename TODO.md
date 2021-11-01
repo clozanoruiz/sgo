@@ -1,10 +1,16 @@
 # TODO
 
-1) Confirm all of those functions (and trnasformations!) keep the 'sgo_points' class and the names in the class are always at least the (5-6) core columns. Plus any additional column
+0) Confirm all of those functions (and trnasformations!) keep the 'sgo_points' class and the names in the class are always at least the (5-6) core columns. Plus any additional column
 
-2) Test all the extended operators '\['. Check they do what is required from them and they keep all attributes/class of sgo, or basically test multiple ways of manipulating sgo objects (subset, merging, etc and see how it works)
+1) From 2D to 3D: add the zero at the beginning of the operation not at the end
 
-3) Test bng where the OSGM heights are outside of the transformation area (flag16) test cases when BNG is out of boundaries: ie. 1000000 
+2) Test bng where the OSGM heights are outside of the transformation area (flag16) test cases when BNG is out of boundaries: ie. 1000000 
+
+3) Add function c() : only works with same CRS!
+
+4) Add function to check if coordinates are within OSTN?
+
+
 
 ---
 

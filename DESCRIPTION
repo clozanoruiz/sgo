@@ -1,6 +1,6 @@
 Package: sgo
 Title: Simple Geographical Operations (with OSGB36)
-Version: 0.9.0
+Version: 0.9.0.9000
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))
 URL: https://github.com/clozanoruiz/sgo

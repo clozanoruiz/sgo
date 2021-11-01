@@ -274,6 +274,11 @@ test_that("Out of range conditions and comparison with Helmert", {
     sgo_points(list(-10, 55), epsg=4258), OSTN = FALSE))))
   expect_warning(sgo_bng_lonlat(sgo_points(list(-111093, 596584), epsg=27700)),
     "outside of the OSTN15 rectangle") #BNG to Lon/Lat (-10, 55)
+  #Upper limit reached
+  expect_warning(sgo_bng_lonlat(sgo_points(list(111093, 1250000), epsg=27700)),
+                 "outside of the OSTN15 rectangle")
+  expect_warning(sgo_bng_lonlat(sgo_points(list(700000, 596584), epsg=27700)),
+                 "outside of the OSTN15 rectangle")
 
   #In the White Sea, NW Russia
   expect_warning(OSTN.coords <- sgo_coordinates(

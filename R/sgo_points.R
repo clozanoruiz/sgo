@@ -91,7 +91,7 @@
 #'
 #' @return
 #' An object of class \code{sgo_points}. This object is a actually a list with
-#' class \code{sgo_points} and 5 elements (or 6 elements if it is 3D):
+#' class \code{sgo_points} and at least 5 elements (or 6 elements if it is 3D):
 #' \itemize{
 #' \item\code{x}: A numeric vector containing easting or longitude coordinates.
 #' \item\code{y}: A numeric vector with northing or latitude coordintes.
@@ -348,7 +348,7 @@ print.sgo_points <- function(x, ..., n = 6L) {
 
   num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)
   and <- paste("and", num.fields, ifelse(num.fields == 1L, "field", "fields"))
-  cat("An sgo object with", n, ifelse(n == 1L,
+  cat("An sgo object with", len, ifelse(len == 1L,
                                       "feature (point)", "features (points)"),
       if (num.fields == 0L) NULL else and,
       "\ndimension:", x$dimension,
