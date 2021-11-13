@@ -9,7 +9,7 @@ sgo - Simple Geographical Operations (with OSGB36)
 [![coverage](https://codecov.io/gh/clozanoruiz/sgo/branch/main/graph/badge.svg?token=Qd5gkpnxFc)](https://app.codecov.io/gh/clozanoruiz/sgo?branch=main)
 [![CRAN](https://www.r-pkg.org/badges/version/sgo)](https://cran.r-project.org/package=sgo)
 [![GitHub release (latest
-SemVer)](https://img.shields.io/github/v/release/clozanoruiz/sgo.svg)](https://github.com/clozanoruiz/sgo/releases)
+SemVer)](https://img.shields.io/github/v/release/clozanoruiz/sgo.svg?sort=semver)](https://github.com/clozanoruiz/sgo/releases)
 [![license](https://img.shields.io/badge/license-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)
 <!-- badges: end -->
 
