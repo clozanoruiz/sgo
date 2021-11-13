@@ -21,8 +21,7 @@ transformation when FALSE.}
 
 \item{OD}{Logical variable. When TRUE, and the output contains a
 column with heights, then a new column is added to the result indicating the
-ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
-or data doesn't contain 3D points.}
+ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}.}
 }
 \value{
 An object of class \code{sgo_points} whose coordinates are defined as

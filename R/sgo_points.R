@@ -31,7 +31,8 @@
 #' This object stores 2D or 3D point coordinates and any other column-list of
 #' attributes related to each point. Note that additional column-lists will be
 #' expanded with \code{NA} values if they contain less elements than
-#' coordinates. Currently it only supports the following \code{epsg}s:
+#' coordinates.
+#' Currently it only supports the following \code{epsg}s:
 #' \itemize{
 #' \item\code{4258}: ETRS89, geodetic coordinate system. The columns in
 #' \code{x} must be defined as Longitude and Latitude (\code{sgo} also accepts

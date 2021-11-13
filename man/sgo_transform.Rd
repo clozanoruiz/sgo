@@ -15,8 +15,7 @@ sgo_transform(x, to = NULL, ...)
 
 \item{...}{Additional parameters passed to internal functions. Currently it
 supports the additional arguments seen in \code{sgo_bng_lonlat} and
-\code{sgo_lonlat_bng}.
-this description and which parameters may admit...}
+\code{sgo_lonlat_bng}.}
 }
 \value{
 An object of class 'sgo_points'.

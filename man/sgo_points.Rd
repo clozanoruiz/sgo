@@ -52,7 +52,7 @@ data frame. Missing values are not allowed.}
 }
 \value{
 An object of class \code{sgo_points}. This object is a actually a list with
-class \code{sgo_points} and 5 elements (or 6 elements if it is 3D):
+class \code{sgo_points} and at least 5 elements (or 6 elements if it is 3D):
 \itemize{
 \item\code{x}: A numeric vector containing easting or longitude coordinates.
 \item\code{y}: A numeric vector with northing or latitude coordintes.
@@ -74,7 +74,8 @@ points
 This object stores 2D or 3D point coordinates and any other column-list of
 attributes related to each point. Note that additional column-lists will be
 expanded with \code{NA} values if they contain less elements than
-coordinates. Currently it only supports the following \code{epsg}s:
+coordinates.
+Currently it only supports the following \code{epsg}s:
 \itemize{
 \item\code{4258}: ETRS89, geodetic coordinate system. The columns in
 \code{x} must be defined as Longitude and Latitude (\code{sgo} also accepts

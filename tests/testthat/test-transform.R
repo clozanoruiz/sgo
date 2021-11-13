@@ -70,7 +70,7 @@ test_that("Transform from 4326", {
   #to 7405
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(-3.9369234, 56.1165135), epsg=4326), to=7405)),
-    to_mtx3(c(279665.251, 693220.644, 0)))
+    to_mtx3(c(279665.251, 693220.644, -53.513)))
 })
 
 test_that("Transform from 3857", {
@@ -128,7 +128,7 @@ test_that("Transform from 3857", {
   #to 7405
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(-344578.12, 7751020.42), epsg=3857), to=7405)),
-    to_mtx3(c(333476.069, 785447.995, 0)))
+    to_mtx3(c(333476.069, 785447.995, -52.091)))
 })
 
 test_that("Transform from 4277", {
@@ -178,7 +178,7 @@ test_that("Transform from 4277", {
   #to 4979
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(-3.09391641, 56.95563591), epsg=4277), to=4979)),
-    to_mtx3(c(-3.09539967, 56.95544731, 0)))
+    to_mtx3(c(-3.09539967, 56.95544731, 52.091)))
 
   #to 4978
   expect_true(all(abs(sgo_coordinates(sgo_transform(
@@ -186,9 +186,10 @@ test_that("Transform from 4277", {
     c(3481063.3678, -188247.3366, 5323196.3289)) < 0.0001))
 
   #to 7405
-  expect_equal(sgo_coordinates(sgo_transform(
-    sgo_points(list(-3.0939164, 56.9556359), epsg=4277), to=7405)),
-    to_mtx3(c(333475.941, 785446.641, 0)))
+  expect_error(sgo_transform(
+    sgo_points(list(-3.0939164, 56.9556359), epsg=4277), to=7405),
+    "Can't convert from EPSG:4277 (2D CS) to a 3D Coordinate System",
+    fixed=TRUE)
 })
 
 test_that("Transform from 27700", {
@@ -215,11 +216,11 @@ test_that("Transform from 27700", {
   #to 4937
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=4937)),
-    to_mtx3(c(-5.8419610340, 56.9314678393, 0)))
+    to_mtx3(c(-5.8419610340, 56.9314678393, 55.2705)))
   #to 4936
   expect_true(all(abs(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=4936)) -
-    c(3470270.5383, -355065.1217, 5321739.7562)) < 0.0001))
+    c(3470300.5396, -355068.1913, 5321786.0739)) < 0.0001))
   #to 3035
   expect_true(all(abs(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=3035))
@@ -227,11 +228,11 @@ test_that("Transform from 27700", {
   #to 4979
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=4979)),
-    to_mtx3(c(-5.8419610341, 56.9314678393, 0)))
+    to_mtx3(c(-5.8419610341, 56.9314678393, 55.2705)))
   #to 4978
   expect_true(all(abs(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=4978)) -
-    c(3470270.5383, -355065.1217, 5321739.7563)) < 0.0001))
+    c(3470300.5396, -355068.1913, 5321786.0739)) < 0.0001))
   #to 7405
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(166341.986, 788816.800), epsg=27700), to=7405)),
@@ -287,7 +288,7 @@ test_that("Transform from 4258", {
   #to 7405
   expect_equal(sgo_coordinates(sgo_transform(
     sgo_points(list(-3.93692341, 56.11651351), epsg=4258), to=7405)),
-    to_mtx3(c(279665.250, 693220.645, 0)))
+    to_mtx3(c(279665.250, 693220.645, -53.513)))
 })
 
 test_that("Transform from 4937", {
@@ -401,7 +402,7 @@ test_that("Transform from 3035", {
                         c(3574551.4872, -197442.6700, 5260959.5994)) < 0.0001))
   #to 7405
   expect_equal(sgo_coordinates(sgo_transform(p, to=7405)),
-               to_mtx3(c(327550, 672950, 0)))
+               to_mtx3(c(327550, 672950, -52.279)))
 })
 
 test_that("Transform from 4979", {

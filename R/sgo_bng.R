@@ -19,8 +19,7 @@
 #' transformation when FALSE.
 #' @param OD Logical variable. When TRUE, and the output contains a
 #' column with heights, then a new column is added to the result indicating the
-#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
-#' or data doesn't contain 3D points.
+#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}.
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
@@ -79,6 +78,21 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
   out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
   if (out.dimension == "XY/Z")
     out.dimension <- "XY"
+
+  # When converting from 2D to 3D, fill input z with 0's and a correct epsg
+  if (out.dimension == "XYZ" && !x.3d) {
+    # 4277 can't be converted to 3D
+    if (x$epsg == 4277) {
+      stop("Can't convert from EPSG:4277 (2D CS) to a 3D Coordinate System")
+    } else {
+      x$epsg <- .epsgs[.epsgs$datum==x$datum & .epsgs$type=="GCS" &
+                         .epsgs$dimension=="XYZ" & .epsgs$format=="ll", "epsg"]
+      x$dimension <- "XYZ"
+      x$z <- rep(0, length(x$x))
+      x.3d <- TRUE
+      #warning("Converted from 2D to 3D. Hence input heights default to 0")
+    }
+  }
 
   if (x.3d) {
     x.coords <- .sgo_points.3d.coords
@@ -161,17 +175,12 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
   # Return values with correct EPSG depending on input and output.
   if (out.dimension == "XYZ") {
-    if (OSTN && x.3d) {
-      if (OD) {
+    if (OSTN && OD) {
         en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3),
                    height.datum=datum.flags[match(shifts$gf,
                                              datum.flags$geoid.datum.flag), 4])
-      } else {
-        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
-      }
     } else {
-      en <- list(x=e, y=n, z=rep(0, length(e)))
-      #warning("Converted from 2D to 3D. Hence heights default to 0")
+        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
     }
   } else {
     en <- list(x=e, y=n)
@@ -205,8 +214,7 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' transformation when FALSE.
 #' @param OD Logical variable. When TRUE, and the output contains a
 #' column with heights, then a new column is added to the result indicating the
-#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}
-#' or data doesn't contain 3D points.
+#' ordnance datum (OD) used on each point. It is ignored when \code{OSTN=FALSE}.
 #' @details
 #' The UK Ordnance Survey defined 'OSGB36' as the datum for the UK, based on the
 #' 'Airy 1830' ellipsoid. However, in 2014, they deprecated OSGB36 in favour of
@@ -265,6 +273,15 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
   if (out.dimension == "XY/Z")
     out.dimension <- "XY"
+
+  # When converting from 2D to 3D, fill input z with 0's and a correct epsg
+  if (out.dimension == "XYZ" && !has.z) {
+    x$z <- rep(0, length(x$x))
+    x$epsg <- 7405
+    x$dimension <- "XYZ"
+    has.z <- TRUE
+    #warning("Converted from 2D to 3D. Hence input heights default to 0")
+  }
 
   if (has.z) {
     core.cols <- .sgo_points.3d.core
@@ -344,21 +361,14 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
 
   if (out.dimension == "XYZ") {
-    if (OSTN && has.z) {
-      if (OD) {
-
+    if (OSTN && OD) {
         unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
                             z=round(x$z + shifts$dz, 4),
                             height.datum=datum.flags[match(shifts$gf,
                                             datum.flags$geoid.datum.flag), 4])
-      } else {
+    } else {
         unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
                             z=round(x$z + shifts$dz, 4))
-      }
-    } else {
-      unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
-                          z=rep(0, length(unprojected[, 1])))
-      #warning("Converted from 2D to 3D. Hence heights default to 0")
     }
   } else {
     unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
@@ -534,7 +544,7 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @noRd
 #' @param e A numeric vector with Easting coordinates
 #' @param n A numeric vector with Northing coordinates
-#' @param z A numeric vector with Height coordinates
+#' @param z A logical value indicating whether we need to compute heights
 .find.OSTN.shifts.at <- function(e, n, z=FALSE) {
 
   # Initialise list of shifts
