@@ -67,10 +67,9 @@ sgo_set_gcs.sgo_points <- function (x, to=NULL) {
   # If converting from 2D to 3D in the same datum, just add a z coordinate
   # and return
   if ((x$epsg == 4258 && to == 4937) || (x$epsg == 4326 && to == 4979)) {
-    x$z <- 0
-    x$dimension <- "XYZ"
-    x$epsg <- to
-    return (x)
+    return (structure(c(list(x=x$x, y=x$y, z=rep(0, length(x$x))),
+                        epsg = to, datum = x$datum, dimension = "XYZ"),
+                      class = "sgo_points"))
   }
 
   coord.format <- .epsgs[.epsgs$epsg==x$epsg, "format"] # ll or c

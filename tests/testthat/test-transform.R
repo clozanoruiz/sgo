@@ -7,6 +7,7 @@ to_mtx3 <- function(x) {
   matrix(x, ncol=3, dimnames=list(NULL, c("x", "y", "z")))
 }
 
+#https://www.ordnancesurvey.co.uk/gps/transformation/
 #Also using cs2cs 6.3.1 to compare results
 
 test_that("Check inputs", {
