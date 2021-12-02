@@ -7,6 +7,7 @@
 - **Fixed**: Points right on the upper boundaries of the OSTN grid are considered   
   outside of the OSTN15 rectangle.
 - **Fixed**: Output text of the print function.
+- Improved slightly the speed of 3D calculations from/to BNG.
 - Improved some parts of sgo_transforms's documentation.
 
 

@@ -136,7 +136,7 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
     # If datum is WGS84/ETRS89, we need to adjust with OSTN15
     if (x$epsg %in% c(4258, 4937)) {
 
-      shifts <- .find.OSTN.shifts.at(e, n, x.3d)
+      shifts <- .find.OSTN.shifts.at(e, n, x.3d, OD)
       # Round to mm precision
       e <- round(e + shifts$dx, 3)
       n <- round(n + shifts$dy, 3)
@@ -301,14 +301,14 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
     if (to %in% c(4258, 4937, 4326, 4979)) {
 
-      shifts <- .find.OSTN.shifts.at(x$x, x$y, has.z)
+      shifts <- .find.OSTN.shifts.at(x$x, x$y, has.z, OD)
       e <- x$x - shifts$dx
       n <- x$y - shifts$dy
       last.shifts <- shifts
 
       for (i in c(1:20)) {
 
-        shifts <- .find.OSTN.shifts.at(e, n, has.z)
+        shifts <- .find.OSTN.shifts.at(e, n, has.z, OD)
         if (all(shifts$out) == TRUE) {
           # all coordinates have been shifted off the edge
           break
@@ -545,7 +545,8 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param e A numeric vector with Easting coordinates
 #' @param n A numeric vector with Northing coordinates
 #' @param z A logical value indicating whether we need to compute heights
-.find.OSTN.shifts.at <- function(e, n, z=FALSE) {
+#' @param flag A logical value indicating whether we need the OD as output
+.find.OSTN.shifts.at <- function(e, n, z=FALSE, flag=FALSE) {
 
   # Initialise list of shifts
   len.e <- length(e)
@@ -605,21 +606,42 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
              + one.t * u * ul[, "g"]
              + t * u * ur[, "g"])
 
-      llf <- ll[, "f"]
-      lrf <- lr[, "f"]
-      ulf <- ul[, "f"]
-      urf <- ur[, "f"]
-      gf <- ifelse(llf == lrf & lrf == ulf & ulf == urf, llf #all equal
-                 , ifelse(t <= 0.5 & u <= 0.5, llf #point in SW (or dead centre)
-                 , ifelse(t > 0.5 & u <= 0.5, lrf #point in SE quadrant
-                 , ifelse(t > 0.5 & u > 0.5, urf  #point in NE quadrant
-                 , ulf))))
       shifts$dz[!out.of.bounds] <- dz
-      shifts$gf[!out.of.bounds] <- gf
+
+      if (flag) {
+        llf <- ll[, "f"]
+        lrf <- lr[, "f"]
+        ulf <- ul[, "f"]
+        urf <- ur[, "f"]
+
+        gf <- .if.else(llf == lrf & lrf == ulf & ulf == urf, llf #all equal
+                   , .if.else(t <= 0.5 & u <= 0.5, llf #point in SW (or dead centre)
+                   , .if.else(t > 0.5 & u <= 0.5, lrf #point in SE quadrant
+                   , .if.else(t > 0.5 & u > 0.5, urf  #point in NE quadrant
+                   , ulf))))
+
+        shifts$gf[!out.of.bounds] <- gf
+      }
     }
 
   }
 
   return (shifts)
+
+}
+
+
+# Helper function. Slightly faster ifelse variant
+#' @noRd
+#' @param test An object which can be coerced to logical mode
+#' @param yes Return values for true elements of test
+#' @param no Return values for true elements of test
+.if.else <- function(test, yes, no){
+
+  out <- rep(NA, length(test))
+  out[test] <- yes[test]
+  out[!test] <- no[!test]
+
+  out
 
 }
