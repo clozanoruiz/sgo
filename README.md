@@ -169,3 +169,11 @@ A <- sgo_area(pol, interpolate=10)
 sprintf("%1.2f", A)
 #> [1] "133610.64"
 ```
+
+## Benchmark
+
+Very simple benchmark in a Intel(R) Core(TM) i7-6700HQ CPU @2.60GHz, and
+16 GB of RAM. See the code of this README file to see the R statements
+used.
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />

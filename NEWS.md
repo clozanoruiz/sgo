@@ -1,4 +1,4 @@
-# sgo 0.9.0.9000
+# sgo 0.9.1
 
 - **Fixed**: Now, when converting from 2D BNG to 3D BNG, the input is first converted  
   to 3D  by filling z with zeros. Previous versions just added zeros to the output.
