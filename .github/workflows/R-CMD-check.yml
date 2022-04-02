@@ -43,8 +43,8 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      #- name: "[Linux] Install spatial libraries"
-      #  if: runner.os == 'Linux'
+      - name: "[Linux] Install spatial libraries"
+        if: runner.os == 'Linux'
       #  run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
         run: sudo apt-get libcurl4-openssl-dev
 
