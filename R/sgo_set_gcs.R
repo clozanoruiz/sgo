@@ -218,7 +218,7 @@ sgo_set_gcs.sgo_points <- function (x, to=NULL) {
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, 2:5]
   a <- params$a
-  b <- params$b
+  #b <- params$b
   e2 <- params$e2
 
   p <- sqrt(x*x + y*y)  # distance from minor axis

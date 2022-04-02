@@ -156,12 +156,12 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
     }
   }
 
-  names <- names(x)
-  if (is.null(names) || any(names == "")) {
+  x.names <- names(x)
+  if (is.null(x.names) || any(x.names == "")) {
     stop("All elements in 'x' must be named")
   }
 
-  if (!is.null(coords) && !all(coords %in% names)) {
+  if (!is.null(coords) && !all(coords %in% x.names)) {
     stop("'x' must include all the coordinates defined in 'coords'")
   }
 
@@ -204,7 +204,7 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
                          z = x[[coords[3]]])
   }
 
-  other.columns <- x[!(names %in% coords)]
+  other.columns <- x[!(x.names %in% coords)]
 
   if (length(other.columns)==0) {
     other.columns <- NULL
@@ -372,7 +372,8 @@ as.data.frame.sgo_points <- function(x,
                                      row.names = NULL, optional = FALSE, ...) {
 
   col.names <- setdiff(names(x), .sgo_points.attr)
-  as.data.frame.list(x[col.names], col.names = col.names)
+  as.data.frame.list(x[col.names], row.names = row.names, optional = optional,
+                     col.names = col.names)
 
 }
 

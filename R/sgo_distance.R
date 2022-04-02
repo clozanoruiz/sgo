@@ -233,7 +233,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     phi <- phi + (dN - M) / aF0
   }
 
-  cos.phi <- cos(phi)
+  #cos.phi <- cos(phi)
   sin.phi <- sin(phi)
 
   splat <- 1 - e2 * sin.phi * sin.phi
@@ -251,7 +251,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 
   dE <- E - E0
   dE2 <- dE * dE
-  F <- F0 * (1 + dE2 * XXI + dE2 * dE2 * XXII)
+  F0 * (1 + dE2 * XXI + dE2 * dE2 * XXII) # return F
 
 }
 
