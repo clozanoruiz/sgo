@@ -46,6 +46,7 @@ jobs:
       #- name: "[Linux] Install spatial libraries"
       #  if: runner.os == 'Linux'
       #  run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+        run: sudo apt-get libcurl4-openssl-dev
 
       #- name: "[macOS] Install spatial libraries"
       #  if: runner.os == 'macOS'
