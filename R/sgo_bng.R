@@ -412,8 +412,8 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   dN <- N - N0
   dE <- E - E0
   # NatGrid true origin is 49°N 2°W:
-  phi0 <- 49 / RAD.TO.GRAD
-  lambda0 <- -2 / RAD.TO.GRAD
+  phi0 <- 49 / RAD.TO.DEG
+  lambda0 <- -2 / RAD.TO.DEG
 
   phi <- phi0 + dN/af
   lambda <- lambda0
@@ -470,7 +470,7 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   phi <- phi + ( -VII + ( VIII - IX * dE2 ) * dE2) * dE2
   lambda <- lambda + ( X + ( -XI + ( XII - XIIA * dE2 ) * dE2) * dE2) * dE
 
-  unname(cbind(lambda * RAD.TO.GRAD, phi * RAD.TO.GRAD))
+  unname(cbind(lambda * RAD.TO.DEG, phi * RAD.TO.DEG))
 
 }
 
@@ -481,8 +481,8 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 .project.onto.grid <- function (lon, lat, datum) {
 
-  phi <- lat / RAD.TO.GRAD
-  lambda <- lon / RAD.TO.GRAD
+  phi <- lat / RAD.TO.DEG
+  lambda <- lon / RAD.TO.DEG
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
@@ -492,8 +492,8 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   f0 <- 0.9996012717      # Convergence factor
   af <- a * f0            # NatGrid scale factor on central meridian
   # NatGrid true origin is 49°N 2°W:
-  phi0 <- 49 / RAD.TO.GRAD
-  lambda0 <- -2 / RAD.TO.GRAD
+  phi0 <- 49 / RAD.TO.DEG
+  lambda0 <- -2 / RAD.TO.DEG
   n0 <- -100000; e0 <- 400000   # northing & easting of true origin, metres
   n <- (a-b)/(a+b)
 

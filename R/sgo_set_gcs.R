@@ -151,8 +151,8 @@ sgo_set_gcs.sgo_points <- function (x, to=NULL) {
   datum <- points$datum
   ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
 
-  phi <- points$y / RAD.TO.GRAD
-  lambda <- points$x / RAD.TO.GRAD
+  phi <- points$y / RAD.TO.DEG
+  lambda <- points$x / RAD.TO.DEG
   # height above ellipsoid
   h <- if (points$dimension=="XYZ") points$z else rep(0, length(points$x))
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
@@ -189,9 +189,9 @@ sgo_set_gcs.sgo_points <- function (x, to=NULL) {
   tz <- t$tz                  # z-shift
   s1 <- t$s + 1               # scale: normalise parts-per-million to (s+1)
   # x, y, z rotations: normalise arcseconds to radians
-  rx <- (t$rx/3600) / RAD.TO.GRAD
-  ry <- (t$ry/3600) / RAD.TO.GRAD
-  rz <- (t$rz/3600) / RAD.TO.GRAD
+  rx <- (t$rx/3600) / RAD.TO.DEG
+  ry <- (t$ry/3600) / RAD.TO.DEG
+  rz <- (t$rz/3600) / RAD.TO.DEG
 
   # apply transform
   x2 <- tx + x1*s1 - y1*rz + z1*ry
@@ -236,8 +236,8 @@ sgo_set_gcs.sgo_points <- function (x, to=NULL) {
     if ( max(abs(old.phi - phi)) < 1e-12 ) { break }
   }
 
-  lat <- phi * RAD.TO.GRAD
-  lon <- lambda * RAD.TO.GRAD
+  lat <- phi * RAD.TO.DEG
+  lon <- lambda * RAD.TO.DEG
   # height above ellipsoid
   h <- unname(p / cos(phi) - nu)
 

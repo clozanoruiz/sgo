@@ -123,9 +123,9 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
   } else {
 
     p1 <- matrix(unlist(x[coords], use.names = FALSE),
-                 ncol = 2, byrow = FALSE) / RAD.TO.GRAD
+                 ncol = 2, byrow = FALSE) / RAD.TO.DEG
     p2 <- matrix(unlist(y[coords], use.names = FALSE),
-             ncol = 2, byrow = FALSE) / RAD.TO.GRAD
+             ncol = 2, byrow = FALSE) / RAD.TO.DEG
 
     if (by.element) {
 
@@ -209,7 +209,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
   bF0 <- b * F0
   n <- (a-b) / (a+b)
   N0 <- -100000; E0 <- 400000 # True origin
-  phi0 <- 49 / RAD.TO.GRAD
+  phi0 <- 49 / RAD.TO.DEG
 
   # Initial latitude φ'
   dN <- N - N0

@@ -1,3 +1,8 @@
+# sgo 0.9.2
+
+- Replaced `testthat` with `tinytest` for Unit Testing.
+
+
 # sgo 0.9.1
 
 - **Fixed**: Now, when converting from 2D BNG to 3D BNG, the input is first converted  

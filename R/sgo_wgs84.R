@@ -50,8 +50,8 @@ sgo_wgs84_en.sgo_points <- function(x, to=3857) {
   additional.elements <- !names(x) %in% core.cols
   num.elements <- sum(additional.elements, na.rm=TRUE)
 
-  phi <- x$y / RAD.TO.GRAD
-  lambda <- x$x / RAD.TO.GRAD
+  phi <- x$y / RAD.TO.DEG
+  lambda <- x$x / RAD.TO.DEG
 
   ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
 
@@ -130,7 +130,7 @@ sgo_en_wgs84.sgo_points <- function(x, to=4326) {
   lambda <- ((E - FE)/a) + lambda0
 
   # Return
-  xy <- list(x=lambda * RAD.TO.GRAD, y=phi * RAD.TO.GRAD)
+  xy <- list(x=lambda * RAD.TO.DEG, y=phi * RAD.TO.DEG)
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 

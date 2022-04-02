@@ -1,6 +1,6 @@
 # 180/π
 # https://keisan.casio.com/calculator (34 digits precision)
-RAD.TO.GRAD <- 57.29577951308232087679815481410517
+RAD.TO.DEG <- 57.29577951308232087679815481410517
 PI <- 3.141592653589793238462643383279503
 
 
@@ -101,7 +101,7 @@ datum.flags <- data.frame(
 # The table of data supplied by the Ordnance Survey contains 876951 rows with
 # entries for each km intersection between (0,0) and (700000, 1250000).
 
-# Make sure this file exists in the folder (currently in ./dev folder)
+# Make sure this file exists in the folder (currently 7z-compressed in ./dev)
 file <- "./data-raw/OSTN15_OSGM15_DataFile.txt"
 OSTN15 <- read.csv(file)
 
@@ -114,8 +114,9 @@ colnames(.ostn.shifts) <- c("e", "n", "g", "f")
 
 
 #SAVE EVERYTHING IN sysdata.rda
-save(RAD.TO.GRAD, PI, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
+save(RAD.TO.DEG, PI, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
      .sgo_points.3d.coords, .sgo_points.2d.core, .sgo_points.3d.core,
      .coordinates.names, lonlat.ellipsoid, lonlat.datum, datum.flags,
-     .ostn.shifts, .ROWS.OSTN.SHIFTS, file = "./R/sysdata.rda", compress = "xz")
+     .ostn.shifts, .ROWS.OSTN.SHIFTS, file = "./R/sysdata.rda",
+     version = 2, compress = "xz")
 #load(file = "./R/sysdata.rda")

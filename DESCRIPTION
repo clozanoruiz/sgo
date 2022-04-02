@@ -1,6 +1,6 @@
 Package: sgo
 Title: Simple Geographical Operations (with OSGB36)
-Version: 0.9.1
+Version: 0.9.1.9000
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))
 URL: https://github.com/clozanoruiz/sgo
@@ -15,7 +15,7 @@ Depends:
   R (>= 3.4.0)
 Suggests:
   maps,
-  testthat (>= 3.0.0)
+  tinytest
 License: BSD_2_clause + file LICENSE
 Copyright: OSTN transformation data included in this module remains Crown 
   Copyright (C) 2016 under the terms of the BSD licence:
@@ -24,7 +24,7 @@ Copyright: OSTN transformation data included in this module remains Crown
   (c) Ordnance Survey Ireland, 2016. All rights reserved.
 Encoding: UTF-8
 ByteCompile: yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate: 
   'sgo.R'
   'sgo_area.R'
@@ -36,4 +36,3 @@ Collate:
   'sgo_set_gcs.R'
   'sgo_wgs84.R'
   'sgo_transform.R'
-Config/testthat/edition: 3

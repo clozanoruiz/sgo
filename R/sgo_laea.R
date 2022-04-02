@@ -52,11 +52,11 @@ sgo_etrs_laea.sgo_points <- function(x) {
   e <- sqrt(e2)
 
   FE <- (4321000); FN <- (3210000) # false easting and northing
-  phi0 <- 52 / RAD.TO.GRAD
-  lambda0 <- 10 / RAD.TO.GRAD
+  phi0 <- 52 / RAD.TO.DEG
+  lambda0 <- 10 / RAD.TO.DEG
 
-  phi <- x$y / RAD.TO.GRAD
-  lambda <- x$x / RAD.TO.GRAD
+  phi <- x$y / RAD.TO.DEG
+  lambda <- x$x / RAD.TO.DEG
 
   lambda.delta <- lambda - lambda0
   cos.lambda.delta <- cos(lambda.delta)
@@ -149,8 +149,8 @@ sgo_laea_etrs.sgo_points <- function(x) {
   e6 <- e4 * e2
 
   FE <- (4321000); FN <- (3210000) # false easting and northing
-  phi0 <- 52 / RAD.TO.GRAD
-  lambda0 <- 10 / RAD.TO.GRAD
+  phi0 <- 52 / RAD.TO.DEG
+  lambda0 <- 10 / RAD.TO.DEG
 
   E <- x$x
   N <- x$y
@@ -193,7 +193,7 @@ sgo_laea_etrs.sgo_points <- function(x) {
     (761 * e6 / 45360) * sin(6 * beta.prime)
 
   # Return
-  xy <- list(x=lambda * RAD.TO.GRAD, y=phi * RAD.TO.GRAD)
+  xy <- list(x=lambda * RAD.TO.DEG, y=phi * RAD.TO.DEG)
   if (num.elements > 0)
     xy <- c(xy, x[additional.elements])
 
