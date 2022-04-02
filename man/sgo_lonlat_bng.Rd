@@ -10,7 +10,7 @@ sgo_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
 \arguments{
 \item{x}{A \code{sgo_points} object with coordinates defined in a Geodetic
 Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
-4326, 4979 or 4277)}
+4326, 4979 or 4277).}
 
 \item{to}{Specifies the EPSG code to convert the coordinates to. It can only
 take the following values: \code{27700} or \code{7405}.}
@@ -76,5 +76,5 @@ Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 }
 \seealso{
 \code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}},
-\code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
+\code{\link{sgo_coordinates}}, \code{\link{sgo_transform}}.
 }

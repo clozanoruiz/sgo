@@ -31,7 +31,7 @@ This function is a wrapper of specific transformation functions
 \code{\link{sgo_laea_etrs}}, \code{\link{sgo_etrs_laea}},
 \code{\link{sgo_cart_lonlat}}, \code{\link{sgo_lonlat_cart}}) that transforms
 the coordinate system of a set of points to any of the supported coordinate
-systems by this package.
+systems.
 
 Please note that this package assumes that the Coordinate Reference Systems
 (CRS) ETRS89 and WGS84 are the same within the UK, but this shouldn't be a

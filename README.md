@@ -2,7 +2,6 @@ sgo - Simple Geographical Operations (with OSGB36)
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/clozanoruiz/sgo/workflows/R-CMD-check/badge.svg?branch=main)](https://github.com/clozanoruiz/sgo/actions?workflow=R-CMD-check)
@@ -24,9 +23,9 @@ supported.
 
 The Coordinate Systems supported by `sgo` are:
 
-  - ETRS89: EPSGs 4258, 4937, 4936 and 3035
-  - WGS84: EPSGs 4326, 4979, 4978 and 3857
-  - OSGB36: EPSGs 27700, 7405 and 4277
+-   ETRS89: EPSGs 4258, 4937, 4936 and 3035
+-   WGS84: EPSGs 4326, 4979, 4978 and 3857
+-   OSGB36: EPSGs 27700, 7405 and 4277
 
 Please note that this package assumes that the Coordinate Reference
 Systems (CRS) ETRS89 and WGS84 are the same within the UK, but this
@@ -88,13 +87,12 @@ text(sr, labels="Stirling", pos=1, cex=0.9)
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="50%" />
 
 ``` r
-
-## Convert coordinates to National Grid Reference
+## Convert coordinates to OS National Grid reference
 bv <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 coords=c("x", "y"), epsg=27700)
 sgo_bng_ngr(bv)$ngr
 #> [1] "NN 47455 06338"
-# notice the truncating, not rounding:
+# notice the truncating:
 sgo_bng_ngr(bv, digits=8)$ngr
 #> [1] "NN 4745 0633"
 
@@ -119,6 +117,7 @@ sgo_transform(locs, to=27700)
 #>          x        y         n
 #> 1 266698.8 845243.9 Inverness
 #> 2 394104.5 806535.9  Aberdeen
+#
 # to OSGB36 (historical):
 sgo_transform(locs, to=4277)
 #> An sgo object with 2 features (points) and 1 field 
@@ -127,6 +126,7 @@ sgo_transform(locs, to=4277)
 #>           x        y         n
 #> 1 -4.223366 57.47804 Inverness
 #> 2 -2.097450 57.14985  Aberdeen
+#
 # to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
 #> An sgo object with 2 features (points) and 1 field 
@@ -135,6 +135,22 @@ sgo_transform(locs, to=3857)
 #>           x       y         n
 #> 1 -470293.7 7858404 Inverness
 #> 2 -233668.5 7790768  Aberdeen
+
+## Convert OS National Grid references to ETRS89
+munros <- data.frame(
+  ngr=c("NN 1652471183", "NN 98713 98880",
+         "NN9521499879", "NN96214 97180"),
+  name=c("Beinn Nibheis", "Beinn Macduibh",
+          "Am Bràigh Riabhach", "Càrn an t-Sabhail"))
+sgo_transform(sgo_ngr_bng(munros, col="ngr"), to=4258)
+#> An sgo object with 4 features (points) and 1 field 
+#> dimension: XY 
+#> EPSG:      4258  
+#>           x        y               name
+#> 1 -5.005929 56.79589      Beinn Nibheis
+#> 2 -3.672139 57.06976     Beinn Macduibh
+#> 3 -3.730236 57.07795 Am Bràigh Riabhach
+#> 4 -3.712631 57.05394  Càrn an t-Sabhail
 
 ## Calculate distances
 # Distance in metres from one point to 2 other points
@@ -152,7 +168,7 @@ lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
 lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
 58.21849188, 58.21853606, 58.21824033, 58.21748949)
 pol <- sgo_points(list(lon, lat), epsg=4326)
-# Create a copy of the polygon with its coordinates shifted one position
+# Let's create a copy of the polygon with its coordinates shifted one position
 # so that we can calculate easily the distance between vertices
 coords <- sgo_coordinates(pol)
 pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
@@ -164,7 +180,7 @@ perimeter
 A <- sgo_area(pol)
 sprintf("%1.2f", A)
 #> [1] "133610.63"
-# Interpolate new vertices if more accuracy is needed
+# Interpolate new vertices (here every 10 metres) if more accuracy is needed
 A <- sgo_area(pol, interpolate=10)
 sprintf("%1.2f", A)
 #> [1] "133610.64"

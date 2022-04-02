@@ -24,11 +24,11 @@ Helmert transformation.
 }
 \details{
 Changes the geodetic coordinate system of a set of points. Note that the
-precision of various datums will vary, and (original) WGS-84 is not defined
+precision of various datums will vary, and the original WGS-84 is not defined
 to be accurate to better than ±1 metre. Most transformations shouldn't be
 assumed to be accurate to better than a meter; between OSGB36 and WGS84
 somewhat less - the lost of accuracy can be up to ±5m when using single
-Helmert transformations).
+Helmert transformations.
 
 Input points with a projected coordinate system (e.g. 27700, 7405, 3035 or
 3857) are not allowed.
@@ -36,7 +36,7 @@ Input points with a projected coordinate system (e.g. 27700, 7405, 3035 or
 \strong{Warning}
 This function is mainly for internal use of the program. Since it relies on a
 single Helmert transformation it is not recommended to call it directly. Use
-any other of the transformation functions available (\link{sgo}).
+any other of the transformation functions available (\link{sgo-package}).
 }
 \examples{
 lon <- c(-4.25181,-3.18827)

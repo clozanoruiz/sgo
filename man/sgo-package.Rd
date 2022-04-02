@@ -2,8 +2,8 @@
 % Please edit documentation in R/sgo.R
 \docType{package}
 \encoding{UTF-8}
-\name{sgo}
-\alias{sgo}
+\name{sgo-package}
+\alias{sgo-package}
 \title{sgo: Simple Geographical Operations (with OSGB36).}
 \description{
 The sgo package aims to help with spatial or geographic analysis in Open
@@ -15,9 +15,9 @@ mapping datum, using the National Geoid Model OSGM15.
 }
 \details{
 Most of the functions available in this package will become much less
-accurate if used outside the coverage of OSTN, therefore it is adviced to
-apply the functions in this package on coordinates within Great Britain,
-the Isle of Man and any areas of sea less than a few miles off shore.
+accurate if used outside the coverage of OSTN, therefore it is advised to
+apply these functions on coordinates within Great Britain, the Isle of Man
+and any areas of sea less than a few miles off shore.
 
 This package assumes that the Coordinate Reference Systems (CRS) ETRS89 and
 WGS84 are practically the same within the UK, but this shouldn't be a

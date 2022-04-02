@@ -19,7 +19,7 @@
 #'
 #' The results can be used in maps where Pseudo-Mercator coordinates are needed.
 #' Usually, those include Google, Bing, OpenStreetMap and several other webmap
-#' applications including the MapChart in Spotfire.
+#' applications.
 #' @return
 #' An object of class \code{sgo_points} whose coordinates are defined as
 #' Easting/Northing.

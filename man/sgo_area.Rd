@@ -17,7 +17,7 @@ angular coordinates.}
 \item{...}{Currently ignored}
 }
 \value{
-Value of the area in squared metres round up to the first decimal.
+Value of the area in squared metres rounded up to the first decimal.
 }
 \description{
 Calculates the planar area for a set of points defined in the OS BNG or

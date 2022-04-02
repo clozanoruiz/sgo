@@ -29,6 +29,5 @@ p <- sgo_points(list(3487823.234, -305433.201, 5313739.634), epsg=4936)
 p.xyz <- sgo_cart_lonlat(p) #Cartesian coordinates
 }
 \seealso{
-\code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}},
-\code{\link{sgo_set_gcs}}.
+\code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}}.
 }

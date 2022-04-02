@@ -13,8 +13,8 @@ National Grid References, with or without whitespace separators.
 (e.g. 'SU 387 148').}
 
 \item{col}{Character string with the name of the 'column' containing the
-vector of NGR values, it is required when \code{x} is a list with more than
-one column.}
+vector of NGR values, it is required when \code{x} is a list or data.frame
+with more than one column.}
 
 \item{check.only}{Logical parameter. If it is set to TRUE then the routine
 returns a logical vector indicating which references are correct.}

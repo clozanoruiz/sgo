@@ -30,7 +30,7 @@ coordinates.
 
 The results can be used in maps where Pseudo-Mercator coordinates are needed.
 Usually, those include Google, Bing, OpenStreetMap and several other webmap
-applications including the MapChart in Spotfire.
+applications.
 }
 \examples{
 p <- sgo_points(list(-3.9369, 56.1165), epsg=4326)

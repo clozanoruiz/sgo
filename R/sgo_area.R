@@ -36,7 +36,7 @@
 #' It will provide much less accurate results for features usually represented
 #' at smalle scale (countries, continents, etc.).
 #' @return
-#' Value of the area in squared metres round up to the first decimal.
+#' Value of the area in squared metres rounded up to the first decimal.
 #' @references
 #' Sandi Berk & Miran Ferlan, 2018. \emph{Accurate area determination in the
 #' cadaster: case study of Slovenia}. Cartography and Geographic Information

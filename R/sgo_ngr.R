@@ -18,8 +18,8 @@
 #' National Grid References, with or without whitespace separators.
 #' (e.g. 'SU 387 148').
 #' @param col Character string with the name of the 'column' containing the
-#' vector of NGR values, it is required when \code{x} is a list with more than
-#' one column.
+#' vector of NGR values, it is required when \code{x} is a list or data.frame
+#' with more than one column.
 #' @param check.only Logical parameter. If it is set to TRUE then the routine
 #' returns a logical vector indicating which references are correct.
 #' @details
@@ -185,13 +185,13 @@ sgo_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' accordingly. When \code{digits=0}, it returns the numeric format of the grid
 #' references.
 #'
-#' Note that rather than being rounded, national grid references are truncated
+#' Note that rather than being rounded, National Grid references are truncated
 #' when converting to less precise references (as the OS system demands). By
 #' doing so, the grid reference refers to the lower left corner of the relevant
 #' square - to ensure the more precise polygon will remain within the boundaries
 #' of the less precise polygon.
 #' @return
-#' A list with at least one element named 'ngr'.
+#' A list with at least one column named 'ngr'.
 #' @seealso \code{\link{sgo_points}}, \code{\link{sgo_ngr_bng}}.
 #' @examples
 #' sgo <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),

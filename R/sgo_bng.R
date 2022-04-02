@@ -11,7 +11,7 @@
 #' @usage sgo_lonlat_bng(x, to=27700, OSTN=TRUE, OD=FALSE)
 #' @param x A \code{sgo_points} object with coordinates defined in a Geodetic
 #' Coordinate System expressed as Longitude and Latitude (e.g. epsg=4258, 4937,
-#' 4326, 4979 or 4277)
+#' 4326, 4979 or 4277).
 #' @param to Specifies the EPSG code to convert the coordinates to. It can only
 #' take the following values: \code{27700} or \code{7405}.
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
@@ -55,7 +55,7 @@
 #' 1m grid square. If \code{OD=TRUE} a column named \code{height.datum} is
 #' added to the resulting object.
 #' @seealso \code{\link{sgo_points}}, \code{\link{sgo_bng_lonlat}},
-#' \code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
+#' \code{\link{sgo_coordinates}}, \code{\link{sgo_transform}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples
@@ -206,7 +206,7 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' @name sgo_bng_lonlat
 #' @usage sgo_bng_lonlat(x, to = 4258, OSTN = TRUE, OD = FALSE)
 #' @param x A \code{sgo_points} object with coordinates defined in the projected
-#' coordinate system BNG (EPSGs 27700 or 7405)
+#' coordinate system BNG (EPSGs 27700 or 7405).
 #' @param to Numeric. Sets the \code{epsg} code of the destination Geodetic
 #' Coordinate System. 4258 (ETRS89) by default.
 #' @param OSTN Logical variable indicating whether use OSTN15 transformation
@@ -249,7 +249,7 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' Longitude/Latitude.If \code{OD=TRUE} a column named \code{height.datum} is
 #' added to the resulting object.
 #' @seealso \code{\link{sgo_points}}, \code{\link{sgo_lonlat_bng}},
-#' \code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
+#' \code{\link{sgo_coordinates}}, \code{\link{sgo_transform}}.
 #' @references
 #' Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 #' @examples

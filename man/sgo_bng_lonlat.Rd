@@ -10,7 +10,7 @@ sgo_bng_lonlat(x, to = 4258, OSTN = TRUE, OD = FALSE)
 }
 \arguments{
 \item{x}{A \code{sgo_points} object with coordinates defined in the projected
-coordinate system BNG (EPSGs 27700 or 7405)}
+coordinate system BNG (EPSGs 27700 or 7405).}
 
 \item{to}{Numeric. Sets the \code{epsg} code of the destination Geodetic
 Coordinate System. 4258 (ETRS89) by default.}
@@ -72,5 +72,5 @@ Ordnance Survey Limited, 2018. \emph{Transformations and OSGM15 user guide}
 }
 \seealso{
 \code{\link{sgo_points}}, \code{\link{sgo_lonlat_bng}},
-\code{\link{sgo_set_gcs}}, \code{\link{sgo_transform}}.
+\code{\link{sgo_coordinates}}, \code{\link{sgo_transform}}.
 }

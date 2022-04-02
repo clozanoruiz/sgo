@@ -1,6 +1,7 @@
 # sgo 0.9.2
 
 - Replaced `testthat` with `tinytest` for Unit Testing.
+- A little tidy-up of both code and documentation.
 
 
 # sgo 0.9.1

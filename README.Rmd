@@ -80,11 +80,11 @@ points(locs, pch=0, col="red")
 text(locs, labels=locs$n, pos=1, cex=0.9)
 text(sr, labels="Stirling", pos=1, cex=0.9)
 
-## Convert coordinates to National Grid Reference
+## Convert coordinates to OS National Grid reference
 bv <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 coords=c("x", "y"), epsg=27700)
 sgo_bng_ngr(bv)$ngr
-# notice the truncating, not rounding:
+# notice the truncating:
 sgo_bng_ngr(bv, digits=8)$ngr
 
 ## Convert from lon/lat to BNG
@@ -96,10 +96,20 @@ sgo_lonlat_bng(pts)
 ## sgo_transform is a wrapper for all the conversions available
 # to BNG:
 sgo_transform(locs, to=27700)
+#
 # to OSGB36 (historical):
 sgo_transform(locs, to=4277)
+#
 # to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
+
+## Convert OS National Grid references to ETRS89
+munros <- data.frame(
+  ngr=c("NN 1652471183", "NN 98713 98880",
+         "NN9521499879", "NN96214 97180"),
+  name=c("Beinn Nibheis", "Beinn Macduibh",
+          "Am Bràigh Riabhach", "Càrn an t-Sabhail"))
+sgo_transform(sgo_ngr_bng(munros, col="ngr"), to=4258)
 
 ## Calculate distances
 # Distance in metres from one point to 2 other points
@@ -116,7 +126,7 @@ lon <- c(-6.43698696, -6.43166843, -6.42706831, -6.42102546,
 lat <- c(58.21740316, 58.21930597, 58.22014035, 58.22034112,
 58.21849188, 58.21853606, 58.21824033, 58.21748949)
 pol <- sgo_points(list(lon, lat), epsg=4326)
-# Create a copy of the polygon with its coordinates shifted one position
+# Let's create a copy of the polygon with its coordinates shifted one position
 # so that we can calculate easily the distance between vertices
 coords <- sgo_coordinates(pol)
 pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
@@ -126,7 +136,7 @@ perimeter
 ## Area of an ordered set of points
 A <- sgo_area(pol)
 sprintf("%1.2f", A)
-# Interpolate new vertices if more accuracy is needed
+# Interpolate new vertices (here every 10 metres) if more accuracy is needed
 A <- sgo_area(pol, interpolate=10)
 sprintf("%1.2f", A)
 ```
