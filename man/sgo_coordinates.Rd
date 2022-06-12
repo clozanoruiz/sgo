@@ -9,6 +9,18 @@ sgo_coordinates(x)
 }
 \arguments{
 \item{x}{An instance of \code{sgo_points}.}
+
+\item{names.xyz}{Character vector. New names for the columns x, y and
+possibly z of the object \code{x}.}
+
+\item{as.latlon}{Logical variable. When \code{x} is defined in a geodetic
+coordinate system as lon/lat and this parameter is set to \code{TRUE} then
+it returns the coordinates ordered as lat/lon.}
+
+\item{geodetic.format}{Character variable. Applies a format to the
+returned coordinates when \code{x} is defined in a geodetic coordinate
+system. As of now it only accepts \code{DMS}, which will return
+coordinates formatted as degrees, minutes and seconds.}
 }
 \value{
 A matrix with 2 or 3 named columns.

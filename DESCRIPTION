@@ -12,7 +12,7 @@ Description: Methods focused in performing the OSGB36/ETRS89 transformation
   sets of points defined in any of the supported Coordinated Systems is also
   available.
 Depends:
-  R (>= 3.4.0)
+  R (>= 3.5.0)
 Suggests:
   maps,
   tinytest

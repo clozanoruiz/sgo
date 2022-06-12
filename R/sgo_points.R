@@ -297,6 +297,15 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' @name sgo_coordinates
 #' @usage sgo_coordinates(x)
 #' @param x An instance of \code{sgo_points}.
+#' @param names.xyz Character vector. New names for the columns x, y and
+#' possibly z of the object \code{x}.
+#' @param as.latlon Logical variable. When \code{x} is defined in a geodetic
+#' coordinate system as lon/lat and this parameter is set to \code{TRUE} then
+#' it returns the coordinates ordered as lat/lon.
+#' @param geodetic.format Character variable. Applies a format to the
+#' returned coordinates when \code{x} is defined in a geodetic coordinate
+#' system. As of now it only accepts \code{DMS}, which will return strings of
+#' coordinates formatted as degrees, minutes and seconds.
 #' @return
 #' A matrix with 2 or 3 named columns.
 #' @examples
@@ -304,10 +313,13 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' coords <- sgo_coordinates(p)
 #'
 #' @export
-sgo_coordinates <- function (x) UseMethod("sgo_coordinates")
+sgo_coordinates <- function (x, names.xyz=NULL, as.latlon=FALSE,
+                             geodetic.format=NULL)
+  UseMethod("sgo_coordinates")
 
 #' @export
-sgo_coordinates.sgo_points <- function(x) {
+sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
+                                       geodetic.format=NULL) {
 
   if(x$dimension == "XY") {
     coords <- .sgo_points.2d.coords
@@ -316,8 +328,44 @@ sgo_coordinates.sgo_points <- function(x) {
     coords <- .sgo_points.3d.coords
     cols <- 3
   }
-  matrix(unlist(x[coords], use.names = FALSE), ncol = cols, byrow = FALSE,
-         dimnames = list(NULL, coords))
+
+  is.ll <- .epsgs[.epsgs$epsg == x$epsg, "format"] == "ll"
+
+  # set the new names for the coordinates columns
+  if (!is.null(names.xyz)) {
+    if (length(names.xyz) > length(coords)) {
+      dim.names <- replace(coords, values = names.xyz[1:length(coords)])
+    } else {
+      dim.names <- replace(coords, 1:length(names.xyz), names.xyz)
+    }
+  } else {
+    dim.names <- coords
+  }
+
+  if (is.ll) {
+    if (as.latlon) {
+      # change order of coords and dim.names
+      coords <- c(coords[2], setdiff(coords, coords[2]))
+      dim.names <- c(dim.names[2], setdiff(dim.names, dim.names[2]))
+    }
+    vec.coords <- unlist(x[coords], use.names = FALSE)
+    len.vec <- length(vec.coords)
+    if (!is.null(geodetic.format)) {
+      if(geodetic.format == "DMS") {
+        if (cols == 3) {
+          vec.coords[1:(len.vec/3*2)] <- .dd.to.dms(vec.coords[1:(len.vec/3*2)],
+                                                    as.latlon)
+        } else {
+          vec.coords <- .dd.to.dms(vec.coords, as.latlon)
+        }
+      }
+    }
+  } else {
+    vec.coords <- unlist(x[coords], use.names = FALSE)
+  }
+
+  matrix(vec.coords, ncol = cols, byrow = FALSE,
+         dimnames = list(NULL, dim.names))
 
 }
 
@@ -383,5 +431,39 @@ as.data.frame.sgo_points <- function(x,
 as.list.sgo_points <- function(x, ...) {
 
   x[setdiff(names(x), .sgo_points.attr)]
+
+}
+
+
+# dd.coords is a vector of coordinates
+# as.latlon is a logical value.
+# a typical tolerance: tol = sqrt(.Machine$double.eps)
+.dd.to.dms <- function(coords, as.latlon, num.decimals = 0) {
+
+  len <- length(coords)
+  signs <- coords < 0
+  if (as.latlon) {
+    letters <- c(ifelse(signs[1:(len/2)], "S", "N"),
+                 ifelse(signs[(len/2+1):len], "W", "E"))
+  } else {
+    letters <- c(ifelse(signs[1:(len/2)], "W", "E"),
+                 ifelse(signs[(len/2+1):len], "S", "N"))
+  }
+
+  coords <- abs(coords)
+  d <- trunc(coords)
+  ms <- (coords - d) * 60
+  m <- trunc(ms)
+  s <- (ms - m) * 60
+
+  tol <- 1 / 10^num.decimals
+  above.tol <- abs(s - 60) > tol
+  s <- ifelse(above.tol, s, 0)
+  m <- ifelse(above.tol, m, m + 1)
+  keep.min <- as.integer(m) < 60L
+  m <- ifelse(keep.min, m, 0)
+  d <- ifelse(keep.min, d, d + 1)
+
+  sprintf("%d%s %d%s %.*f%s %s", d, "°", m, "′", num.decimals, s, '″', letters)
 
 }

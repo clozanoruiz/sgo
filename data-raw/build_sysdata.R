@@ -118,5 +118,5 @@ save(RAD.TO.DEG, PI, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
      .sgo_points.3d.coords, .sgo_points.2d.core, .sgo_points.3d.core,
      .coordinates.names, lonlat.ellipsoid, lonlat.datum, datum.flags,
      .ostn.shifts, .ROWS.OSTN.SHIFTS, file = "./R/sysdata.rda",
-     version = 2, compress = "xz")
+     version = 3, compress = "xz")
 #load(file = "./R/sysdata.rda")

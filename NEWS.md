@@ -1,6 +1,8 @@
 # sgo 0.9.2
 
+- Bumped minimum R required version to 3.5 (sysdata.rda)
 - Replaced `testthat` with `tinytest` for Unit Testing.
+- Added DMS output to sgo_coordinates for geodetic coordinates.
 - A little tidy-up of both code and documentation.
 
 
