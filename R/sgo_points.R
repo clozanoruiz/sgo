@@ -295,16 +295,17 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' Extract the coordinates of an \code{sgo_points} object expressed as a matrix.
 #'
 #' @name sgo_coordinates
-#' @usage sgo_coordinates(x)
+#' @usage sgo_coordinates(x, names.xyz = NULL, as.latlon = FALSE,
+#' ll.format=NULL)
 #' @param x An instance of \code{sgo_points}.
 #' @param names.xyz Character vector. New names for the columns x, y and
 #' possibly z of the object \code{x}.
 #' @param as.latlon Logical variable. When \code{x} is defined in a geodetic
 #' coordinate system as lon/lat and this parameter is set to \code{TRUE} then
 #' it returns the coordinates ordered as lat/lon.
-#' @param geodetic.format Character variable. Applies a format to the
-#' returned coordinates when \code{x} is defined in a geodetic coordinate
-#' system. As of now it only accepts \code{DMS}, which will return strings of
+#' @param ll.format Character variable. Applies a format to the returned
+#' coordinates when \code{x} is defined in a geodetic coordinate system. As of
+#' now it only accepts \code{DMS}, which will return strings of
 #' coordinates formatted as degrees, minutes and seconds.
 #' @return
 #' A matrix with 2 or 3 named columns.
@@ -313,13 +314,12 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' coords <- sgo_coordinates(p)
 #'
 #' @export
-sgo_coordinates <- function (x, names.xyz=NULL, as.latlon=FALSE,
-                             geodetic.format=NULL)
+sgo_coordinates <- function (x, names.xyz=NULL, as.latlon=FALSE, ll.format=NULL)
   UseMethod("sgo_coordinates")
 
 #' @export
 sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
-                                       geodetic.format=NULL) {
+                                       ll.format=NULL) {
 
   if(x$dimension == "XY") {
     coords <- .sgo_points.2d.coords
@@ -350,8 +350,8 @@ sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
     }
     vec.coords <- unlist(x[coords], use.names = FALSE)
     len.vec <- length(vec.coords)
-    if (!is.null(geodetic.format)) {
-      if(geodetic.format == "DMS") {
+    if (!is.null(ll.format)) {
+      if(ll.format == "DMS") {
         if (cols == 3) {
           vec.coords[1:(len.vec/3*2)] <- .dd.to.dms(vec.coords[1:(len.vec/3*2)],
                                                     as.latlon)
@@ -437,8 +437,11 @@ as.list.sgo_points <- function(x, ...) {
 
 # dd.coords is a vector of coordinates
 # as.latlon is a logical value.
-# a typical tolerance: tol = sqrt(.Machine$double.eps)
+# num.decimals is a hscalar value.
 .dd.to.dms <- function(coords, as.latlon, num.decimals = 0) {
+
+  # a typical tolerance: tol = sqrt(.Machine$double.eps)
+  tol <- sqrt(.Machine$double.eps)
 
   len <- length(coords)
   signs <- coords < 0
@@ -456,7 +459,6 @@ as.list.sgo_points <- function(x, ...) {
   m <- trunc(ms)
   s <- (ms - m) * 60
 
-  tol <- 1 / 10^num.decimals
   above.tol <- abs(s - 60) > tol
   s <- ifelse(above.tol, s, 0)
   m <- ifelse(above.tol, m, m + 1)
@@ -464,6 +466,12 @@ as.list.sgo_points <- function(x, ...) {
   m <- ifelse(keep.min, m, 0)
   d <- ifelse(keep.min, d, d + 1)
 
-  sprintf("%d%s %d%s %.*f%s %s", d, "°", m, "′", num.decimals, s, '″', letters)
+  #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
+  #        num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
+  #        letters)
+  # Since we are not using num.decimals right now:
+  sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
+          num.decimals, trunc(s), "\U2033", letters)
+
 
 }

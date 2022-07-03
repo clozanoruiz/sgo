@@ -102,14 +102,8 @@ sgo_ngr_bng.list <- function(x, col=NULL, check.only=FALSE) {
   }
 
   # Get numeric values of letter references, mapping A->0, B->1, C->2, etc:
-  a.code <- strtoi(charToRaw("A"), 16L)
-  l1 <- strtoi(vapply(substr(toupper(x), 1, 1),
-                      charToRaw, as.raw(0)), 16L) - a.code
-  l2 <- strtoi(vapply(substr(toupper(x), 2, 2),
-                      charToRaw, as.raw(0)), 16L) - a.code
-  # Shuffle down letters after 'I' since 'I' is not used in grid:
-  l1 <- ifelse (l1 > 7, l1-1, l1)
-  l2 <- ifelse (l2 > 7, l2-1, l2)
+  l1 <- .ngr.LUT$num[match(substr(toupper(x), 1, 1), .ngr.LUT$letter)]
+  l2 <- .ngr.LUT$num[match(substr(toupper(x), 2, 2), .ngr.LUT$letter)]
 
   # Convert grid letters into 100km-square indexes from false origin
   # (grid square SV):
@@ -253,13 +247,10 @@ sgo_bng_ngr.sgo_points <- function(x, digits=10) {
   l1 <- (19-n100k) - (19-n100k)%%5 + trunc((e100k+10)/5)
   l2 <- ((19-n100k)*5)%%25 + e100k%%5
 
-  # Compensate for skipped 'I' and build grid letter-pairs
-  l1 <- ifelse(l1 > 7, l1+1, l1)
-  l2 <- ifelse(l2 > 7, l2+1, l2)
-  # A is the (charcode) origin to which l1 and l2 codes will be added:
-  a.code <- strtoi(charToRaw("A"), 16L)
-  let.pair <- paste0( vapply(as.raw(l1 + a.code), rawToChar,""),
-                      vapply(as.raw(l2 + a.code), rawToChar,""))
+  # Build grid letter-pairs
+  l1 <- .ngr.LUT$letter[match(l1, .ngr.LUT$num)]
+  l2 <- .ngr.LUT$letter[match(l2, .ngr.LUT$num)]
+  let.pair <- paste0(l1, l2)
 
   # Strip 100km-grid indices from easting & northing, and reduce precision
   # Note that rather than being rounded, the easting and northing are truncated

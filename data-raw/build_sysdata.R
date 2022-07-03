@@ -4,6 +4,16 @@ RAD.TO.DEG <- 57.29577951308232087679815481410517
 PI <- 3.141592653589793238462643383279503
 
 
+#Lookup table table to decode NGR letters
+.ngr.LUT <- data.frame(letter=c("A", "B", "C", "D", "E", "F", "G", "H", "J",
+                                "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+                                "T", "U", "V", "W", "X", "Y", "Z"),
+                       num=   c(0, 1, 2, 3, 4, 5, 6, 7, 8,
+                                9, 10, 11, 12, 13, 14, 15, 16, 17,
+                                18, 19, 20, 21, 22, 23, 24),
+                       stringsAsFactors = FALSE)
+
+
 # list of EPSG codes and types #,
 # we could admit some epsg which should be XY as XYZ (eg. 4258, 4326, 27700)
 # format is either ll (lon/lat), c (cartesians), en (easting/northing)
@@ -114,7 +124,7 @@ colnames(.ostn.shifts) <- c("e", "n", "g", "f")
 
 
 #SAVE EVERYTHING IN sysdata.rda
-save(RAD.TO.DEG, PI, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
+save(RAD.TO.DEG, PI, .ngr.LUT, .epsgs, .sgo_points.attr, .sgo_points.2d.coords,
      .sgo_points.3d.coords, .sgo_points.2d.core, .sgo_points.3d.core,
      .coordinates.names, lonlat.ellipsoid, lonlat.datum, datum.flags,
      .ostn.shifts, .ROWS.OSTN.SHIFTS, file = "./R/sysdata.rda",
