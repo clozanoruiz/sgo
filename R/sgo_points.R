@@ -50,7 +50,7 @@
 #'
 #' \item\code{3035}: ETRS-LAEA, projected coordinate system. The
 #' columns in \code{x} must be defined as Easting and Northing. The defined
-#' datum for this set of coordinates is WGS84 (https://epsg.io/3035)
+#' datum for this set of coordinates is ETRS89 (https://epsg.io/3035)
 #'
 #' \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
 #' must be defined as Longitude and Latitude (\code{sgo} also accepts a
@@ -306,7 +306,8 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' @param ll.format Character variable. Applies a format to the returned
 #' coordinates when \code{x} is defined in a geodetic coordinate system. As of
 #' now it only accepts \code{DMS}, which will return strings of
-#' coordinates formatted as degrees, minutes and seconds.
+#' coordinates formatted as degrees, minutes and seconds (hence certain
+#' accuracy will be lost).
 #' @return
 #' A matrix with 2 or 3 named columns.
 #' @examples

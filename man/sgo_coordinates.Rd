@@ -21,7 +21,8 @@ it returns the coordinates ordered as lat/lon.}
 \item{ll.format}{Character variable. Applies a format to the returned
 coordinates when \code{x} is defined in a geodetic coordinate system. As of
 now it only accepts \code{DMS}, which will return strings of
-coordinates formatted as degrees, minutes and seconds.}
+coordinates formatted as degrees, minutes and seconds (hence certain
+accuracy will be lost).}
 }
 \value{
 A matrix with 2 or 3 named columns.

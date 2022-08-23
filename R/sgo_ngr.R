@@ -179,7 +179,7 @@ sgo_ngr_bng.default <- function(x, col=NULL, check.only=FALSE) {
 #' accordingly. When \code{digits=0}, it returns the numeric format of the grid
 #' references.
 #'
-#' Note that rather than being rounded, National Grid references are truncated
+#' Note that National Grid references are truncated instead of being rounded
 #' when converting to less precise references (as the OS system demands). By
 #' doing so, the grid reference refers to the lower left corner of the relevant
 #' square - to ensure the more precise polygon will remain within the boundaries
@@ -248,9 +248,8 @@ sgo_bng_ngr.sgo_points <- function(x, digits=10) {
   l2 <- ((19-n100k)*5)%%25 + e100k%%5
 
   # Build grid letter-pairs
-  l1 <- .ngr.LUT$letter[match(l1, .ngr.LUT$num)]
-  l2 <- .ngr.LUT$letter[match(l2, .ngr.LUT$num)]
-  let.pair <- paste0(l1, l2)
+  let.pair <- paste0(.ngr.LUT$letter[match(c(l1, l2), .ngr.LUT$num)],
+                     collapse="")
 
   # Strip 100km-grid indices from easting & northing, and reduce precision
   # Note that rather than being rounded, the easting and northing are truncated

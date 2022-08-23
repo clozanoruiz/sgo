@@ -93,7 +93,7 @@ datum for this set of coordinates is ETRS89 (https://epsg.io/4936).
 
 \item\code{3035}: ETRS-LAEA, projected coordinate system. The
 columns in \code{x} must be defined as Easting and Northing. The defined
-datum for this set of coordinates is WGS84 (https://epsg.io/3035)
+datum for this set of coordinates is ETRS89 (https://epsg.io/3035)
 
 \item\code{4326}: WGS84, geodetic coordinate system. The columns in \code{x}
 must be defined as Longitude and Latitude (\code{sgo} also accepts a

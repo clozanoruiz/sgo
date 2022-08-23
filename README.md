@@ -87,6 +87,7 @@ text(sr, labels="Stirling", pos=1, cex=0.9)
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="50%" />
 
 ``` r
+
 ## Convert coordinates to OS National Grid reference
 bv <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 coords=c("x", "y"), epsg=27700)
@@ -95,6 +96,7 @@ sgo_bng_ngr(bv)$ngr
 # notice the truncating:
 sgo_bng_ngr(bv, digits=8)$ngr
 #> [1] "NN 4745 0633"
+
 
 ## Convert from lon/lat to BNG
 lon <- c(-4.25181,-3.18827)
@@ -108,7 +110,9 @@ sgo_lonlat_bng(pts)
 #> 1 259174.4 665744.8
 #> 2 325899.1 673996.1
 
-## sgo_transform is a wrapper for all the conversions available
+
+## sgo_transform is a wrapper for all the conversions available.
+
 # to BNG:
 sgo_transform(locs, to=27700)
 #> An sgo object with 2 features (points) and 1 field 
@@ -117,7 +121,7 @@ sgo_transform(locs, to=27700)
 #>          x        y         n
 #> 1 266698.8 845243.9 Inverness
 #> 2 394104.5 806535.9  Aberdeen
-#
+
 # to OSGB36 (historical):
 sgo_transform(locs, to=4277)
 #> An sgo object with 2 features (points) and 1 field 
@@ -126,7 +130,7 @@ sgo_transform(locs, to=4277)
 #>           x        y         n
 #> 1 -4.223366 57.47804 Inverness
 #> 2 -2.097450 57.14985  Aberdeen
-#
+
 # to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
 #> An sgo object with 2 features (points) and 1 field 
@@ -135,6 +139,7 @@ sgo_transform(locs, to=3857)
 #>           x       y         n
 #> 1 -470293.7 7858404 Inverness
 #> 2 -233668.5 7790768  Aberdeen
+
 
 ## Convert OS National Grid references to ETRS89
 munros <- data.frame(
@@ -151,6 +156,7 @@ sgo_transform(sgo_ngr_bng(munros, col="ngr"), to=4258)
 #> 2 -3.672139 57.06976     Beinn Macduibh
 #> 3 -3.730236 57.07795 Am Bràigh Riabhach
 #> 4 -3.712631 57.05394  Càrn an t-Sabhail
+
 
 ## Calculate distances
 # Distance in metres from one point to 2 other points
@@ -175,6 +181,7 @@ pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
 perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
 perimeter
 #> [1] 2115.33
+
 
 ## Area of an ordered set of points
 A <- sgo_area(pol)

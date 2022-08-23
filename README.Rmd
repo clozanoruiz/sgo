@@ -80,6 +80,7 @@ points(locs, pch=0, col="red")
 text(locs, labels=locs$n, pos=1, cex=0.9)
 text(sr, labels="Stirling", pos=1, cex=0.9)
 
+
 ## Convert coordinates to OS National Grid reference
 bv <- sgo_points(list(x=247455, y=706338, name="Ben Venue"),
 coords=c("x", "y"), epsg=27700)
@@ -87,21 +88,25 @@ sgo_bng_ngr(bv)$ngr
 # notice the truncating:
 sgo_bng_ngr(bv, digits=8)$ngr
 
+
 ## Convert from lon/lat to BNG
 lon <- c(-4.25181,-3.18827)
 lat <- c(55.86424, 55.95325)
 pts <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
 sgo_lonlat_bng(pts)
 
-## sgo_transform is a wrapper for all the conversions available
+
+## sgo_transform is a wrapper for all the conversions available.
+
 # to BNG:
 sgo_transform(locs, to=27700)
-#
+
 # to OSGB36 (historical):
 sgo_transform(locs, to=4277)
-#
+
 # to Pseudo-Mercator:
 sgo_transform(locs, to=3857)
+
 
 ## Convert OS National Grid references to ETRS89
 munros <- data.frame(
@@ -110,6 +115,7 @@ munros <- data.frame(
   name=c("Beinn Nibheis", "Beinn Macduibh",
           "Am Bràigh Riabhach", "Càrn an t-Sabhail"))
 sgo_transform(sgo_ngr_bng(munros, col="ngr"), to=4258)
+
 
 ## Calculate distances
 # Distance in metres from one point to 2 other points
@@ -132,6 +138,7 @@ coords <- sgo_coordinates(pol)
 pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
 perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
 perimeter
+
 
 ## Area of an ordered set of points
 A <- sgo_area(pol)
