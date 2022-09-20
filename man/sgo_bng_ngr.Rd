@@ -26,7 +26,7 @@ default. In order to reduce the output precision change the digits parameter
 accordingly. When \code{digits=0}, it returns the numeric format of the grid
 references.
 
-Note that rather than being rounded, National Grid references are truncated
+Note that National Grid references are truncated instead of being rounded
 when converting to less precise references (as the OS system demands). By
 doing so, the grid reference refers to the lower left corner of the relevant
 square - to ensure the more precise polygon will remain within the boundaries

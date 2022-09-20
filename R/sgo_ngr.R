@@ -248,8 +248,8 @@ sgo_bng_ngr.sgo_points <- function(x, digits=10) {
   l2 <- ((19-n100k)*5)%%25 + e100k%%5
 
   # Build grid letter-pairs
-  let.pair <- paste0(.ngr.LUT$letter[match(c(l1, l2), .ngr.LUT$num)],
-                     collapse="")
+  let.pair <- paste0(.ngr.LUT$letter[match(l1, .ngr.LUT$num)],
+                     .ngr.LUT$letter[match(l2, .ngr.LUT$num)])
 
   # Strip 100km-grid indices from easting & northing, and reduce precision
   # Note that rather than being rounded, the easting and northing are truncated

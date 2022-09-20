@@ -138,3 +138,44 @@ expect_identical(as.list(p), l)
 #export to data.frame
 df <- data.frame(x, y, z, N)
 expect_identical(as.data.frame(p), df)
+
+
+### Extract coordinates ###
+lon <- c(-4.25181,-3.18827)
+lat <- c(55.86424, 55.95325)
+p <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
+
+#new names
+new.names <- c("longitude", "latitude")
+too.many.names <- c("longitude", "latitude", "shouldn't_be_considered")
+expect_equal(colnames(sgo_coordinates(p, names.xyz=too.many.names)), new.names)
+expect_equal(colnames(sgo_coordinates(p, names.xyz=new.names)), new.names)
+
+#as latitude and longited (reverse lon/lat)
+expect_equal(sgo_coordinates(p, as.latlon = TRUE),
+             matrix(data=c(lat, lon), ncol=2, byrow=FALSE,
+                    dimnames=list(NULL, c('y', 'x'))))
+
+expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE),
+             matrix(data=c(lat, lon), ncol=2, byrow=FALSE,
+                    dimnames=list(NULL, c("latitude", "longitude"))))
+
+#as DMS
+expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE,
+                             ll.format='DMS'),
+             matrix(data=c("55\U00B0 51\U2032 51.26\U2033 N",
+                           "55\U00B0 57\U2032 11.70\U2033 N",
+                           "4\U00B0 15\U2032 6.52\U2033 W",
+                           "3\U00B0 11\U2032 17.77\U2033 W"),
+                    ncol=2, byrow=FALSE,
+                    dimnames=list(NULL, c("latitude", "longitude"))))
+
+expect_equal(sgo_coordinates(p, ll.format='DMS'),
+             matrix(data=c("4\U00B0 15\U2032 6.52\U2033 W",
+                           "3\U00B0 11\U2032 17.77\U2033 W",
+                           "55\U00B0 51\U2032 51.26\U2033 N",
+                           "55\U00B0 57\U2032 11.70\U2033 N"),
+                    ncol=2, byrow=FALSE, dimnames=list(NULL, c("x", "y"))))
+
+#y 3D con y sin nuevos nombres (tanto para DMS como normal)
+#mirar by.element=FALSE/TRUE de sgo_distance.

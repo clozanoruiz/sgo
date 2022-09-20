@@ -24,7 +24,7 @@ Copyright: OSTN transformation data included in this module remains Crown
   (c) Ordnance Survey Ireland, 2016. All rights reserved.
 Encoding: UTF-8
 ByteCompile: yes
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Collate: 
   'sgo.R'
   'sgo_area.R'

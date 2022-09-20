@@ -306,8 +306,8 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' @param ll.format Character variable. Applies a format to the returned
 #' coordinates when \code{x} is defined in a geodetic coordinate system. As of
 #' now it only accepts \code{DMS}, which will return strings of
-#' coordinates formatted as degrees, minutes and seconds (hence certain
-#' accuracy will be lost).
+#' coordinates formatted as degrees, minutes and seconds (certain accuracy will
+#' be lost).
 #' @return
 #' A matrix with 2 or 3 named columns.
 #' @examples
@@ -355,9 +355,9 @@ sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
       if(ll.format == "DMS") {
         if (cols == 3) {
           vec.coords[1:(len.vec/3*2)] <- .dd.to.dms(vec.coords[1:(len.vec/3*2)],
-                                                    as.latlon)
+                                                    as.latlon, 2)
         } else {
-          vec.coords <- .dd.to.dms(vec.coords, as.latlon)
+          vec.coords <- .dd.to.dms(vec.coords, as.latlon, 2)
         }
       }
     }
@@ -442,7 +442,7 @@ as.list.sgo_points <- function(x, ...) {
 .dd.to.dms <- function(coords, as.latlon, num.decimals = 0) {
 
   # a typical tolerance: tol = sqrt(.Machine$double.eps)
-  tol <- sqrt(.Machine$double.eps)
+  tol <- 60
 
   len <- length(coords)
   signs <- coords < 0
@@ -458,21 +458,20 @@ as.list.sgo_points <- function(x, ...) {
   d <- trunc(coords)
   ms <- (coords - d) * 60
   m <- trunc(ms)
-  s <- (ms - m) * 60
+  s <- round((ms - m) * 60, num.decimals)
 
-  above.tol <- abs(s - 60) > tol
+  above.tol <- s != tol
   s <- ifelse(above.tol, s, 0)
   m <- ifelse(above.tol, m, m + 1)
   keep.min <- as.integer(m) < 60L
   m <- ifelse(keep.min, m, 0)
   d <- ifelse(keep.min, d, d + 1)
 
-  #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
-  #        num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
-  #        letters)
-  # Since we are not using num.decimals right now:
   sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
-          num.decimals, trunc(s), "\U2033", letters)
-
+          num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
+          letters)
+  # Not using num.decimals:
+  #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
+  #        num.decimals, trunc(s), "\U2033", letters)
 
 }
