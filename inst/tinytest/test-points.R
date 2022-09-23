@@ -154,7 +154,7 @@ expect_equal(colnames(sgo_coordinates(p, names.xyz=new.names)), new.names)
 #as latitude and longited (reverse lon/lat)
 expect_equal(sgo_coordinates(p, as.latlon = TRUE),
              matrix(data=c(lat, lon), ncol=2, byrow=FALSE,
-                    dimnames=list(NULL, c('y', 'x'))))
+                    dimnames=list(NULL, c("y", "x"))))
 
 expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE),
              matrix(data=c(lat, lon), ncol=2, byrow=FALSE,
@@ -162,7 +162,7 @@ expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE),
 
 #as DMS
 expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE,
-                             ll.format='DMS'),
+                             ll.format="DMS"),
              matrix(data=c("55\U00B0 51\U2032 51.26\U2033 N",
                            "55\U00B0 57\U2032 11.70\U2033 N",
                            "4\U00B0 15\U2032 6.52\U2033 W",
@@ -170,12 +170,32 @@ expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE,
                     ncol=2, byrow=FALSE,
                     dimnames=list(NULL, c("latitude", "longitude"))))
 
-expect_equal(sgo_coordinates(p, ll.format='DMS'),
+expect_equal(sgo_coordinates(p, ll.format="DMS"),
              matrix(data=c("4\U00B0 15\U2032 6.52\U2033 W",
                            "3\U00B0 11\U2032 17.77\U2033 W",
                            "55\U00B0 51\U2032 51.26\U2033 N",
                            "55\U00B0 57\U2032 11.70\U2033 N"),
                     ncol=2, byrow=FALSE, dimnames=list(NULL, c("x", "y"))))
 
-#y 3D con y sin nuevos nombres (tanto para DMS como normal)
-#mirar by.element=FALSE/TRUE de sgo_distance.
+#3D
+z <- c(23.437, 18.674)
+p <- sgo_points(list(longitude=lon, latitude=lat, z=z), epsg=4979)
+
+expect_equal(sgo_coordinates(p),
+             matrix(data=c(lon, lat, z), ncol=3, byrow=FALSE,
+                    dimnames=list(NULL, c("x", "y", "z"))))
+
+new.names <- c("longitude", "latitude", "height")
+expect_equal(sgo_coordinates(p, names.xyz=new.names, as.latlon=TRUE),
+             matrix(data=c(lat, lon, z), ncol=3, byrow=FALSE,
+                    dimnames=list(NULL, c("latitude", "longitude", "height"))))
+
+expect_equal(sgo_coordinates(p, ll.format="DMS"),
+             matrix(data=c("4\U00B0 15\U2032 6.52\U2033 W",
+                           "3\U00B0 11\U2032 17.77\U2033 W",
+                           "55\U00B0 51\U2032 51.26\U2033 N",
+                           "55\U00B0 57\U2032 11.70\U2033 N",
+                           "23.437",
+                           "18.674"),
+                    ncol=3, byrow=FALSE, dimnames=list(NULL, c("x", "y", "z"))))
+

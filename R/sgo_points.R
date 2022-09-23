@@ -307,7 +307,7 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' coordinates when \code{x} is defined in a geodetic coordinate system. As of
 #' now it only accepts \code{DMS}, which will return strings of
 #' coordinates formatted as degrees, minutes and seconds (certain accuracy will
-#' be lost).
+#' be lost because seconds are rounded to the second decimal).
 #' @return
 #' A matrix with 2 or 3 named columns.
 #' @examples
@@ -468,8 +468,10 @@ as.list.sgo_points <- function(x, ...) {
   d <- ifelse(keep.min, d, d + 1)
 
   sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
-          num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
-          letters)
+          num.decimals, s, "\U2033", letters)
+  #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
+  #        num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
+  #        letters)
   # Not using num.decimals:
   #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
   #        num.decimals, trunc(s), "\U2033", letters)
