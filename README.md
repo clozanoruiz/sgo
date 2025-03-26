@@ -4,7 +4,7 @@ sgo - Simple Geographical Operations (with OSGB36)
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/clozanoruiz/sgo/workflows/R-CMD-check/badge.svg?branch=main)](https://github.com/clozanoruiz/sgo/actions?workflow=R-CMD-check)
+[![R-CMD-check](https://github.com/clozanoruiz/sgo/actions/workflows/R-CMD-check.yml/badge.svg?branch=main)](https://github.com/clozanoruiz/sgo/actions?workflow=R-CMD-check)
 [![coverage](https://codecov.io/gh/clozanoruiz/sgo/branch/main/graph/badge.svg?token=Qd5gkpnxFc)](https://app.codecov.io/gh/clozanoruiz/sgo?branch=main)
 [![CRAN](https://www.r-pkg.org/badges/version/sgo)](https://cran.r-project.org/package=sgo)
 [![GitHub release (latest
