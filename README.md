@@ -10,6 +10,7 @@ sgo - Simple Geographical Operations (with OSGB36)
 [![GitHub release (latest
 SemVer)](https://img.shields.io/github/v/release/clozanoruiz/sgo.svg?sort=semver&label=GitHub)](https://github.com/clozanoruiz/sgo/releases)
 [![license](https://img.shields.io/badge/license-BSD%202--Clause-green.svg)](https://opensource.org/licenses/BSD-2-Clause)
+[![status](https://tinyverse.netlify.app/badge/sgo)](https://cran.r-project.org/package=sgo)
 <!-- badges: end -->
 
 The goal of `sgo` is to provide a set of methods to transform ETRS89
