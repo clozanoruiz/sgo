@@ -1,6 +1,6 @@
 Package: sgo
 Title: Simple Geographical Operations (with OSGB36)
-Version: 0.9.2
+Version: 0.9.3
 Authors@R: person("Carlos", "Lozano Ruiz", 
   email = "carloslozanoruiz@outlook.com", role = c("aut", "cre"))
 URL: https://github.com/clozanoruiz/sgo
@@ -24,15 +24,15 @@ Copyright: OSTN transformation data included in this module remains Crown
   (c) Ordnance Survey Ireland, 2016. All rights reserved.
 Encoding: UTF-8
 ByteCompile: yes
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Collate: 
-  'sgo.R'
-  'sgo_area.R'
-  'sgo_bng.R'
-  'sgo_distance.R'
-  'sgo_laea.R'
-  'sgo_ngr.R'
-  'sgo_points.R'
-  'sgo_set_gcs.R'
-  'sgo_wgs84.R'
-  'sgo_transform.R'
+    'sgo-package.R'
+    'sgo_area.R'
+    'sgo_bng.R'
+    'sgo_distance.R'
+    'sgo_laea.R'
+    'sgo_ngr.R'
+    'sgo_points.R'
+    'sgo_set_gcs.R'
+    'sgo_wgs84.R'
+    'sgo_transform.R'

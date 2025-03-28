@@ -1,4 +1,5 @@
 Version: 1.0
+ProjectId: 84e74385-b292-45f7-aaaf-0dde52063b23
 
 RestoreWorkspace: No
 SaveWorkspace: No
@@ -18,5 +19,5 @@ StripTrailingWhitespace: Yes
 BuildType: Package
 PackageInstallArgs: --with-keep.source --byte-compile
 PackageBuildBinaryArgs: --byte-compile
-PackageCheckArgs: --multiarch
+PackageCheckArgs: --no-multiarch
 PackageRoxygenize: rd,collate,namespace
