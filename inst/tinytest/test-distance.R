@@ -1,8 +1,12 @@
+# fmt: skip file
 RAD.2.DEG <- sgo:::RAD.TO.DEG
 
 ### Inputs and BNG ###
 p <- sgo_points(
-      list(x = c(100000, 100000, 100000), y = c(100000, 200000, 300000)),
+      list(
+            x = c(100000, 100000, 100000),
+            y = c(100000, 200000, 300000)
+      ),
       epsg = 27700
 )
 # y defaults to x and by.element = FALSE
@@ -10,15 +14,9 @@ expect_equal(
       sgo_distance(p, grid.true.distance = FALSE),
       matrix(
             data = c(
-                  0e+00,
-                  1e+05,
-                  2e+05,
-                  1e+05,
-                  0e+00,
-                  1e+05,
-                  2e+05,
-                  1e+05,
-                  0e+00
+                  0e+00, 1e+05, 2e+05,
+                  1e+05, 0e+00, 1e+05,
+                  2e+05, 1e+05, 0e+00
             ),
             nrow = 3,
             byrow = FALSE
@@ -31,15 +29,9 @@ expect_true(all(
             sgo_distance(p, grid.true.distance = TRUE) -
                   matrix(
                         data = c(
-                              0,
-                              99929.3852,
-                              199858.8042,
-                              99929.3739,
-                              0,
-                              99929.4078,
-                              199858.7591,
-                              99929.3965,
-                              0
+                              0, 99929.3852, 199858.8042,
+                              99929.3739, 0, 99929.4078,
+                              199858.7591, 99929.3965, 0
                         ),
                         nrow = 3,
                         byrow = TRUE
@@ -141,7 +133,10 @@ expect_equal(
 
 # testing coincident points
 p <- sgo_points(
-      list(x = c(-6.43698696, -6.43166843), y = c(58.21740316, 58.21930597)),
+      list(
+            x = c(-6.43698696, -6.43166843),
+            y = c(58.21740316, 58.21930597)
+      ),
       epsg = 4326
 )
 expect_equal(sgo_distance(p, which = "Vicenty", by.element = TRUE), c(0, 0))

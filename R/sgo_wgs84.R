@@ -57,9 +57,11 @@ sgo_wgs84_en.sgo_points <- function(x, to = 3857) {
   ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
 
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"]
+  # False Easting, Northing:
   FE <- 0
-  FN <- 0 # False Easting, Northing
-  lambda0 <- 0 # True origin
+  FN <- 0
+  # True origin:
+  lambda0 <- 0
 
   #e <- round(FE + a * (lambda - lambda0), 2) #round to cm
   #n <- round(FN + a * log(tan(pi/4 + phi/2)), 2)
@@ -129,9 +131,11 @@ sgo_en_wgs84.sgo_points <- function(x, to = 4326) {
   ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
 
   a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"]
+  # False Easting, Northing:
   FE <- 0
-  FN <- 0 # False Easting, Northing
-  lambda0 <- 0 # True origin
+  FN <- 0
+  # True origin:
+  lambda0 <- 0
 
   E <- x$x
   N <- x$y

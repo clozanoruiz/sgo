@@ -1,3 +1,4 @@
+# fmt: skip file
 #' @include sgo_wgs84.R
 NULL
 
@@ -157,312 +158,312 @@ sgo_transform.sgo_points <- function(x, to = NULL, ...) {
 
 .FROM <- list(4326, 3857, 4277, 27700, 4258, 4979, 4978, 4937, 4936, 7405, 3035)
 
-# FROM:
+                                            # FROM:
 .FUN_TO_4326 <- list(
-  NULL, # 4326
-  list(sgo_en_wgs84), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4277
-  list(sgo_bng_lonlat), # 27700
-  list(sgo_set_gcs), # 4258
-  list(sgo_set_gcs), # 4979
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4978
-  list(sgo_set_gcs), # 4937
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4936
-  list(sgo_bng_lonlat), # 7405
-  list(sgo_laea_etrs, sgo_set_gcs) # 3035
+  NULL,                                     # 4326
+  list(sgo_en_wgs84),                       # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat),     # 4277
+  list(sgo_bng_lonlat),                     # 27700
+  list(sgo_set_gcs),                        # 4258
+  list(sgo_set_gcs),                        # 4979
+  list(sgo_cart_lonlat, sgo_set_gcs),       # 4978
+  list(sgo_set_gcs),                        # 4937
+  list(sgo_cart_lonlat, sgo_set_gcs),       # 4936
+  list(sgo_bng_lonlat),                     # 7405
+  list(sgo_laea_etrs, sgo_set_gcs)          # 3035
 )
 .ARGS_TO_4326 <- list(
-  NULL, # 4326
-  list(to = 4326), # 3857
-  list(list(to = 27700), list(to = 4326)), # 4277
-  list(to = 4326), # 27700
-  list(to = 4326), # 4258
-  list(to = 4326), # 4979
-  list(list(), list(to = 4326)), # 4978
-  list(to = 4326), # 4937
-  list(list(), list(to = 4326)), # 4936
-  list(to = 4326), # 7405
-  list(list(), list(to = 4326)) # 3035
+  NULL,                                     # 4326
+  list(to = 4326),                          # 3857
+  list(list(to = 27700), list(to = 4326)),  # 4277
+  list(to = 4326),                          # 27700
+  list(to = 4326),                          # 4258
+  list(to = 4326),                          # 4979
+  list(list(), list(to = 4326)),            # 4978
+  list(to = 4326),                          # 4937
+  list(list(), list(to = 4326)),            # 4936
+  list(to = 4326),                          # 7405
+  list(list(), list(to = 4326))             # 3035
 )
 
-#FROM:
+                                                            #FROM:
 .FUN_TO_3857 <- list(
-  list(sgo_wgs84_en), # 4326
-  NULL, # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_wgs84_en), # 4277
-  list(sgo_bng_lonlat, sgo_wgs84_en),
-  list(sgo_wgs84_en), # 4258
-  list(sgo_wgs84_en), # 4979
-  list(sgo_cart_lonlat, sgo_wgs84_en), # 4978
-  list(sgo_wgs84_en), # 4937
-  list(sgo_cart_lonlat, sgo_wgs84_en), # 4936
-  list(sgo_bng_lonlat, sgo_wgs84_en), # 7405
-  list(sgo_laea_etrs, sgo_wgs84_en) # 3035
+  list(sgo_wgs84_en),                                       # 4326
+  NULL,                                                     # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_wgs84_en),       # 4277
+  list(sgo_bng_lonlat, sgo_wgs84_en),                       # 27700
+  list(sgo_wgs84_en),                                       # 4258
+  list(sgo_wgs84_en),                                       # 4979
+  list(sgo_cart_lonlat, sgo_wgs84_en),                      # 4978
+  list(sgo_wgs84_en),                                       # 4937
+  list(sgo_cart_lonlat, sgo_wgs84_en),                      # 4936
+  list(sgo_bng_lonlat, sgo_wgs84_en),                       # 7405
+  list(sgo_laea_etrs, sgo_wgs84_en)                         # 3035
 )
 .ARGS_TO_3857 <- list(
-  list(to = 3857),
-  NULL,
-  list(list(to = 27700), list(to = 4326), list(to = 3857)),
-  list(list(to = 4326), list(to = 3857)),
-  list(list(to = 3857)), # 4258
-  list(to = 3857), # 4979
-  list(list(), to = 3857), # 4978
-  list(list(to = 3857)), # 4937
-  list(list(), list(to = 3857)), # 4936
-  list(list(to = 4326), list(to = 3857)), # 7405
-  list(list(), list(to = 3857)) # 3035
+  list(to = 3857),                                          # 4326
+  NULL,                                                     # 3857
+  list(list(to = 27700), list(to = 4326), list(to = 3857)), # 4277
+  list(list(to = 4326), list(to = 3857)),                   # 27700
+  list(list(to = 3857)),                                    # 4258
+  list(to = 3857),                                          # 4979
+  list(list(), to = 3857),                                  # 4978
+  list(list(to = 3857)),                                    # 4937
+  list(list(), list(to = 3857)),                            # 4936
+  list(list(to = 4326), list(to = 3857)),                   # 7405
+  list(list(), list(to = 3857))                             # 3035
 )
 
-# FROM:
+                                                            # FROM:
 .FUN_TO_4277 <- list(
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4326
-  list(sgo_en_wgs84, sgo_lonlat_bng, sgo_bng_lonlat), # 3857
-  NULL, # 4277
-  list(sgo_bng_lonlat), # 27700
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4258
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4979
-  list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4937
-  list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),
-  list(sgo_bng_lonlat), # 7405
-  list(sgo_laea_etrs, sgo_lonlat_bng, sgo_bng_lonlat) # 3035
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4326
+  list(sgo_en_wgs84, sgo_lonlat_bng, sgo_bng_lonlat),       # 3857
+  NULL,                                                     # 4277
+  list(sgo_bng_lonlat),                                     # 27700
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4258
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4979
+  list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),    # 4978
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4937
+  list(sgo_cart_lonlat, sgo_lonlat_bng, sgo_bng_lonlat),    # 4936
+  list(sgo_bng_lonlat),                                     # 7405
+  list(sgo_laea_etrs, sgo_lonlat_bng, sgo_bng_lonlat)       # 3035
 )
 .ARGS_TO_4277 <- list(
-  list(list(to = 27700), list(to = 4277)), # 4326
+  list(list(to = 27700), list(to = 4277)),                  # 4326
   list(list(to = 4326), list(to = 27700), list(to = 4277)), # 3857
-  NULL, # 4277
-  list(to = 4277), # 27700
-  list(list(to = 27700), list(to = 4277)), # 4258
-  list(list(to = 27700), list(to = 4277)), # 4979
-  list(list(), list(to = 27700), list(to = 4277)), # 4978
-  list(list(to = 27700), list(to = 4277)), # 4937
-  list(list(), list(to = 27700), list(to = 4277)), # 4936
-  list(to = 4277), # 7405
-  list(list(), list(to = 27700), list(to = 4277)) # 3035
+  NULL,                                                     # 4277
+  list(to = 4277),                                          # 27700
+  list(list(to = 27700), list(to = 4277)),                  # 4258
+  list(list(to = 27700), list(to = 4277)),                  # 4979
+  list(list(), list(to = 27700), list(to = 4277)),          # 4978
+  list(list(to = 27700), list(to = 4277)),                  # 4937
+  list(list(), list(to = 27700), list(to = 4277)),          # 4936
+  list(to = 4277),                                          # 7405
+  list(list(), list(to = 27700), list(to = 4277))           # 3035
 )
 
 
 .FUN_TO_27700 <- list(
-  list(sgo_lonlat_bng), # 4326
-  list(sgo_en_wgs84, sgo_lonlat_bng), # 3857
-  list(sgo_lonlat_bng),
-  NULL, # 27700
-  list(sgo_lonlat_bng), # 4258
-  list(sgo_lonlat_bng), # 4979
-  list(sgo_cart_lonlat, sgo_lonlat_bng), # 4978
-  list(sgo_lonlat_bng), # 4937
-  list(sgo_cart_lonlat, sgo_lonlat_bng), # 4936
-  list(.remove.z), # 7405
-  list(sgo_laea_etrs, sgo_lonlat_bng) # 3035
+  list(sgo_lonlat_bng),                                     # 4326
+  list(sgo_en_wgs84, sgo_lonlat_bng),                       # 3857
+  list(sgo_lonlat_bng),                                     # 4277
+  NULL,                                                     # 27700
+  list(sgo_lonlat_bng),                                     # 4258
+  list(sgo_lonlat_bng),                                     # 4979
+  list(sgo_cart_lonlat, sgo_lonlat_bng),                    # 4978
+  list(sgo_lonlat_bng),                                     # 4937
+  list(sgo_cart_lonlat, sgo_lonlat_bng),                    # 4936
+  list(.remove.z),                                          # 7405
+  list(sgo_laea_etrs, sgo_lonlat_bng)                       # 3035
 )
 .ARGS_TO_27700 <- list(
-  list(to = 27700),
-  list(list(to = 4326), list(to = 27700)),
-  list(to = 27700),
-  NULL,
-  list(to = 27700), # 4258
-  list(to = 27700), # 4979
-  list(list(), list(to = 27700)), # 4978
-  list(to = 27700), # 4937
-  list(list(), list(to = 27700)), # 4936
-  list(), # 7405
-  list(list(), list(to = 27700)) # 3035
+  list(to = 27700),                                         # 4326
+  list(list(to = 4326), list(to = 27700)),                  # 3857
+  list(to = 27700),                                         # 4277
+  NULL,                                                     # 27700
+  list(to = 27700),                                         # 4258
+  list(to = 27700),                                         # 4979
+  list(list(), list(to = 27700)),                           # 4978
+  list(to = 27700),                                         # 4937
+  list(list(), list(to = 27700)),                           # 4936
+  list(),                                                   # 7405
+  list(list(), list(to = 27700))                            # 3035
 )
 
 
 .FUN_TO_4258 <- list(
-  list(sgo_set_gcs),
-  list(sgo_en_wgs84, sgo_set_gcs), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4277
-  list(sgo_bng_lonlat),
-  NULL, # 4258
-  list(sgo_set_gcs), # 4979
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4978
-  list(sgo_set_gcs), # 4937
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4936
-  list(sgo_bng_lonlat), # 7405
-  list(sgo_laea_etrs) # 3035
+  list(sgo_set_gcs),                                        # 4326
+  list(sgo_en_wgs84, sgo_set_gcs),                          # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4277
+  list(sgo_bng_lonlat),                                     # 27700
+  NULL,                                                     # 4258
+  list(sgo_set_gcs),                                        # 4979
+  list(sgo_cart_lonlat, sgo_set_gcs),                       # 4978
+  list(sgo_set_gcs),                                        # 4937
+  list(sgo_cart_lonlat, sgo_set_gcs),                       # 4936
+  list(sgo_bng_lonlat),                                     # 7405
+  list(sgo_laea_etrs)                                       # 3035
 )
 .ARGS_TO_4258 <- list(
-  list(to = 4258), # 4326
-  list(list(to = 4326), list(to = 4258)), # 3857
-  list(list(to = 27700), list(to = 4258)), # 4277
-  list(to = 4258), # 27700
-  NULL, # 4258
-  list(to = 4258), # 4979
-  list(list(), list(to = 4258)), # 4978
-  list(to = 4258), # 4937
-  list(list(), list(to = 4258)), # 4936
-  list(to = 4258), # 7405
-  list(list()) # 3035
+  list(to = 4258),                                          # 4326
+  list(list(to = 4326), list(to = 4258)),                   # 3857
+  list(list(to = 27700), list(to = 4258)),                  # 4277
+  list(to = 4258),                                          # 27700
+  NULL,                                                     # 4258
+  list(to = 4258),                                          # 4979
+  list(list(), list(to = 4258)),                            # 4978
+  list(to = 4258),                                          # 4937
+  list(list(), list(to = 4258)),                            # 4936
+  list(to = 4258),                                          # 7405
+  list(list())                                              # 3035
 )
 
-#FROM:
+                                                            #FROM:
 .FUN_TO_4979 <- list(
-  list(sgo_set_gcs), # 4326
-  list(sgo_en_wgs84, sgo_set_gcs), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat), # 4277
-  list(sgo_bng_lonlat), # 27700
-  list(sgo_set_gcs), # 4258
-  NULL, # 4979
-  list(sgo_cart_lonlat), # 4978
-  list(sgo_set_gcs), # 4937
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4936
-  list(sgo_bng_lonlat), # 7405
-  list(sgo_laea_etrs, sgo_set_gcs) # 3035
+  list(sgo_set_gcs),                                        # 4326
+  list(sgo_en_wgs84, sgo_set_gcs),                          # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat),                     # 4277
+  list(sgo_bng_lonlat),                                     # 27700
+  list(sgo_set_gcs),                                        # 4258
+  NULL,                                                     # 4979
+  list(sgo_cart_lonlat),                                    # 4978
+  list(sgo_set_gcs),                                        # 4937
+  list(sgo_cart_lonlat, sgo_set_gcs),                       # 4936
+  list(sgo_bng_lonlat),                                     # 7405
+  list(sgo_laea_etrs, sgo_set_gcs)                          # 3035
 )
 .ARGS_TO_4979 <- list(
-  list(to = 4979), # 4326
-  list(list(to = 4326), list(to = 4979)), # 3857
-  list(list(to = 27700), list(to = 4979)), # 4277
-  list(to = 4979), # 27700
-  list(to = 4979), # 4258
-  NULL, # 4979
-  list(), # 4978
-  list(to = 4979), # 4937
-  list(list(), list(to = 4979)), # 4936
-  list(to = 4979), # 7405
-  list(list(), list(to = 4979)) # 3035
+  list(to = 4979),                                          # 4326
+  list(list(to = 4326), list(to = 4979)),                   # 3857
+  list(list(to = 27700), list(to = 4979)),                  # 4277
+  list(to = 4979),                                          # 27700
+  list(to = 4979),                                          # 4258
+  NULL,                                                     # 4979
+  list(),                                                   # 4978
+  list(to = 4979),                                          # 4937
+  list(list(), list(to = 4979)),                            # 4936
+  list(to = 4979),                                          # 7405
+  list(list(), list(to = 4979))                             # 3035
 )
 
-#FROM:
+                                                            #FROM:
 .FUN_TO_4978 <- list(
-  list(sgo_lonlat_cart), # 4326
-  list(sgo_en_wgs84, sgo_lonlat_cart), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart), # 4277
-  list(sgo_bng_lonlat, sgo_lonlat_cart), # 27700
-  list(sgo_set_gcs, sgo_lonlat_cart), # 4258
-  list(sgo_lonlat_cart), # 4979
-  NULL, # 4978
-  list(sgo_set_gcs, sgo_lonlat_cart), # 4937
-  list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart), # 4936
-  list(sgo_bng_lonlat, sgo_lonlat_cart), # 7405
-  list(sgo_laea_etrs, sgo_set_gcs, sgo_lonlat_cart) # 3035
+  list(sgo_lonlat_cart),                                    # 4326
+  list(sgo_en_wgs84, sgo_lonlat_cart),                      # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart),    # 4277
+  list(sgo_bng_lonlat, sgo_lonlat_cart),                    # 27700
+  list(sgo_set_gcs, sgo_lonlat_cart),                       # 4258
+  list(sgo_lonlat_cart),                                    # 4979
+  NULL,                                                     # 4978
+  list(sgo_set_gcs, sgo_lonlat_cart),                       # 4937
+  list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart),      # 4936
+  list(sgo_bng_lonlat, sgo_lonlat_cart),                    # 7405
+  list(sgo_laea_etrs, sgo_set_gcs, sgo_lonlat_cart)         # 3035
 )
 .ARGS_TO_4978 <- list(
-  list(), # 4326
-  list(list(to = 4326), list()), # 3857
-  list(list(to = 27700), list(to = 4326), list()), # 4277
-  list(list(to = 4979), list()), # 27700
-  list(list(to = 4326), list()), # 4258
-  list(), # 4979
+  list(),                                                   # 4326
+  list(list(to = 4326), list()),                            # 3857
+  list(list(to = 27700), list(to = 4326), list()),          # 4277
+  list(list(to = 4979), list()),                            # 27700
+  list(list(to = 4326), list()),                            # 4258
+  list(),                                                   # 4979
   NULL,
-  list(list(to = 4979), list()), # 4937
-  list(list(), list(to = 4979), list()), # 4936
-  list(list(to = 4979), list()), # 7405
-  list(list(), list(to = 4326), list()) # 3035
+  list(list(to = 4979), list()),                            # 4937
+  list(list(), list(to = 4979), list()),                    # 4936
+  list(list(to = 4979), list()),                            # 7405
+  list(list(), list(to = 4326), list())                     # 3035
 )
 
 
 .FUN_TO_4937 <- list(
-  list(sgo_set_gcs),
+  list(sgo_set_gcs),                                        # 4326
   list(sgo_en_wgs84, sgo_set_gcs),
-  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_set_gcs), # 4277
-  list(sgo_bng_lonlat), # 27700
-  list(sgo_set_gcs), # 4258
-  list(sgo_set_gcs), # 4979
-  list(sgo_cart_lonlat, sgo_set_gcs), # 4978
+  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_set_gcs),        # 4277
+  list(sgo_bng_lonlat),                                     # 27700
+  list(sgo_set_gcs),                                        # 4258
+  list(sgo_set_gcs),                                        # 4979
+  list(sgo_cart_lonlat, sgo_set_gcs),                       # 4978
   NULL,
-  list(sgo_cart_lonlat), # 4936
-  list(sgo_bng_lonlat), # 7405
-  list(sgo_laea_etrs, sgo_set_gcs) # 3035
+  list(sgo_cart_lonlat),                                    # 4936
+  list(sgo_bng_lonlat),                                     # 7405
+  list(sgo_laea_etrs, sgo_set_gcs)                          # 3035
 )
 .ARGS_TO_4937 <- list(
-  list(to = 4937), # 4326
-  list(list(to = 4326), list(to = 4937)), # 3857
+  list(to = 4937),                                          # 4326
+  list(list(to = 4326), list(to = 4937)),                   # 3857
   list(list(to = 27700), list(to = 4258), list(to = 4937)), # 4277
-  list(list(to = 4937)), # 27700
-  list(to = 4937), # 4258
-  list(to = 4937), # 4979
-  list(list(), list(to = 4937)), # 4978
-  NULL, # 4937
-  list(), # 4936
-  list(to = 4937), # 7405
-  list(list(), list(to = 4937)) # 3035
+  list(list(to = 4937)),                                    # 27700
+  list(to = 4937),                                          # 4258
+  list(to = 4937),                                          # 4979
+  list(list(), list(to = 4937)),                            # 4978
+  NULL,                                                     # 4937
+  list(),                                                   # 4936
+  list(to = 4937),                                          # 7405
+  list(list(), list(to = 4937))                             # 3035
 )
 
 
 .FUN_TO_4936 <- list(
   list(sgo_set_gcs, sgo_lonlat_cart),
-  list(sgo_en_wgs84, sgo_set_gcs, sgo_lonlat_cart), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart), # 4277
-  list(sgo_bng_lonlat, sgo_lonlat_cart), # 27700
-  list(sgo_lonlat_cart), # 4258
-  list(sgo_set_gcs, sgo_lonlat_cart), # 4979
-  list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart), # 4978
+  list(sgo_en_wgs84, sgo_set_gcs, sgo_lonlat_cart),         # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_lonlat_cart),    # 4277
+  list(sgo_bng_lonlat, sgo_lonlat_cart),                    # 27700
+  list(sgo_lonlat_cart),                                    # 4258
+  list(sgo_set_gcs, sgo_lonlat_cart),                       # 4979
+  list(sgo_cart_lonlat, sgo_set_gcs, sgo_lonlat_cart),      # 4978
   list(sgo_lonlat_cart),
   NULL,
-  list(sgo_bng_lonlat, sgo_lonlat_cart), #7405
-  list(sgo_laea_etrs, sgo_lonlat_cart) #3035
+  list(sgo_bng_lonlat, sgo_lonlat_cart),                    # 7405
+  list(sgo_laea_etrs, sgo_lonlat_cart)                      # 3035
 )
 .ARGS_TO_4936 <- list(
-  list(list(to = 4258), list()),
+  list(list(to = 4258), list()),                            # 4326
   list(list(to = 4326), list(to = 4258), list()),
   list(list(to = 27700), list(to = 4258), list()),
-  list(list(to = 4937), list()), #27700
-  list(), #4258
-  list(list(to = 4937), list()),
+  list(list(to = 4937), list()),                            # 27700
+  list(),                                                   # 4258
+  list(list(to = 4937), list()),                            # 4979
   list(list(), list(to = 4937), list()),
   list(),
   NULL,
-  list(list(to = 4937), list()), # 7405
-  list(list(), list()) # 3035
+  list(list(to = 4937), list()),                            # 7405
+  list(list(), list())                                      # 3035
 )
 
 
 .FUN_TO_7405 <- list(
-  list(sgo_lonlat_bng), # 4326
-  list(sgo_en_wgs84, sgo_lonlat_bng), # 3857
-  list(sgo_lonlat_bng), # 4277
-  list(.add.z), # 27700
-  list(sgo_lonlat_bng), # 4258
-  list(sgo_lonlat_bng), # 4979
-  list(sgo_cart_lonlat, sgo_lonlat_bng), # 4978
-  list(sgo_lonlat_bng), # 4937
-  list(sgo_cart_lonlat, sgo_lonlat_bng), # 4936
-  NULL, # 7405
-  list(sgo_laea_etrs, sgo_lonlat_bng) # 3035
+  list(sgo_lonlat_bng),                                     # 4326
+  list(sgo_en_wgs84, sgo_lonlat_bng),                       # 3857
+  list(sgo_lonlat_bng),                                     # 4277
+  list(.add.z),                                             # 27700
+  list(sgo_lonlat_bng),                                     # 4258
+  list(sgo_lonlat_bng),                                     # 4979
+  list(sgo_cart_lonlat, sgo_lonlat_bng),                    # 4978
+  list(sgo_lonlat_bng),                                     # 4937
+  list(sgo_cart_lonlat, sgo_lonlat_bng),                    # 4936
+  NULL,                                                     # 7405
+  list(sgo_laea_etrs, sgo_lonlat_bng)                       # 3035
 )
 .ARGS_TO_7405 <- list(
-  list(list(to = 7405)), # 4326
+  list(list(to = 7405)),                                    # 4326
   list(list(to = 4326), list(to = 7405)),
-  list(list(to = 7405)), # 4277
-  list(), # 27700
-  list(list(to = 7405)), # 4258
-  list(to = 7405), # 4979
-  list(list(), list(to = 7405)), # 4978
-  list(to = 7405), # 4937
-  list(list(), list(to = 7405)), # 4936
-  NULL, # 7405
-  list(list(), list(to = 7405)) # 3035
+  list(list(to = 7405)),                                    # 4277
+  list(),                                                   # 27700
+  list(list(to = 7405)),                                    # 4258
+  list(to = 7405),                                          # 4979
+  list(list(), list(to = 7405)),                            # 4978
+  list(to = 7405),                                          # 4937
+  list(list(), list(to = 7405)),                            # 4936
+  NULL,                                                     # 7405
+  list(list(), list(to = 7405))                             # 3035
 )
 
 
 .FUN_TO_3035 <- list(
-  list(sgo_set_gcs, sgo_etrs_laea), # 4326
-  list(sgo_en_wgs84, sgo_set_gcs, sgo_etrs_laea), # 3857
-  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_etrs_laea), # 4277
-  list(sgo_bng_lonlat, sgo_etrs_laea), # 27700
-  list(sgo_etrs_laea), # 4258
-  list(sgo_set_gcs, sgo_etrs_laea), # 4979
-  list(sgo_cart_lonlat, sgo_set_gcs, sgo_etrs_laea), # 4978
-  list(sgo_etrs_laea), # 4937
-  list(sgo_etrs_laea), # 4936
-  list(sgo_bng_lonlat, sgo_etrs_laea), # 7405
-  NULL # 3035
+  list(sgo_set_gcs, sgo_etrs_laea),                         # 4326
+  list(sgo_en_wgs84, sgo_set_gcs, sgo_etrs_laea),           # 3857
+  list(sgo_lonlat_bng, sgo_bng_lonlat, sgo_etrs_laea),      # 4277
+  list(sgo_bng_lonlat, sgo_etrs_laea),                      # 27700
+  list(sgo_etrs_laea),                                      # 4258
+  list(sgo_set_gcs, sgo_etrs_laea),                         # 4979
+  list(sgo_cart_lonlat, sgo_set_gcs, sgo_etrs_laea),        # 4978
+  list(sgo_etrs_laea),                                      # 4937
+  list(sgo_etrs_laea),                                      # 4936
+  list(sgo_bng_lonlat, sgo_etrs_laea),                      # 7405
+  NULL                                                      # 3035
 )
 .ARGS_TO_3035 <- list(
-  list(list(to = 4258), list()), # 4326
-  list(list(to = 4326), list(to = 4258), list()), # 3857
-  list(list(to = 27700), list(to = 4258), list()), # 4277
-  list(list(to = 4258), list()), # 27700
-  list(), # 4258
-  list(list(to = 4937), list()), # 4979
-  list(list(), list(to = 4937), list()), # 4978
-  list(), # 4937
-  list(), # 4936
-  list(list(to = 4937), list()), # 7405
-  NULL # 3035
+  list(list(to = 4258), list()),                            # 4326
+  list(list(to = 4326), list(to = 4258), list()),           # 3857
+  list(list(to = 27700), list(to = 4258), list()),          # 4277
+  list(list(to = 4258), list()),                            # 27700
+  list(),                                                   # 4258
+  list(list(to = 4937), list()),                            # 4979
+  list(list(), list(to = 4937), list()),                    # 4978
+  list(),                                                   # 4937
+  list(),                                                   # 4936
+  list(list(to = 4937), list()),                            # 7405
+  NULL                                                      # 3035
 )
 
 

@@ -54,8 +54,9 @@ sgo_etrs_laea.sgo_points <- function(x) {
   e2 <- params$e2
   e <- sqrt(e2)
 
+  # false easting and northing:
   FE <- (4321000)
-  FN <- (3210000) # false easting and northing
+  FN <- (3210000)
   phi0 <- 52 / RAD.TO.DEG
   lambda0 <- 10 / RAD.TO.DEG
 
@@ -168,8 +169,9 @@ sgo_laea_etrs.sgo_points <- function(x) {
   e4 <- e2 * e2
   e6 <- e4 * e2
 
+  # false easting and northing:
   FE <- (4321000)
-  FN <- (3210000) # false easting and northing
+  FN <- (3210000)
   phi0 <- 52 / RAD.TO.DEG
   lambda0 <- 10 / RAD.TO.DEG
 

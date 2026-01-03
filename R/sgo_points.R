@@ -217,7 +217,7 @@ sgo_points.list <- function(x, coords = NULL, epsg = NULL) {
     other.columns <- NULL
   } else {
     # if other.columns contains column names from sgo_points.core, rename them
-    # and warn the user about it.
+    # and warn the user about it:
 
     if (dimension == "XY") {
       cols.to.check <- .sgo_points.2d.core

@@ -1,3 +1,4 @@
+# fmt: skip file
 ### Grid References are correctly parsed ###
 dnames <- list(NULL, c("x", "y"))
 expect_equal(
@@ -338,8 +339,7 @@ expect_true(
      sgo_bng_ngr(
           sgo_points(list(x = 512345, y = 467890), epsg = 27700),
           digits = 0
-     )$ngr ==
-          "512345, 467890"
+     )$ngr == "512345, 467890"
 )
 expect_true(
      all(
@@ -352,8 +352,7 @@ expect_true(
                digits = 0
           )) ==
                unlist(list(ngr = "512345, 467890", name = "name1"))
-     ) ==
-          TRUE
+     ) == TRUE
 )
 
 # Out of bounds warning (and NA)
@@ -375,8 +374,6 @@ expect_true(
                     epsg = 27700
                ),
                digits = 6
-          )) ==
-               unlist(list(ngr = "TA 123 678", name = "name1"))
-     ) ==
-          TRUE
+          )) == unlist(list(ngr = "TA 123 678", name = "name1"))
+     ) == TRUE
 )

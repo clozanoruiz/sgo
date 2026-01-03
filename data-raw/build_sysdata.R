@@ -1,3 +1,5 @@
+
+# fmt: skip file
 # 180/π
 # hhttps://www.wolframalpha.com (34 digits precision)
 RAD.TO.DEG <- 57.29577951308232087679815481410517
@@ -7,58 +9,14 @@ PI <- 3.141592653589793238462643383279503
 # Lookup table table to decode NGR letters
 .ngr.LUT <- data.frame(
      letter = c(
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z"
+          "A", "B", "C", "D", "E", "F", "G", "H", "J",
+          "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+          "T", "U", "V", "W", "X", "Y", "Z"
      ),
      num = c(
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15,
-          16,
-          17,
-          18,
-          19,
-          20,
-          21,
-          22,
-          23,
-          24
+          0, 1, 2, 3, 4, 5, 6, 7, 8,
+          9, 10, 11, 12, 13, 14, 15, 16, 17,
+          18, 19, 20, 21, 22, 23, 24
      ),
      stringsAsFactors = FALSE
 )
@@ -69,58 +27,30 @@ PI <- 3.141592653589793238462643383279503
 # format is either ll (lon/lat), c (cartesians), en (easting/northing)
 .epsgs <- data.frame(
      epsg = c(
-          4258,
-          4937,
-          4936,
-          3035,
-          4326,
-          4979,
-          4978,
-          3857,
-          4277,
-          27700,
-          7405
+          4258, 4937, 4936, 3035,
+          4326, 4979, 4978, 3857,
+          4277, 27700, 7405
      ),
      datum = c(
-          "ETRS89",
-          "ETRS89",
-          "ETRS89",
-          "ETRS89",
-          "WGS84",
-          "WGS84",
-          "WGS84",
-          "WGS84",
-          "OSGB36",
-          "OSGB36",
-          "OSGB36"
+          "ETRS89", "ETRS89", "ETRS89", "ETRS89",
+          "WGS84", "WGS84", "WGS84", "WGS84",
+          "OSGB36", "OSGB36", "OSGB36"
      ),
      type = c(
-          "GCS",
-          "GCS",
-          "GCS",
-          "PCS",
-          "GCS",
-          "GCS",
-          "GCS",
-          "PCS",
-          "GCS",
-          "PCS",
-          "PCS"
+          "GCS", "GCS", "GCS", "PCS",
+          "GCS", "GCS", "GCS", "PCS",
+          "GCS", "PCS", "PCS"
      ),
      dimension = c(
-          "XY/Z",
-          "XYZ",
-          "XYZ",
-          "XY",
-          "XY/Z",
-          "XYZ",
-          "XYZ",
-          "XY",
-          "XY",
-          "XY/Z",
-          "XYZ"
+          "XY/Z", "XYZ", "XYZ", "XY",
+          "XY/Z", "XYZ", "XYZ", "XY",
+          "XY", "XY/Z", "XYZ"
      ),
-     format = c("ll", "ll", "c", "en", "ll", "ll", "c", "en", "ll", "en", "en"),
+     format = c(
+          "ll", "ll", "c", "en",
+          "ll", "ll", "c", "en",
+          "ll", "en", "en"
+     ),
      stringsAsFactors = FALSE
 )
 

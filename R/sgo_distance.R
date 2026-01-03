@@ -241,8 +241,9 @@ sgo_distance.sgo_points <- function(
   aF0 <- a * F0
   bF0 <- b * F0
   n <- (a - b) / (a + b)
+  # True origin (N, E):
   N0 <- -100000
-  E0 <- 400000 # True origin
+  E0 <- 400000
   phi0 <- 49 / RAD.TO.DEG
 
   # Initial latitude φ'
@@ -256,12 +257,13 @@ sgo_distance.sgo_points <- function(
     phi.minus <- phi - phi0
     phi.plus <- phi + phi0
 
+    # meridional arc
     M <- bF0 *
       ((1 + n * (1 + 5 / 4 * n * (1 + n))) *
         phi.minus -
         3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus) +
         (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus) -
-        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)) # meridional arc
+        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus))
 
     if (max(abs(dN - M)) < 0.00001) {
       break

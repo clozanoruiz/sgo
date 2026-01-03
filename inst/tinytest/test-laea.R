@@ -1,3 +1,4 @@
+# fmt: skip file
 ### sgo_etrs_laea Input ###
 # wrong epsg
 expect_error(
@@ -19,8 +20,7 @@ expect_true(all(
   abs(
     as.data.frame(p1[1:2]) -
       as.data.frame(p2[1:2])
-  ) <
-    0.00001
+  ) < 0.00001
 ))
 expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
 
@@ -46,7 +46,6 @@ expect_true(all(
   abs(
     as.data.frame(p1[1:2]) -
       as.data.frame(p2[1:2])
-  ) <
-    0.000001
+  ) < 0.000001
 ))
 expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))

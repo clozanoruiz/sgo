@@ -1,3 +1,4 @@
+# fmt: skip file
 # Comparing also against geographiclib (https://geographiclib.sourceforge.io/)
 # https://geographiclib.sourceforge.io/cgi-bin/Planimeter (if available)
 
@@ -27,11 +28,10 @@ expect_true(all(
        abs(
               sgo_area(sgo_points(list(lon = lon, lat = lat), epsg = 4326)) -
                      133610.63495
-       ) <
-              0.00001
+       ) < 0.00001
 ))
 
-# 3D input (should just ignre the heights)
+# 3D input (should just ignore the heights)
 lon <- c(
        -6.43698696,
        -6.43166843,
@@ -60,10 +60,8 @@ expect_true(all(
                      list(lon = lon, lat = lat, h = h),
                      coords = c("lon", "lat", "h"),
                      epsg = 4979
-              )) -
-                     133610.63495
-       ) <
-              0.00001
+              )) - 133610.63495
+       ) < 0.00001
 ))
 
 # Lots of vertices (converted from BNG data)
@@ -77,7 +75,8 @@ expect_equal(round(sgo_area(stirling.sgo) / 10000, 4), 216400.2725) #in ha
 # Same but interpolating vertices (the shorter the sides the more accurate)
 # in this case, interpolating every 30m. matches the results of geographiclib
 # https://geographiclib.sourceforge.io/scripts/geod-calc.html
-expect_equal(round(sgo_area(stirling.sgo, interpolate = 30), 2), 2164002729.34) #in m^2
+# in m^2:
+expect_equal(round(sgo_area(stirling.sgo, interpolate = 30), 2), 2164002729.34)
 
 
 ### Planar area ###

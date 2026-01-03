@@ -1,3 +1,4 @@
+# fmt: skip file
 to_mtx <- function(x) {
   matrix(x, ncol = 2, dimnames = list(NULL, c("x", "y")))
 }
@@ -33,10 +34,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.9369234, 56.1165135), epsg = 4326),
       to = 3857
-    )) -
-      c(-438256.3082, 7581645.2490)
-  ) <
-    0.0001
+    )) - c(-438256.3082, 7581645.2490)
+  ) < 0.0001
 ))
 
 #to 4277
@@ -46,10 +45,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-5.25118234, 56.91644979), epsg = 4326),
       to = 4277
-    )) -
-      c(-5.25, 56 + 55 / 60)
-  ) <
-    0.00000001
+    )) - c(-5.25, 56 + 55 / 60)
+  ) < 0.00000001
 ))
 
 #to 27700
@@ -85,10 +82,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.9369234, 56.1165135), epsg = 4326),
       to = 4936
-    )) -
-      c(3555669.6748, -244703.3887, 5271685.6769)
-  ) <
-    0.0001
+    )) - c(3555669.6748, -244703.3887, 5271685.6769)
+  ) < 0.0001
 ))
 
 #to 3035
@@ -97,10 +92,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.9369234, 56.1165135), epsg = 4326),
       to = 3035
-    )) -
-      c(3459763.300, 3751984.646)
-  ) <
-    0.001
+    )) - c(3459763.300, 3751984.646)
+  ) < 0.001
 ))
 
 #to 4979
@@ -120,8 +113,7 @@ expect_true(all(
       to = 4978
     )) -
       c(3555669.6748, -244703.3887, 5271685.6770)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 
 #to 7405
@@ -150,10 +142,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4326
-    )) -
-      c(-3.095397918, 56.955459476)
-  ) <
-    0.000000001
+    )) - c(-3.095397918, 56.955459476)
+  ) < 0.000000001
 ))
 
 #to 4277
@@ -163,10 +153,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4277
-    )) -
-      c(-3.09391468, 56.95564807)
-  ) <
-    0.00000005
+    )) - c(-3.09391468, 56.95564807)
+  ) < 0.00000005
 ))
 
 #to 27700
@@ -184,10 +172,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4258
-    )) -
-      c(-3.095397918, 56.955459476)
-  ) <
-    0.000000001
+    )) - c(-3.095397918, 56.955459476)
+  ) < 0.000000001
 ))
 
 #to 4937
@@ -196,10 +182,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4937
-    )) -
-      c(-3.095397918, 56.955459476, 0)
-  ) <
-    0.000000001
+    )) - c(-3.095397918, 56.955459476, 0)
+  ) < 0.000000001
 ))
 
 #to 4936
@@ -208,10 +192,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4936
-    )) -
-      c(3481062.2382, -188247.1688, 5323197.0684)
-  ) <
-    0.0001
+    )) - c(3481062.2382, -188247.1688, 5323197.0684)
+  ) < 0.0001
 ))
 
 #to 3035
@@ -220,10 +202,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 3035
-    )) -
-      c(3528573.939, 3834119.302)
-  ) <
-    0.001
+    )) - c(3528573.939, 3834119.302)
+  ) < 0.001
 ))
 
 #to 4979
@@ -232,10 +212,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4979
-    )) -
-      c(-3.095397918, 56.955459476, 0)
-  ) <
-    0.000000001
+    )) - c(-3.095397918, 56.955459476, 0)
+  ) < 0.000000001
 ))
 
 #to 4978
@@ -244,10 +222,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-344578.12, 7751020.42), epsg = 3857),
       to = 4978
-    )) -
-      c(3481062.2383, -188247.1688, 5323197.0685)
-  ) <
-    0.0001
+    )) - c(3481062.2383, -188247.1688, 5323197.0685)
+  ) < 0.0001
 ))
 
 #to 7405
@@ -285,10 +261,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.0939164, 56.9556359), epsg = 4277),
       to = 3857
-    )) -
-      c(-344578.3150, 7751017.9336)
-  ) <
-    0.0001
+    )) - c(-344578.3150, 7751017.9336)
+  ) < 0.0001
 ))
 
 #to 27700
@@ -306,10 +280,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-5.25, 56 + 55 / 60), epsg = 4277),
       to = 4258
-    )) -
-      c(-5.25118234, 56.91644979)
-  ) <
-    0.00000001
+    )) - c(-5.25118234, 56.91644979)
+  ) < 0.00000001
 ))
 expect_equal(
   sgo_coordinates(sgo_transform(
@@ -334,10 +306,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.0939164, 56.9556359), epsg = 4277),
       to = 4936
-    )) -
-      c(3481063.3678, -188247.3366, 5323196.3288)
-  ) <
-    0.0001
+    )) - c(3481063.3678, -188247.3366, 5323196.3288)
+  ) < 0.0001
 ))
 
 #to 3035
@@ -346,10 +316,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.0939164, 56.9556359), epsg = 4277),
       to = 3035
-    )) -
-      c(3528573.579, 3834117.987)
-  ) <
-    0.001
+    )) - c(3528573.579, 3834117.987)
+  ) < 0.001
 ))
 
 #to 4979
@@ -367,10 +335,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.0939164, 56.9556359), epsg = 4277),
       to = 4978
-    )) -
-      c(3481063.3678, -188247.3366, 5323196.3289)
-  ) <
-    0.0001
+    )) - c(3481063.3678, -188247.3366, 5323196.3289)
+  ) < 0.0001
 ))
 
 #to 7405
@@ -407,10 +373,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(166341.986, 788816.800), epsg = 27700),
       to = 3857
-    )) -
-      c(-650324.1275, 7746124.1748)
-  ) <
-    0.0001
+    )) - c(-650324.1275, 7746124.1748)
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -442,10 +406,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(166341.986, 788816.800), epsg = 27700),
       to = 4936
-    )) -
-      c(3470300.5396, -355068.1913, 5321786.0739)
-  ) <
-    0.0001
+    )) - c(3470300.5396, -355068.1913, 5321786.0739)
+  ) < 0.0001
 ))
 #to 3035
 expect_true(all(
@@ -453,10 +415,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(166341.986, 788816.800), epsg = 27700),
       to = 3035
-    )) -
-      c(3364671.806, 3865100.263)
-  ) <
-    0.001
+    )) - c(3364671.806, 3865100.263)
+  ) < 0.001
 ))
 #to 4979
 expect_equal(
@@ -472,10 +432,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(166341.986, 788816.800), epsg = 27700),
       to = 4978
-    )) -
-      c(3470300.5396, -355068.1913, 5321786.0739)
-  ) <
-    0.0001
+    )) - c(3470300.5396, -355068.1913, 5321786.0739)
+  ) < 0.0001
 ))
 #to 7405
 expect_equal(
@@ -518,10 +476,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.93692340, 56.11651350), epsg = 4258),
       to = 3857
-    )) -
-      c(-438256.3082, 7581645.2490)
-  ) <
-    0.0001
+    )) - c(-438256.3082, 7581645.2490)
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -553,10 +509,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.93692341, 56.11651351), epsg = 4258),
       to = 4936
-    )) -
-      c(3555669.6739, -244703.3892, 5271685.6775)
-  ) <
-    0.0001
+    )) - c(3555669.6739, -244703.3892, 5271685.6775)
+  ) < 0.0001
 ))
 #to 3035
 expect_true(all(
@@ -564,10 +518,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.93692341, 56.11651351), epsg = 4258),
       to = 3035
-    )) -
-      c(3459763.300, 3751984.648)
-  ) <
-    0.001
+    )) - c(3459763.300, 3751984.648)
+  ) < 0.001
 ))
 #to 4979
 expect_equal(
@@ -583,10 +535,8 @@ expect_true(all(
     sgo_coordinates(sgo_transform(
       sgo_points(list(-3.93692341, 56.11651351), epsg = 4258),
       to = 4978
-    )) -
-      c(3555669.6740, -244703.3892, 5271685.6775)
-  ) <
-    0.0001
+    )) - c(3555669.6740, -244703.3892, 5271685.6775)
+  ) < 0.0001
 ))
 #to 7405
 expect_equal(
@@ -615,8 +565,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-185284.8606, 7097011.7155)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -638,32 +587,28 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4936)) -
       c(3790644.8999, -110149.2097, 5111482.9705)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 3035
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3035)) -
       c(3552763.693, 3451397.456)
-  ) <
-    0.001
+  ) < 0.001
 ))
 #to 4979
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4979)) -
       c(-1.6644422222, 53.6119903611, 299.800)
-  ) <
-    c(0.000000001, 0.000000001, 0.0001)
+  ) < c(0.000000001, 0.000000001, 0.0001)
 ))
 #to 4978
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4978)) -
       c(3790644.8999, -110149.2097, 5111482.9705)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 7405
 expect_equal(
@@ -689,8 +634,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-515912.5936, 7186586.3782)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -717,8 +661,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3035)) -
       c(3370704.4606, 3538801.6044)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4979
 expect_equal(
@@ -758,8 +701,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-351942.9019, 7547296.4950)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -786,8 +728,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4936)) -
       c(3574551.4871, -197442.6700, 5260959.5994)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4979
 expect_equal(
@@ -799,8 +740,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4978)) -
       c(3574551.4872, -197442.6700, 5260959.5994)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 7405
 expect_equal(
@@ -826,8 +766,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-185284.8606, 7097011.7155)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -849,32 +788,28 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4937)) -
       c(-1.6644422222, 53.6119903611, 299.800068)
-  ) <
-    0.000001
+  ) < 0.000001
 ))
 #to 4936
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4936)) -
       c(3790644.8999, -110149.2097, 5111482.9705)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 3035
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3035)) -
       c(3552763.693, 3451397.456)
-  ) <
-    0.001
+  ) < 0.001
 ))
 #to 4978
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4978)) -
       c(3790644.8999, -110149.2097, 5111482.9705)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 7405
 expect_equal(
@@ -900,8 +835,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-515912.5936, 7186586.3780)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -933,8 +867,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3035)) -
       c(3370704.4606, 3538801.6044)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4979
 expect_equal(
@@ -969,8 +902,7 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3857)) -
       c(-8653.0123, 7192317.6926)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4277
 expect_equal(
@@ -1004,16 +936,14 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4936)) -
       c(3746732.40205, -5083.0738, 5144448.3028)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 3035
 expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 3035)) -
       c(3664331.3618, 3491400.6431)
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 #to 4979
 expect_equal(
@@ -1025,6 +955,5 @@ expect_true(all(
   abs(
     sgo_coordinates(sgo_transform(p, to = 4978)) -
       c(3746732.4020, -5083.0738, 5144448.3029)
-  ) <
-    0.0001
+  ) < 0.0001
 ))

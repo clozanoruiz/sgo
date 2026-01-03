@@ -170,7 +170,6 @@ sgo_lonlat_bng.sgo_points <- function(x, to = 27700, OSTN = TRUE, OD = FALSE) {
     }
   } else {
     # single Helmert transformation
-
     helmert.x <- sgo_set_gcs(
       sgo_points(x[x.coords], coords = x.coords, epsg = x$epsg),
       to = 4277
@@ -392,7 +391,6 @@ sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
     }
   } else {
     # single Helmert transformation
-
     unprojected <- .unproject.onto.ellipsoid(x$x, x$y, x$datum)
   } # end if (OSTN)
 
@@ -465,8 +463,9 @@ sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
   af <- a * f0
   bf <- b * f0
   n <- (a - b) / (a + b)
+  # northing & easting of true origin in metres:
   N0 <- (-100000)
-  E0 <- (400000) # northing & easting of true origin, metres
+  E0 <- (400000)
 
   dN <- N - N0
   dE <- E - E0
@@ -484,12 +483,13 @@ sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
     phi.minus <- phi - phi0
     phi.plus <- phi + phi0
 
+    # meridional arc
     M <- bf *
       ((1 + n * (1 + 5 / 4 * n * (1L + n))) *
         phi.minus -
         3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus) +
         (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus) -
-        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)) # meridional arc
+        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus))
 
     if (max(abs(dN - M)) < 0.00001) {
       break
@@ -551,8 +551,9 @@ sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
   # NatGrid true origin is 49°N 2°W:
   phi0 <- 49 / RAD.TO.DEG
   lambda0 <- -2 / RAD.TO.DEG
+  # northing & easting of true origin in metres:
   n0 <- -100000
-  e0 <- 400000 # northing & easting of true origin, metres
+  e0 <- 400000
   n <- (a - b) / (a + b)
 
   cos.phi <- cos(phi)
@@ -678,18 +679,12 @@ sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
         ulf <- ul[, "f"]
         urf <- ur[, "f"]
 
+        # fmt: skip
         gf <- .if.else(
-          llf == lrf & lrf == ulf & ulf == urf,
-          llf, #all equal
-          .if.else(
-            t <= 0.5 & u <= 0.5,
-            llf, #point in SW (or dead centre)
-            .if.else(
-              t > 0.5 & u <= 0.5,
-              lrf, #point in SE quadrant
-              .if.else(
-                t > 0.5 & u > 0.5,
-                urf, #point in NE quadrant
+          llf == lrf & lrf == ulf & ulf == urf, llf, #all equal
+          .if.else(t <= 0.5 & u <= 0.5, llf, #point in SW (or dead centre)
+            .if.else(t > 0.5 & u <= 0.5, lrf, #point in SE quadrant
+              .if.else(t > 0.5 & u > 0.5, urf, #point in NE quadrant
                 ulf
               )
             )

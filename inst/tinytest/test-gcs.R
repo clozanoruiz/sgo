@@ -1,3 +1,4 @@
+# fmt: skip file
 ### Main function sgo_set_gcs ###
 dnames <- list(NULL, c("x", "y"))
 
@@ -33,8 +34,7 @@ expect_true(all(
       to = 4936
     )) -
       c(3545966.25772, 1186463.71294, 5149813.49954)
-  ) <
-    0.00001
+  ) < 0.00001
 ))
 expect_true(all(
   abs(
@@ -43,8 +43,7 @@ expect_true(all(
       to = 4937
     )) -
       c(18.5, 54.2, 20)
-  ) <
-    c(0.00000001, 0.00000001, 0.001)
+  ) < c(0.00000001, 0.00000001, 0.001)
 ))
 
 # additional elements
@@ -67,8 +66,7 @@ p <- sgo_points(list(-3.9369234, 56.1165135), epsg = 4326)
 expect_true(all(
   abs(
     sgo_coordinates(sgo_set_gcs(p, to = 4277)) - c(-3.93558807, 56.11660085)
-  ) <
-    0.00000001
+  ) < 0.00000001
 ))
 p <- sgo_points(list(3737197.092, -302954.150, 5142476.100), epsg = 4978)
 expect_equal(
@@ -106,8 +104,7 @@ expect_true(all(
   abs(
     as.data.frame(p1[1:2]) -
       as.data.frame(p2[1:2])
-  ) <
-    0.0001
+  ) < 0.0001
 ))
 expect_equal(as.data.frame(p1[3:4]), as.data.frame(p2[3:4]))
 expect_true(all(abs(p1$z - z) < 0.0001))
