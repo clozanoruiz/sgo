@@ -27,12 +27,13 @@ sgo_etrs_laea <- function(x) UseMethod("sgo_etrs_laea")
 
 #' @export
 sgo_etrs_laea.sgo_points <- function(x) {
-
-  if (!x$epsg %in% c(4258, 4937, 4936))
+  if (!x$epsg %in% c(4258, 4937, 4936)) {
     stop("This routine only supports ETRS89 coordinates.")
+  }
 
-  if (x$epsg == 4936)
+  if (x$epsg == 4936) {
     x <- sgo_cart_lonlat(x)
+  }
 
   x.3d <- x$dimension == "XYZ"
   if (x.3d) {
@@ -42,16 +43,19 @@ sgo_etrs_laea.sgo_points <- function(x) {
   }
 
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
-  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
-                             c("a","e2")]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[
+    lonlat.ellipsoid$ellipsoid == ellipsoid,
+    c("a", "e2")
+  ]
   a <- params$a
   e2 <- params$e2
   e <- sqrt(e2)
 
-  FE <- (4321000); FN <- (3210000) # false easting and northing
+  FE <- (4321000)
+  FN <- (3210000) # false easting and northing
   phi0 <- 52 / RAD.TO.DEG
   lambda0 <- 10 / RAD.TO.DEG
 
@@ -68,12 +72,16 @@ sgo_etrs_laea.sgo_points <- function(x) {
   sin2.phi0 <- sin.phi0 * sin.phi0
   splat0 <- 1 - e2 * sin2.phi0
 
-  q.phi <- (1 - e2) * (sin.phi / (1 - e2 * sin2.phi) - 1/(2 * e) *
-                         log((1 - e * sin.phi) / (1 + e * sin.phi)))
-  q.phi0 <- (1 - e2) * (sin.phi0 / splat0 - 1/(2 * e) *
-                         log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
+  q.phi <- (1 - e2) *
+    (sin.phi /
+      (1 - e2 * sin2.phi) -
+      1 / (2 * e) * log((1 - e * sin.phi) / (1 + e * sin.phi)))
+  q.phi0 <- (1 - e2) *
+    (sin.phi0 /
+      splat0 -
+      1 / (2 * e) * log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
   #phi.p = π/2 rad, therefore sin(phi.p) = 1
-  q.phi.p <- (1 - e2) * (1 / (1-e2) - 1/(2 * e) * log((1 - e ) / (1 + e)))
+  q.phi.p <- (1 - e2) * (1 / (1 - e2) - 1 / (2 * e) * log((1 - e) / (1 + e)))
 
   beta <- asin(q.phi / q.phi.p)
   beta0 <- asin(q.phi0 / q.phi.p)
@@ -84,22 +92,32 @@ sgo_etrs_laea.sgo_points <- function(x) {
 
   Rq <- a * sqrt(q.phi.p / 2)
   D <- a * (cos(phi0) / sqrt(splat0)) / (Rq * cos.beta0)
-  B <- Rq * sqrt(2 / (1 + sin.beta0 * sin.beta +
-                        (cos.beta0 * cos.beta * cos.lambda.delta)))
+  B <- Rq *
+    sqrt(
+      2 / (1 + sin.beta0 * sin.beta + (cos.beta0 * cos.beta * cos.lambda.delta))
+    )
 
   E <- FE + B * D * cos.beta * sin(lambda.delta)
-  N <- FN + (B / D) *
-    (cos.beta0 * sin.beta - sin.beta0 * cos.beta * cos.lambda.delta)
+  N <- FN +
+    (B / D) *
+      (cos.beta0 * sin.beta - sin.beta0 * cos.beta * cos.lambda.delta)
 
   # Return values
-  en <- list(x=E, y=N)
+  en <- list(x = E, y = N)
   #en <- lapply(en, round, 2) #round to cm
-  if (num.elements > 0) en <- c(en, x[additional.elements])
+  if (num.elements > 0) {
+    en <- c(en, x[additional.elements])
+  }
 
-  structure(c(en, epsg = 3035, datum = .epsgs[.epsgs$epsg == 3035, "datum"],
-              dimension = "XY"),
-            class = "sgo_points")
-
+  structure(
+    c(
+      en,
+      epsg = 3035,
+      datum = .epsgs[.epsgs$epsg == 3035, "datum"],
+      dimension = "XY"
+    ),
+    class = "sgo_points"
+  )
 }
 
 
@@ -131,24 +149,27 @@ sgo_laea_etrs <- function(x) UseMethod("sgo_laea_etrs")
 
 #' @export
 sgo_laea_etrs.sgo_points <- function(x) {
-
-  if (x$epsg != 3035)
+  if (x$epsg != 3035) {
     stop("This routine only supports coordinates in EPSG:3035.")
+  }
 
   core.cols <- .sgo_points.2d.core
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
-  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
-                             c("a","e2")]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[
+    lonlat.ellipsoid$ellipsoid == ellipsoid,
+    c("a", "e2")
+  ]
   a <- params$a
   e2 <- params$e2
   e <- sqrt(e2)
   e4 <- e2 * e2
   e6 <- e4 * e2
 
-  FE <- (4321000); FN <- (3210000) # false easting and northing
+  FE <- (4321000)
+  FN <- (3210000) # false easting and northing
   phi0 <- 52 / RAD.TO.DEG
   lambda0 <- 10 / RAD.TO.DEG
 
@@ -161,10 +182,12 @@ sgo_laea_etrs.sgo_points <- function(x) {
   sin2.phi0 <- sin.phi0 * sin.phi0
   splat0 <- 1 - e2 * sin2.phi0
 
-  q.phi0 <- (1 - e2) * (sin.phi0 / splat0 - 1/(2 * e) *
-                          log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
+  q.phi0 <- (1 - e2) *
+    (sin.phi0 /
+      splat0 -
+      1 / (2 * e) * log((1 - e * sin.phi0) / (1 + e * sin.phi0)))
   #phi.p = π/2 rad, therefore sin(phi.p) = 1
-  q.phi.p <- (1 - e2) * (1 / (1-e2) - 1/(2 * e) * log((1 - e ) / (1 + e)))
+  q.phi.p <- (1 - e2) * (1 / (1 - e2) - 1 / (2 * e) * log((1 - e) / (1 + e)))
 
   beta0 <- asin(q.phi0 / q.phi.p)
   cos.beta0 <- cos(beta0)
@@ -181,24 +204,33 @@ sgo_laea_etrs.sgo_points <- function(x) {
   sin.C <- sin(C)
   cos.C <- cos(C)
 
-  beta.prime <- asin(cos.C * sin.beta0 +
-                       ((Dtimes.N.delta * sin.C * cos.beta0) / rho))
+  beta.prime <- asin(
+    cos.C * sin.beta0 + ((Dtimes.N.delta * sin.C * cos.beta0) / rho)
+  )
 
-  lambda <- lambda0 + atan2(E.delta * sin.C,
-                            (D * rho * cos.beta0 * cos.C -
-                               D * Dtimes.N.delta * sin.beta0 * sin.C))
+  lambda <- lambda0 +
+    atan2(
+      E.delta * sin.C,
+      (D * rho * cos.beta0 * cos.C - D * Dtimes.N.delta * sin.beta0 * sin.C)
+    )
   phi <- beta.prime +
     (e2 / 3 + 31 * e4 / 180 + 517 * e6 / 5040) * sin(2 * beta.prime) +
     (23 * e4 / 360 + 251 * e6 / 3780) * sin(4 * beta.prime) +
     (761 * e6 / 45360) * sin(6 * beta.prime)
 
   # Return
-  xy <- list(x=lambda * RAD.TO.DEG, y=phi * RAD.TO.DEG)
-  if (num.elements > 0)
+  xy <- list(x = lambda * RAD.TO.DEG, y = phi * RAD.TO.DEG)
+  if (num.elements > 0) {
     xy <- c(xy, x[additional.elements])
+  }
 
-  structure(c(xy, epsg = 4258, datum = .epsgs[.epsgs$epsg == 4258, "datum"],
-              dimension = "XY"),
-            class = "sgo_points")
-
+  structure(
+    c(
+      xy,
+      epsg = 4258,
+      datum = .epsgs[.epsgs$epsg == 4258, "datum"],
+      dimension = "XY"
+    ),
+    class = "sgo_points"
+  )
 }

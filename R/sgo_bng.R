@@ -64,20 +64,22 @@
 #' pts <- sgo_points(list(longitude=lon, latitude=lat), epsg=4326)
 #' bng.pts <- sgo_lonlat_bng(pts)
 #' @export
-sgo_lonlat_bng <- function(x, to=27700, OSTN=TRUE, OD=FALSE)
+sgo_lonlat_bng <- function(x, to = 27700, OSTN = TRUE, OD = FALSE) {
   UseMethod("sgo_lonlat_bng")
+}
 
 #' @export
-sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
-
-  coord.system <- .epsgs[.epsgs$epsg==x$epsg, c("type", "format")]
-  if (coord.system$type != "GCS" || coord.system$format != "ll")
+sgo_lonlat_bng.sgo_points <- function(x, to = 27700, OSTN = TRUE, OD = FALSE) {
+  coord.system <- .epsgs[.epsgs$epsg == x$epsg, c("type", "format")]
+  if (coord.system$type != "GCS" || coord.system$format != "ll") {
     stop("This routine only only accepts Geodetic Coordinate Systems")
+  }
 
   x.3d <- x$dimension == "XYZ"
-  out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
-  if (out.dimension == "XY/Z")
+  out.dimension <- .epsgs[.epsgs$epsg == to, "dimension"]
+  if (out.dimension == "XY/Z") {
     out.dimension <- "XY"
+  }
 
   # When converting from 2D to 3D, fill input z with 0's and a correct epsg
   if (out.dimension == "XYZ" && !x.3d) {
@@ -85,8 +87,13 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
     if (x$epsg == 4277) {
       stop("Can't convert from EPSG:4277 (2D CS) to a 3D Coordinate System")
     } else {
-      x$epsg <- .epsgs[.epsgs$datum==x$datum & .epsgs$type=="GCS" &
-                         .epsgs$dimension=="XYZ" & .epsgs$format=="ll", "epsg"]
+      x$epsg <- .epsgs[
+        .epsgs$datum == x$datum &
+          .epsgs$type == "GCS" &
+          .epsgs$dimension == "XYZ" &
+          .epsgs$format == "ll",
+        "epsg"
+      ]
       x$dimension <- "XYZ"
       x$z <- rep(0, length(x$x))
       x.3d <- TRUE
@@ -103,7 +110,7 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
   }
 
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
   # Convert datum from WGS84 to ETRS89
   # Currently we consider both EPSGs practically equal
@@ -126,16 +133,13 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 
     # If datum is OSGB36, no need to do anything else
     if (x$epsg == 4277) {
-
       # Round to mm precision
       e <- round(e, 3)
       n <- round(n, 3)
-
     }
 
     # If datum is WGS84/ETRS89, we need to adjust with OSTN15
     if (x$epsg %in% c(4258, 4937)) {
-
       shifts <- .find.OSTN.shifts.at(e, n, x.3d, OD)
       # Round to mm precision
       e <- round(e + shifts$dx, 3)
@@ -145,54 +149,73 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
       # that are out of bounds of OSTN15.
       if (any(shifts$out) == TRUE) {
         out.of.bounds <- TRUE
-        out.x <- sgo_points(lapply(x[x.coords], function(el) el[shifts$out]),
-                            coords = x.coords, epsg = x$epsg)
+        out.x <- sgo_points(
+          lapply(x[x.coords], function(el) el[shifts$out]),
+          coords = x.coords,
+          epsg = x$epsg
+        )
         helmert.x <- sgo_set_gcs(out.x, to = 4277)
-        helmert.projected <- .project.onto.grid(helmert.x$x,
-                                                helmert.x$y,
-                                                helmert.x$datum)
+        helmert.projected <- .project.onto.grid(
+          helmert.x$x,
+          helmert.x$y,
+          helmert.x$datum
+        )
         e[shifts$out] <- round(helmert.projected[, 1], 0) # Round to metres
         n[shifts$out] <- round(helmert.projected[, 2], 0)
       }
-
     }
 
-    if (out.of.bounds)
+    if (out.of.bounds) {
       warning("There are points outside of the OSTN15 rectangle")
+    }
+  } else {
+    # single Helmert transformation
 
-  } else {  # single Helmert transformation
-
-    helmert.x <- sgo_set_gcs(sgo_points(x[x.coords], coords = x.coords,
-                                        epsg = x$epsg), to = 4277)
-    helmert.projected <- .project.onto.grid(helmert.x$x,
-                                            helmert.x$y,
-                                            helmert.x$datum)
+    helmert.x <- sgo_set_gcs(
+      sgo_points(x[x.coords], coords = x.coords, epsg = x$epsg),
+      to = 4277
+    )
+    helmert.projected <- .project.onto.grid(
+      helmert.x$x,
+      helmert.x$y,
+      helmert.x$datum
+    )
     e <- round(helmert.projected[, 1], 0) # Round to metres
     n <- round(helmert.projected[, 2], 0)
-
   } # end if (OSTN)
-
 
   # Return values with correct EPSG depending on input and output.
   if (out.dimension == "XYZ") {
     if (OSTN && OD) {
-        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3),
-                   height.datum=datum.flags[match(shifts$gf,
-                                             datum.flags$geoid.datum.flag), 4])
+      en <- list(
+        x = e,
+        y = n,
+        z = round(x$z - shifts$dz, 3),
+        height.datum = datum.flags[
+          match(shifts$gf, datum.flags$geoid.datum.flag),
+          4
+        ]
+      )
     } else {
-        en <- list(x=e, y=n, z=round(x$z - shifts$dz, 3))
+      en <- list(x = e, y = n, z = round(x$z - shifts$dz, 3))
     }
   } else {
-    en <- list(x=e, y=n)
+    en <- list(x = e, y = n)
   }
 
-  if (num.elements > 0)
+  if (num.elements > 0) {
     en <- c(en, x[additional.elements])
+  }
 
-  structure(c(en, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
-              dimension=out.dimension),
-            class="sgo_points")
-
+  structure(
+    c(
+      en,
+      epsg = to,
+      datum = .epsgs[.epsgs$epsg == to, "datum"],
+      dimension = out.dimension
+    ),
+    class = "sgo_points"
+  )
 }
 
 #' @encoding UTF-8
@@ -257,22 +280,25 @@ sgo_lonlat_bng.sgo_points <- function(x, to=27700, OSTN=TRUE, OD=FALSE) {
 #' p.89 <- sgo_bng_lonlat(p) #ETRS89 lon/lat
 #' p.36 <- sgo_bng_lonlat(p, to=4277) #OSGB36 lon/lat
 #' @export
-sgo_bng_lonlat <- function(x, to=4258, OSTN=TRUE, OD=FALSE)
+sgo_bng_lonlat <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
   UseMethod("sgo_bng_lonlat")
+}
 
 #' @export
-sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
-
-  if (!x$epsg %in% c(27700, 7405))
+sgo_bng_lonlat.sgo_points <- function(x, to = 4258, OSTN = TRUE, OD = FALSE) {
+  if (!x$epsg %in% c(27700, 7405)) {
     stop("This routine only supports BNG Easting and Northing entries")
+  }
 
-  if (!to %in% c(4258, 4937, 4326, 4979, 4277))
+  if (!to %in% c(4258, 4937, 4326, 4979, 4277)) {
     stop("This routine only supports converting to polar coordinates")
+  }
 
   has.z <- x$dimension == "XYZ"
-  out.dimension <- .epsgs[.epsgs$epsg==to, "dimension"]
-  if (out.dimension == "XY/Z")
+  out.dimension <- .epsgs[.epsgs$epsg == to, "dimension"]
+  if (out.dimension == "XY/Z") {
     out.dimension <- "XY"
+  }
 
   # When converting from 2D to 3D, fill input z with 0's and a correct epsg
   if (out.dimension == "XYZ" && !has.z) {
@@ -290,7 +316,7 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   }
 
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
   if (OSTN) {
     out.of.bounds <- FALSE # as of now no coordinate out of bounds
@@ -300,14 +326,12 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
     }
 
     if (to %in% c(4258, 4937, 4326, 4979)) {
-
       shifts <- .find.OSTN.shifts.at(x$x, x$y, has.z, OD)
       e <- x$x - shifts$dx
       n <- x$y - shifts$dy
       last.shifts <- shifts
 
       for (i in c(1:20)) {
-
         shifts <- .find.OSTN.shifts.at(e, n, has.z, OD)
         if (all(shifts$out) == TRUE) {
           # all coordinates have been shifted off the edge
@@ -316,12 +340,13 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
         e <- x$x - shifts$dx
         n <- x$y - shifts$dy
-        if (max(abs(shifts$dx - last.shifts$dx), na.rm=TRUE) < 0.0001 &&
-            max(abs(shifts$dy - last.shifts$dy), na.rm=TRUE) < 0.0001) {
+        if (
+          max(abs(shifts$dx - last.shifts$dx), na.rm = TRUE) < 0.0001 &&
+            max(abs(shifts$dy - last.shifts$dy), na.rm = TRUE) < 0.0001
+        ) {
           break
         }
         last.shifts <- shifts
-
       }
 
       #initialise 'unprojected' matrix of coordinates
@@ -332,63 +357,97 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
       if (any(shifts$out == FALSE)) {
         e <- x$x[!shifts$out] - shifts$dx[!shifts$out]
         n <- x$y[!shifts$out] - shifts$dy[!shifts$out]
-        unprojected[!shifts$out, ] <- .unproject.onto.ellipsoid(e, n,
-                                        .epsgs[.epsgs$epsg==to, "datum"])
+        unprojected[!shifts$out, ] <- .unproject.onto.ellipsoid(
+          e,
+          n,
+          .epsgs[.epsgs$epsg == to, "datum"]
+        )
       }
 
       # unproject the rest of coordinates (the ones that couldn't be shifted)
       if (any(shifts$out == TRUE)) {
         out.of.bounds <- TRUE
-        os.ll <- .unproject.onto.ellipsoid(x$x[shifts$out],
-                                           x$y[shifts$out], x$datum)
-        os.ll.points <- sgo_set_gcs(sgo_points(list(x=os.ll[, 1], y=os.ll[, 2]),
-                                               coords=.sgo_points.2d.coords,
-                                               epsg=4277),
-                                    to=to)
-        unprojected[shifts$out, ] <- cbind(x=os.ll.points$x, y=os.ll.points$y)
+        os.ll <- .unproject.onto.ellipsoid(
+          x$x[shifts$out],
+          x$y[shifts$out],
+          x$datum
+        )
+        os.ll.points <- sgo_set_gcs(
+          sgo_points(
+            list(x = os.ll[, 1], y = os.ll[, 2]),
+            coords = .sgo_points.2d.coords,
+            epsg = 4277
+          ),
+          to = to
+        )
+        unprojected[shifts$out, ] <- cbind(
+          x = os.ll.points$x,
+          y = os.ll.points$y
+        )
       }
-
     }
 
-    if (out.of.bounds)
+    if (out.of.bounds) {
       warning("There are points outside of the OSTN15 rectangle")
-
-  } else {  # single Helmert transformation
+    }
+  } else {
+    # single Helmert transformation
 
     unprojected <- .unproject.onto.ellipsoid(x$x, x$y, x$datum)
-
   } # end if (OSTN)
-
 
   if (out.dimension == "XYZ") {
     if (OSTN && OD) {
-        unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
-                            z=round(x$z + shifts$dz, 4),
-                            height.datum=datum.flags[match(shifts$gf,
-                                            datum.flags$geoid.datum.flag), 4])
+      unprojected <- list(
+        x = unprojected[, 1],
+        y = unprojected[, 2],
+        z = round(x$z + shifts$dz, 4),
+        height.datum = datum.flags[
+          match(shifts$gf, datum.flags$geoid.datum.flag),
+          4
+        ]
+      )
     } else {
-        unprojected <- list(x=unprojected[, 1], y=unprojected[, 2],
-                            z=round(x$z + shifts$dz, 4))
+      unprojected <- list(
+        x = unprojected[, 1],
+        y = unprojected[, 2],
+        z = round(x$z + shifts$dz, 4)
+      )
     }
   } else {
-    unprojected <- list(x=unprojected[, 1], y=unprojected[, 2])
+    unprojected <- list(x = unprojected[, 1], y = unprojected[, 2])
   }
 
-  if (num.elements > 0)
+  if (num.elements > 0) {
     unprojected <- c(unprojected, x[additional.elements])
+  }
 
   # We consider ETRS89/WGS84 practically equal...
   #Return
   if (OSTN) {
-    structure(c(unprojected, epsg=to,
-              datum=.epsgs[.epsgs$epsg==to, "datum"],
-              dimension=out.dimension), class="sgo_points")
+    structure(
+      c(
+        unprojected,
+        epsg = to,
+        datum = .epsgs[.epsgs$epsg == to, "datum"],
+        dimension = out.dimension
+      ),
+      class = "sgo_points"
+    )
   } else {
-    sgo_set_gcs(structure(c(unprojected, epsg=4277,
-        datum=.epsgs[.epsgs$epsg==4277, "datum"],
-        dimension="XY"), class="sgo_points"), to=to)
+    sgo_set_gcs(
+      structure(
+        c(
+          unprojected,
+          epsg = 4277,
+          datum = .epsgs[.epsgs$epsg == 4277, "datum"],
+          dimension = "XY"
+        ),
+        class = "sgo_points"
+      ),
+      to = to
+    )
   }
-
 }
 
 # Helper function. Unproject BNG (OSGB36) to geodetic coordinates
@@ -397,17 +456,17 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param N A numeric vector with Northing coordinates
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 .unproject.onto.ellipsoid <- function(E, N, datum) {
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == datum, "ellipsoid"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"] # Major
+  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "b"] # Minor
+  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "e2"] # ecc.²
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
-  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
-  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
-  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
-
-  f0 <- 0.9996012717              # Converge factor
+  f0 <- 0.9996012717 # Converge factor
   af <- a * f0
   bf <- b * f0
-  n <- (a-b) / (a+b)
-  N0 <- (-100000); E0 <- (400000) # northing & easting of true origin, metres
+  n <- (a - b) / (a + b)
+  N0 <- (-100000)
+  E0 <- (400000) # northing & easting of true origin, metres
 
   dN <- N - N0
   dE <- E - E0
@@ -415,9 +474,8 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
   phi0 <- 49 / RAD.TO.DEG
   lambda0 <- -2 / RAD.TO.DEG
 
-  phi <- phi0 + dN/af
+  phi <- phi0 + dN / af
   lambda <- lambda0
-
 
   M <- NA
   phi.plus <- NA
@@ -426,14 +484,16 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
     phi.minus <- phi - phi0
     phi.plus <- phi + phi0
 
-    M <- bf * (
-    (1 + n * (1 + 5/4 * n * (1L + n))) * phi.minus
-    - 3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus)
-    + (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
-    - 35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
-    ) # meridional arc
+    M <- bf *
+      ((1 + n * (1 + 5 / 4 * n * (1L + n))) *
+        phi.minus -
+        3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus) +
+        (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus) -
+        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)) # meridional arc
 
-    if ( max(abs(dN - M)) < 0.00001 ) { break } # ie until < 0.01mm
+    if (max(abs(dN - M)) < 0.00001) {
+      break
+    } # ie until < 0.01mm
     phi <- phi + (dN - M) / af
   }
 
@@ -453,25 +513,23 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 
   tan2.phi <- tan.phi * tan.phi
   VII <- tan.phi / (2 * rho * nu)
-  VIII <- tan.phi / (24 * rho * nu^3) *
-    (5 + eta2 + ( 3 - 9 * eta2 ) * tan2.phi)
-  IX <- tan.phi / (720 * rho * nu^5) *
-    (61 + ( 90 + 45 * tan2.phi ) * tan2.phi)
+  VIII <- tan.phi / (24 * rho * nu^3) * (5 + eta2 + (3 - 9 * eta2) * tan2.phi)
+  IX <- tan.phi / (720 * rho * nu^5) * (61 + (90 + 45 * tan2.phi) * tan2.phi)
 
   sec.phi <- 1 / cos.phi
 
   X <- sec.phi / nu
   XI <- sec.phi / (6 * nu^3) * (nu / rho + 2 * tan2.phi)
-  XII <- sec.phi / (120 * nu^5) * ( 5 + ( 28 + 24 * tan2.phi ) * tan2.phi)
-  XIIA <- sec.phi / (5040 * nu^7) *
-    ( 61 + ( 662 + (1320 + 720 * tan2.phi) * tan2.phi ) * tan2.phi )
+  XII <- sec.phi / (120 * nu^5) * (5 + (28 + 24 * tan2.phi) * tan2.phi)
+  XIIA <- sec.phi /
+    (5040 * nu^7) *
+    (61 + (662 + (1320 + 720 * tan2.phi) * tan2.phi) * tan2.phi)
 
   dE2 <- dE * dE
-  phi <- phi + ( -VII + ( VIII - IX * dE2 ) * dE2) * dE2
-  lambda <- lambda + ( X + ( -XI + ( XII - XIIA * dE2 ) * dE2) * dE2) * dE
+  phi <- phi + (-VII + (VIII - IX * dE2) * dE2) * dE2
+  lambda <- lambda + (X + (-XI + (XII - XIIA * dE2) * dE2) * dE2) * dE
 
   unname(cbind(lambda * RAD.TO.DEG, phi * RAD.TO.DEG))
-
 }
 
 # Helper function. Project geodetic coordinates onto BNG
@@ -479,65 +537,67 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param lon A numeric vector with Longitude coordinates
 #' @param lat A numeric vector with Latitude coordinates
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
-.project.onto.grid <- function (lon, lat, datum) {
-
+.project.onto.grid <- function(lon, lat, datum) {
   phi <- lat / RAD.TO.DEG
   lambda <- lon / RAD.TO.DEG
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
-  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]   # Major
-  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "b"]   # Minor
-  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "e2"] # ecc.²
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == datum, "ellipsoid"]
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"] # Major
+  b <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "b"] # Minor
+  e2 <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "e2"] # ecc.²
 
-  f0 <- 0.9996012717      # Convergence factor
-  af <- a * f0            # NatGrid scale factor on central meridian
+  f0 <- 0.9996012717 # Convergence factor
+  af <- a * f0 # NatGrid scale factor on central meridian
   # NatGrid true origin is 49°N 2°W:
   phi0 <- 49 / RAD.TO.DEG
   lambda0 <- -2 / RAD.TO.DEG
-  n0 <- -100000; e0 <- 400000   # northing & easting of true origin, metres
-  n <- (a-b)/(a+b)
+  n0 <- -100000
+  e0 <- 400000 # northing & easting of true origin, metres
+  n <- (a - b) / (a + b)
 
   cos.phi <- cos(phi)
   sin.phi <- sin(phi)
   sin2.phi <- sin.phi * sin.phi
-  tan.phi <- sin.phi / cos.phi               # cos(phi) cannot be zero in GB
+  tan.phi <- sin.phi / cos.phi # cos(phi) cannot be zero in GB
   tan2.phi <- tan.phi * tan.phi
   tan4.phi <- tan2.phi * tan2.phi
 
   splat <- 1 - e2 * sin2.phi
   sqrtsplat <- sqrt(splat)
-  nu <- af / sqrtsplat                       # nu = transverse r of curvature
-  rho <- af * (1-e2) / (splat * sqrtsplat)
+  nu <- af / sqrtsplat # nu = transverse r of curvature
+  rho <- af * (1 - e2) / (splat * sqrtsplat)
   eta2 <- nu / rho - 1
 
   phi.minus <- phi - phi0
   phi.plus <- phi + phi0
 
   # meridional arc
-  M <- b * f0 * ((1 + n * (1 + 5/4 * n * (1 + n)))* phi.minus
-      - 3 * n * (1 + n * (1 + 7/8 * n))  * sin(phi.minus) * cos(phi.plus)
-      + (15/8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
-      - 35/24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
-  )
+  M <- b *
+    f0 *
+    ((1 + n * (1 + 5 / 4 * n * (1 + n))) *
+      phi.minus -
+      3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus) +
+      (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus) -
+      35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus))
 
   I <- M + n0
-  II <- (nu/2) *sin.phi * cos.phi
-  III <- (nu/24) * sin.phi * cos.phi^3 * (5 - tan2.phi + 9 * eta2)
-  IIIA <- (nu/720) * sin.phi * cos.phi^5 * (61-58 * tan2.phi + tan4.phi)
+  II <- (nu / 2) * sin.phi * cos.phi
+  III <- (nu / 24) * sin.phi * cos.phi^3 * (5 - tan2.phi + 9 * eta2)
+  IIIA <- (nu / 720) * sin.phi * cos.phi^5 * (61 - 58 * tan2.phi + tan4.phi)
 
   IV <- nu * cos.phi
-  V <- nu/6 * cos.phi^3 * (nu/rho - tan2.phi)
-  VI <- (nu/120) * cos.phi^5 *
+  V <- nu / 6 * cos.phi^3 * (nu / rho - tan2.phi)
+  VI <- (nu / 120) *
+    cos.phi^5 *
     (5 - 18 * tan2.phi + tan4.phi + 14 * eta2 - 58 * tan2.phi * eta2)
 
-  dlambda <- lambda-lambda0
+  dlambda <- lambda - lambda0
   dlambda2 <- dlambda * dlambda
 
-  n <- I +  ( II + ( III + IIIA * dlambda2 ) * dlambda2 ) * dlambda2
-  e <- e0 + ( IV + ( V   + VI   * dlambda2 ) * dlambda2 ) * dlambda
+  n <- I + (II + (III + IIIA * dlambda2) * dlambda2) * dlambda2
+  e <- e0 + (IV + (V + VI * dlambda2) * dlambda2) * dlambda
 
   unname(cbind(e, n))
-
 }
 
 # Helper function. Get OSTN shift of coordinates
@@ -546,30 +606,28 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param n A numeric vector with Northing coordinates
 #' @param z A logical value indicating whether we need to compute heights
 #' @param flag A logical value indicating whether we need the OD as output
-.find.OSTN.shifts.at <- function(e, n, z=FALSE, flag=FALSE) {
-
+.find.OSTN.shifts.at <- function(e, n, z = FALSE, flag = FALSE) {
   # Initialise list of shifts
   len.e <- length(e)
   items <- rep(NA_real_, len.e)
   out <- rep(FALSE, len.e)
-  shifts <- list(dx=items, dy=items, dz=items, gf=items, out=out)
+  shifts <- list(dx = items, dy = items, dz = items, gf = items, out = out)
 
   # No need to continue when everything is NA
   if (all(is.na(e))) {
     shifts$out <- rep(TRUE, len.e)
-    return (shifts)
+    return(shifts)
   }
 
   # OSTN15 covers grid point (0, 0) to (700000, 1250000)
   # NA's are checked in case there are stored coordinates as BNG that are
   # actually outside of the OSTN15 rectangle.
   out.of.bounds <- (e < 0 | e >= 700000) |
-                   (n < 0 | n >= 1250000) | (is.na(e) | is.na(n))
+    (n < 0 | n >= 1250000) |
+    (is.na(e) | is.na(n))
   shifts$out <- out.of.bounds
 
-
   if (!all(out.of.bounds)) {
-
     # set coordinates to km
     os.e <- e[!out.of.bounds] / 1000
     os.n <- n[!out.of.bounds] / 1000
@@ -578,33 +636,39 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
     north.km <- trunc(os.n)
 
     # R 'lists' are 1-based (find which data records to use)
-    ll <- .ostn.shifts[east.km + north.km * 701 + 1, , drop=FALSE]
-    lr <- .ostn.shifts[east.km + north.km * 701 + 2, , drop=FALSE]
-    ul <- .ostn.shifts[east.km + north.km * 701 + 702, , drop=FALSE]
-    ur <- .ostn.shifts[east.km + north.km * 701 + 703, , drop=FALSE]
+    ll <- .ostn.shifts[east.km + north.km * 701 + 1, , drop = FALSE]
+    lr <- .ostn.shifts[east.km + north.km * 701 + 2, , drop = FALSE]
+    ul <- .ostn.shifts[east.km + north.km * 701 + 702, , drop = FALSE]
+    ur <- .ostn.shifts[east.km + north.km * 701 + 703, , drop = FALSE]
 
     t <- os.e - east.km
     u <- os.n - north.km
 
     one.t <- 1 - t
     one.u <- 1 - u
-    dx <- (one.t * one.u * ll[, "e"]
-           + t * one.u * lr[, "e"]
-           + one.t * u * ul[, "e"]
-           + t * u * ur[, "e"])
-    dy <- (one.t * one.u * ll[, "n"]
-           + t * one.u * lr[, "n"]
-           + one.t * u * ul[, "n"]
-           + t * u * ur[, "n"])
+    dx <- (one.t *
+      one.u *
+      ll[, "e"] +
+      t * one.u * lr[, "e"] +
+      one.t * u * ul[, "e"] +
+      t * u * ur[, "e"])
+    dy <- (one.t *
+      one.u *
+      ll[, "n"] +
+      t * one.u * lr[, "n"] +
+      one.t * u * ul[, "n"] +
+      t * u * ur[, "n"])
 
     shifts$dx[!out.of.bounds] <- dx
     shifts$dy[!out.of.bounds] <- dy
 
     if (z) {
-      dz <- (one.t * one.u * ll[, "g"]
-             + t * one.u * lr[, "g"]
-             + one.t * u * ul[, "g"]
-             + t * u * ur[, "g"])
+      dz <- (one.t *
+        one.u *
+        ll[, "g"] +
+        t * one.u * lr[, "g"] +
+        one.t * u * ul[, "g"] +
+        t * u * ur[, "g"])
 
       shifts$dz[!out.of.bounds] <- dz
 
@@ -614,20 +678,30 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
         ulf <- ul[, "f"]
         urf <- ur[, "f"]
 
-        gf <- .if.else(llf == lrf & lrf == ulf & ulf == urf, llf #all equal
-                   , .if.else(t <= 0.5 & u <= 0.5, llf #point in SW (or dead centre)
-                   , .if.else(t > 0.5 & u <= 0.5, lrf #point in SE quadrant
-                   , .if.else(t > 0.5 & u > 0.5, urf  #point in NE quadrant
-                   , ulf))))
+        gf <- .if.else(
+          llf == lrf & lrf == ulf & ulf == urf,
+          llf, #all equal
+          .if.else(
+            t <= 0.5 & u <= 0.5,
+            llf, #point in SW (or dead centre)
+            .if.else(
+              t > 0.5 & u <= 0.5,
+              lrf, #point in SE quadrant
+              .if.else(
+                t > 0.5 & u > 0.5,
+                urf, #point in NE quadrant
+                ulf
+              )
+            )
+          )
+        )
 
         shifts$gf[!out.of.bounds] <- gf
       }
     }
-
   }
 
-  return (shifts)
-
+  return(shifts)
 }
 
 
@@ -636,12 +710,10 @@ sgo_bng_lonlat.sgo_points <- function(x, to=4258, OSTN=TRUE, OD=FALSE) {
 #' @param test An object which can be coerced to logical mode
 #' @param yes Return values for true elements of test
 #' @param no Return values for true elements of test
-.if.else <- function(test, yes, no){
-
+.if.else <- function(test, yes, no) {
   out <- rep(NA, length(test))
   out[test] <- yes[test]
   out[!test] <- no[!test]
 
   out
-
 }

@@ -83,7 +83,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Carlos Lozano Ruiz \email{carloslozanoruiz@outlook.com}
+\strong{Maintainer}: Carlos Lozano Ruiz \email{clozanoruiz@outlook.com}
 
 }
 \keyword{internal}

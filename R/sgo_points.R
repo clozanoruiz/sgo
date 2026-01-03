@@ -131,15 +131,17 @@
 #'   text(p4, labels=p4$n, pos=1, cex=0.9)
 #' }
 #' @export
-sgo_points <- function (x, coords=NULL, epsg=NULL)
+sgo_points <- function(x, coords = NULL, epsg = NULL) {
   UseMethod("sgo_points")
+}
 
 #' @export
-sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
-
+sgo_points.list <- function(x, coords = NULL, epsg = NULL) {
   # Checks
   len <- length(x)
-  if (len < 2) stop("This method accepts lists with at least 2 elements")
+  if (len < 2) {
+    stop("This method accepts lists with at least 2 elements")
+  }
 
   if (is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
@@ -147,10 +149,12 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
 
   # don't try to guess too much the coords...
   if (is.null(coords)) {
-    if ((epsg %in% .epsgs[.epsgs$dimension %in% c("XY", "XY/Z"), "epsg"]
-         && len == 2) ||
-        (epsg %in% .epsgs[.epsgs$dimension == "XYZ", "epsg"]
-         && len == 3)){
+    if (
+      (epsg %in%
+        .epsgs[.epsgs$dimension %in% c("XY", "XY/Z"), "epsg"] &&
+        len == 2) ||
+        (epsg %in% .epsgs[.epsgs$dimension == "XYZ", "epsg"] && len == 3)
+    ) {
       coords <- .coordinates.names[1, 1:len] #c(x,y,(z)) just because
       names(x) <- coords
     }
@@ -172,19 +176,22 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
   num.coords <- length(coords)
 
   # check those epsgs that need 3 coordinates and there are only 2 defined
-  if (epsg %in% .epsgs[.epsgs$dimension=="XYZ", "epsg"] && num.coords < 3) {
+  if (epsg %in% .epsgs[.epsgs$dimension == "XYZ", "epsg"] && num.coords < 3) {
     stop("Wrong number of coordinates for the the specified 'epsg'")
   }
 
   for (i in 1:num.coords) {
-    if (!is.numeric(x[[coords[i]]]) )
+    if (!is.numeric(x[[coords[i]]])) {
       stop("All coordinates must be numeric")
+    }
   }
 
-  dimension <- if(num.coords == 2) "XY" else "XYZ"
+  dimension <- if (num.coords == 2) "XY" else "XYZ"
 
   # correct 3D EPSG 4258, 4326, 27700 if needed
-  if (epsg %in% .epsgs[.epsgs$dimension=="XY/Z", "epsg"] && dimension =="XYZ") {
+  if (
+    epsg %in% .epsgs[.epsgs$dimension == "XY/Z", "epsg"] && dimension == "XYZ"
+  ) {
     if (epsg == 4258) {
       epsg <- 4937
     } else if (epsg == 4326) {
@@ -194,27 +201,27 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
     }
   }
 
-
   if (dimension == "XY") {
-    point.coords <- list(x = x[[coords[1]]],
-                         y = x[[coords[2]]])
+    point.coords <- list(x = x[[coords[1]]], y = x[[coords[2]]])
   } else {
-    point.coords <- list(x = x[[coords[1]]],
-                         y = x[[coords[2]]],
-                         z = x[[coords[3]]])
+    point.coords <- list(
+      x = x[[coords[1]]],
+      y = x[[coords[2]]],
+      z = x[[coords[3]]]
+    )
   }
 
   other.columns <- x[!(x.names %in% coords)]
 
-  if (length(other.columns)==0) {
+  if (length(other.columns) == 0) {
     other.columns <- NULL
   } else {
     # if other.columns contains column names from sgo_points.core, rename them
     # and warn the user about it.
 
-    if(dimension == "XY") {
+    if (dimension == "XY") {
       cols.to.check <- .sgo_points.2d.core
-    } else  {
+    } else {
       cols.to.check <- .sgo_points.3d.core
     }
 
@@ -222,34 +229,43 @@ sgo_points.list <- function (x, coords=NULL, epsg=NULL) {
     if (any(to.rename)) {
       o.names <- names(other.columns)[to.rename]
       names(other.columns)[to.rename] <- paste0(o.names, ".1")
-      warning(paste0("The column(s) from input data named ",
-                     paste(o.names, collapse = ", "),
-                     " has(have) been renamed appending the suffix '.1'"))
+      warning(paste0(
+        "The column(s) from input data named ",
+        paste(o.names, collapse = ", "),
+        " has(have) been renamed appending the suffix '.1'"
+      ))
     }
-
 
     # all additional columns will be expanded to contain the same number of
     # elements as coordinates in the object
     max.len <- length(x[[coords[1]]])
-    other.columns <- lapply(other.columns,
-                            function(x) { length(x) <- max.len; x })
+    other.columns <- lapply(other.columns, function(x) {
+      length(x) <- max.len
+      x
+    })
   }
 
-  structure(c(point.coords, other.columns, epsg=epsg,
-              datum=.epsgs[.epsgs$epsg==epsg, "datum"],
-              dimension=dimension),
-            class="sgo_points")
-
+  structure(
+    c(
+      point.coords,
+      other.columns,
+      epsg = epsg,
+      datum = .epsgs[.epsgs$epsg == epsg, "datum"],
+      dimension = dimension
+    ),
+    class = "sgo_points"
+  )
 }
 
 #' @export
-sgo_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
-
+sgo_points.data.frame <- function(x, coords = NULL, epsg = NULL) {
   # Checks
   cols <- ncol(x)
-  if (cols < 2) stop("This method accepts dataframes with at least 2 columns")
+  if (cols < 2) {
+    stop("This method accepts dataframes with at least 2 columns")
+  }
 
-  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
+  if (is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
@@ -260,18 +276,18 @@ sgo_points.data.frame <- function (x, coords=NULL, epsg=NULL) {
     names(x) <- coords
   }
 
-  sgo_points(as.list(x), coords=coords, epsg=epsg)
-
+  sgo_points(as.list(x), coords = coords, epsg = epsg)
 }
 
 #' @export
-sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
-
+sgo_points.matrix <- function(x, coords = NULL, epsg = NULL) {
   # Checks
   cols <- ncol(x)
-  if (cols < 2) stop("This method accepts matrices with at least 2 columns")
+  if (cols < 2) {
+    stop("This method accepts matrices with at least 2 columns")
+  }
 
-  if(is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
+  if (is.null(epsg) || (!epsg %in% .epsgs$epsg)) {
     stop("'epsg' must be entered as one of the accepted numbers")
   }
 
@@ -285,7 +301,6 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
   lst <- lapply(seq_len(ncol(x)), function(i) x[, i])
   names(lst) <- colnames(x)
   sgo_points(lst, coords = coords, epsg = epsg)
-
 }
 
 #' @encoding UTF-8
@@ -315,17 +330,26 @@ sgo_points.matrix <- function (x, coords=NULL, epsg=NULL) {
 #' coords <- sgo_coordinates(p)
 #'
 #' @export
-sgo_coordinates <- function (x, names.xyz=NULL, as.latlon=FALSE, ll.format=NULL)
+sgo_coordinates <- function(
+  x,
+  names.xyz = NULL,
+  as.latlon = FALSE,
+  ll.format = NULL
+) {
   UseMethod("sgo_coordinates")
+}
 
 #' @export
-sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
-                                       ll.format=NULL) {
-
-  if(x$dimension == "XY") {
+sgo_coordinates.sgo_points <- function(
+  x,
+  names.xyz = NULL,
+  as.latlon = FALSE,
+  ll.format = NULL
+) {
+  if (x$dimension == "XY") {
     coords <- .sgo_points.2d.coords
     cols <- 2
-  } else  {
+  } else {
     coords <- .sgo_points.3d.coords
     cols <- 3
   }
@@ -352,10 +376,13 @@ sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
     vec.coords <- unlist(x[coords], use.names = FALSE)
     len.vec <- length(vec.coords)
     if (!is.null(ll.format)) {
-      if(ll.format == "DMS") {
+      if (ll.format == "DMS") {
         if (cols == 3) {
-          vec.coords[1:(len.vec/3*2)] <- .dd.to.dms(vec.coords[1:(len.vec/3*2)],
-                                                    as.latlon, 2)
+          vec.coords[1:(len.vec / 3 * 2)] <- .dd.to.dms(
+            vec.coords[1:(len.vec / 3 * 2)],
+            as.latlon,
+            2
+          )
         } else {
           vec.coords <- .dd.to.dms(vec.coords, as.latlon, 2)
         }
@@ -365,9 +392,12 @@ sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
     vec.coords <- unlist(x[coords], use.names = FALSE)
   }
 
-  matrix(vec.coords, ncol = cols, byrow = FALSE,
-         dimnames = list(NULL, dim.names))
-
+  matrix(
+    vec.coords,
+    ncol = cols,
+    byrow = FALSE,
+    dimnames = list(NULL, dim.names)
+  )
 }
 
 
@@ -377,7 +407,6 @@ sgo_coordinates.sgo_points <- function(x, names.xyz=NULL, as.latlon=FALSE,
 #' @param n Maximum number of features to print.
 #' @export
 print.sgo_points <- function(x, ..., n = 6L) {
-
   len <- length(x$x)
   if (n >= len) {
     msg <- ""
@@ -398,17 +427,24 @@ print.sgo_points <- function(x, ..., n = 6L) {
 
   num.fields <- length(print.cols) - ifelse(x.2d, 2L, 3L)
   and <- paste("and", num.fields, ifelse(num.fields == 1L, "field", "fields"))
-  cat("An sgo object with", len, ifelse(len == 1L,
-                                      "feature (point)", "features (points)"),
-      if (num.fields == 0L) NULL else and,
-      "\ndimension:", x$dimension,
-      "\nEPSG:     ", x$epsg,
-      msg, "\n")
+  cat(
+    "An sgo object with",
+    len,
+    ifelse(len == 1L, "feature (point)", "features (points)"),
+    if (num.fields == 0L) NULL else and,
+    "\ndimension:",
+    x$dimension,
+    "\nEPSG:     ",
+    x$epsg,
+    msg,
+    "\n"
+  )
 
-  print.data.frame(as.data.frame(lapply(x[print.cols],
-                                        function(l) l[1:n])), ...)
+  print.data.frame(
+    as.data.frame(lapply(x[print.cols], function(l) l[1:n])),
+    ...
+  )
   invisible(x)
-
 }
 
 
@@ -417,22 +453,26 @@ print.sgo_points <- function(x, ..., n = 6L) {
 #' data frame. Missing values are not allowed.
 #' @param optional Logical. See \link{as.data.frame}
 #' @export
-as.data.frame.sgo_points <- function(x,
-                                     row.names = NULL, optional = FALSE, ...) {
-
+as.data.frame.sgo_points <- function(
+  x,
+  row.names = NULL,
+  optional = FALSE,
+  ...
+) {
   col.names <- setdiff(names(x), .sgo_points.attr)
-  as.data.frame.list(x[col.names], row.names = row.names, optional = optional,
-                     col.names = col.names)
-
+  as.data.frame.list(
+    x[col.names],
+    row.names = row.names,
+    optional = optional,
+    col.names = col.names
+  )
 }
 
 
 #' @rdname sgo_points
 #' @export
 as.list.sgo_points <- function(x, ...) {
-
   x[setdiff(names(x), .sgo_points.attr)]
-
 }
 
 
@@ -440,18 +480,21 @@ as.list.sgo_points <- function(x, ...) {
 # as.latlon is a logical value.
 # num.decimals is a hscalar value.
 .dd.to.dms <- function(coords, as.latlon, num.decimals = 0) {
-
   # a typical tolerance: tol = sqrt(.Machine$double.eps)
   tol <- 60
 
   len <- length(coords)
   signs <- coords < 0
   if (as.latlon) {
-    letters <- c(ifelse(signs[1:(len/2)], "S", "N"),
-                 ifelse(signs[(len/2+1):len], "W", "E"))
+    letters <- c(
+      ifelse(signs[1:(len / 2)], "S", "N"),
+      ifelse(signs[(len / 2 + 1):len], "W", "E")
+    )
   } else {
-    letters <- c(ifelse(signs[1:(len/2)], "W", "E"),
-                 ifelse(signs[(len/2+1):len], "S", "N"))
+    letters <- c(
+      ifelse(signs[1:(len / 2)], "W", "E"),
+      ifelse(signs[(len / 2 + 1):len], "S", "N")
+    )
   }
 
   coords <- abs(coords)
@@ -467,13 +510,21 @@ as.list.sgo_points <- function(x, ...) {
   m <- ifelse(keep.min, m, 0)
   d <- ifelse(keep.min, d, d + 1)
 
-  sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
-          num.decimals, s, "\U2033", letters)
+  sprintf(
+    "%d%s %d%s %.*f%s %s",
+    d,
+    "\U00B0",
+    m,
+    "\U2032",
+    num.decimals,
+    s,
+    "\U2033",
+    letters
+  )
   #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
   #        num.decimals, trunc(s * 10^num.decimals) / 10^num.decimals, "\U2033",
   #        letters)
   # Not using num.decimals:
   #sprintf("%d%s %d%s %.*f%s %s", d, "\U00B0", m, "\U2032",
   #        num.decimals, trunc(s), "\U2033", letters)
-
 }

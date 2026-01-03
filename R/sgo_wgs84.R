@@ -30,16 +30,17 @@
 #' p <- sgo_points(list(-3.9369, 56.1165), epsg=4326)
 #' res <- sgo_wgs84_en(p)
 #' @export
-sgo_wgs84_en <- function(x, to=3857) UseMethod("sgo_wgs84_en")
+sgo_wgs84_en <- function(x, to = 3857) UseMethod("sgo_wgs84_en")
 
 #' @export
-sgo_wgs84_en.sgo_points <- function(x, to=3857) {
-
-  if (!x$epsg %in% c(4326, 4979, 4258, 4937))
+sgo_wgs84_en.sgo_points <- function(x, to = 3857) {
+  if (!x$epsg %in% c(4326, 4979, 4258, 4937)) {
     stop("This routine only supports WGS84 or ETRS89 polar entries")
+  }
 
-  if(to != 3857)
+  if (to != 3857) {
     stop("This routine only supports converting to EPSG:3857 (Pseudo-Mercator)")
+  }
 
   if (x$dimension == "XY") {
     core.cols <- .sgo_points.2d.core
@@ -48,31 +49,38 @@ sgo_wgs84_en.sgo_points <- function(x, to=3857) {
   }
 
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
   phi <- x$y / RAD.TO.DEG
   lambda <- x$x / RAD.TO.DEG
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
 
-  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
-  FE <- 0; FN <- 0  # False Easting, Northing
-  lambda0 <- 0      # True origin
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"]
+  FE <- 0
+  FN <- 0 # False Easting, Northing
+  lambda0 <- 0 # True origin
 
   #e <- round(FE + a * (lambda - lambda0), 2) #round to cm
   #n <- round(FN + a * log(tan(pi/4 + phi/2)), 2)
   e <- FE + a * (lambda - lambda0)
-  n <- FN + a * log(tan(pi/4 + phi/2))
+  n <- FN + a * log(tan(pi / 4 + phi / 2))
 
   # Return values
-  en <- list(x=e, y=n)
-  if (num.elements > 0)
+  en <- list(x = e, y = n)
+  if (num.elements > 0) {
     en <- c(en, x[additional.elements])
+  }
 
-  structure(c(en, epsg = to, datum = .epsgs[.epsgs$epsg == to, "datum"],
-              dimension = "XY"),
-            class = "sgo_points")
-
+  structure(
+    c(
+      en,
+      epsg = to,
+      datum = .epsgs[.epsgs$epsg == to, "datum"],
+      dimension = "XY"
+    ),
+    class = "sgo_points"
+  )
 }
 
 
@@ -101,41 +109,50 @@ sgo_wgs84_en.sgo_points <- function(x, to=3857) {
 #' p <- sgo_points(list(-11169055.58, 2810000.00), epsg=3857)
 #' res <- sgo_en_wgs84(p)
 #' @export
-sgo_en_wgs84 <- function(x, to=4326) UseMethod("sgo_en_wgs84")
+sgo_en_wgs84 <- function(x, to = 4326) UseMethod("sgo_en_wgs84")
 
 #' @export
-sgo_en_wgs84.sgo_points <- function(x, to=4326) {
+sgo_en_wgs84.sgo_points <- function(x, to = 4326) {
+  if (x$epsg != 3857) {
+    stop("This routine only supports EPSG:3857 entries")
+  }
 
-  if (x$epsg != 3857) stop("This routine only supports EPSG:3857 entries")
-
-  if(to != 4326)
+  if (to != 4326) {
     stop("This routine only supports converting to EPSG:4326")
+  }
 
   core.cols <- .sgo_points.2d.core
 
   additional.elements <- !names(x) %in% core.cols
-  num.elements <- sum(additional.elements, na.rm=TRUE)
+  num.elements <- sum(additional.elements, na.rm = TRUE)
 
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==x$datum, "ellipsoid"]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == x$datum, "ellipsoid"]
 
-  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid, "a"]
-  FE <- 0; FN <- 0  # False Easting, Northing
-  lambda0 <- 0      # True origin
+  a <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid == ellipsoid, "a"]
+  FE <- 0
+  FN <- 0 # False Easting, Northing
+  lambda0 <- 0 # True origin
 
   E <- x$x
   N <- x$y
 
   D <- (FN - N) / a
-  phi <- (pi/2) - 2 * atan(exp(D))
-  lambda <- ((E - FE)/a) + lambda0
+  phi <- (pi / 2) - 2 * atan(exp(D))
+  lambda <- ((E - FE) / a) + lambda0
 
   # Return
-  xy <- list(x=lambda * RAD.TO.DEG, y=phi * RAD.TO.DEG)
-  if (num.elements > 0)
+  xy <- list(x = lambda * RAD.TO.DEG, y = phi * RAD.TO.DEG)
+  if (num.elements > 0) {
     xy <- c(xy, x[additional.elements])
+  }
 
-  structure(c(xy, epsg=to, datum=.epsgs[.epsgs$epsg==to, "datum"],
-              dimension="XY"),
-            class="sgo_points")
-
+  structure(
+    c(
+      xy,
+      epsg = to,
+      datum = .epsgs[.epsgs$epsg == to, "datum"],
+      dimension = "XY"
+    ),
+    class = "sgo_points"
+  )
 }

@@ -77,31 +77,49 @@
 #' pol.shift.one <- sgo_points(rbind(coords[-1, ], coords[1, ]), epsg=pol$epsg)
 #' perimeter <- sum(sgo_distance(pol, pol.shift.one, by.element=TRUE))
 #' @export
-sgo_distance <- function (x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
-  grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-                              TRUE, FALSE), iterations = 100L)
-    UseMethod("sgo_distance")
+sgo_distance <- function(
+  x,
+  y,
+  by.element = FALSE,
+  which = ifelse(isTRUE(x$epsg == 27700 || x$epsg == 7405), "BNG", "Vicenty"),
+  grid.true.distance = ifelse(
+    isTRUE(x$epsg == 27700 || x$epsg == 7405),
+    TRUE,
+    FALSE
+  ),
+  iterations = 100L
+) {
+  UseMethod("sgo_distance")
+}
 
 #' @export
-sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
-  which = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405), "BNG", "Vicenty"),
-  grid.true.distance = ifelse(isTRUE(x$epsg==27700 || x$epsg==7405),
-                              TRUE, FALSE), iterations = 100L) {
-
-  if (missing(y))
+sgo_distance.sgo_points <- function(
+  x,
+  y,
+  by.element = FALSE,
+  which = ifelse(isTRUE(x$epsg == 27700 || x$epsg == 7405), "BNG", "Vicenty"),
+  grid.true.distance = ifelse(
+    isTRUE(x$epsg == 27700 || x$epsg == 7405),
+    TRUE,
+    FALSE
+  ),
+  iterations = 100L
+) {
+  if (missing(y)) {
     y <- x
+  }
 
-  if (x$epsg != y$epsg)
+  if (x$epsg != y$epsg) {
     stop("All points must have the same EPSG code")
+  }
 
-  if (isTRUE(x$epsg %in% c(4936, 3035, 4978, 3857)))
+  if (isTRUE(x$epsg %in% c(4936, 3035, 4978, 3857))) {
     stop("This function doesn't support the input's EPSG")
+  }
 
   default.simpson <- 20 #20 km
   coords <- .sgo_points.2d.coords
-  if(isTRUE(x$epsg==27700 || x$epsg==7405)) {
-
+  if (isTRUE(x$epsg == 27700 || x$epsg == 7405)) {
     p1 <- matrix(unlist(x[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
     p2 <- matrix(unlist(y[coords], use.names = FALSE), ncol = 2, byrow = FALSE)
 
@@ -117,25 +135,32 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
       m1 <- rep(1, rows.p2) %x% p1
       m2 <- p2 %x% rep(1, rows.p1)
 
-      matrix(.bng.distance(m1, m2, grid.true.distance, default.simpson),
-             rows.p1, rows.p2)
+      matrix(
+        .bng.distance(m1, m2, grid.true.distance, default.simpson),
+        rows.p1,
+        rows.p2
+      )
     }
-
   } else {
-
-    p1 <- matrix(unlist(x[coords], use.names = FALSE),
-                 ncol = 2, byrow = FALSE) / RAD.TO.DEG
-    p2 <- matrix(unlist(y[coords], use.names = FALSE),
-             ncol = 2, byrow = FALSE) / RAD.TO.DEG
+    p1 <- matrix(
+      unlist(x[coords], use.names = FALSE),
+      ncol = 2,
+      byrow = FALSE
+    ) /
+      RAD.TO.DEG
+    p2 <- matrix(
+      unlist(y[coords], use.names = FALSE),
+      ncol = 2,
+      byrow = FALSE
+    ) /
+      RAD.TO.DEG
 
     if (by.element) {
-
       if (which == "Harvesine") {
         .great.circle.harvesine(p1, p2)
       } else if (which == "Vicenty") {
         .inverse.vicenty.ellipsoid(p1, p2, x$datum, iterations)$distance
       }
-
     } else {
       rows.p1 <- nrow(p1)
       rows.p2 <- nrow(p2)
@@ -146,13 +171,14 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
       if (which == "Harvesine") {
         matrix(.great.circle.harvesine(m1, m2), rows.p1, rows.p2)
       } else if (which == "Vicenty") {
-        matrix(.inverse.vicenty.ellipsoid(m1, m2, x$datum, iterations)$distance,
-               rows.p1, rows.p2)
+        matrix(
+          .inverse.vicenty.ellipsoid(m1, m2, x$datum, iterations)$distance,
+          rows.p1,
+          rows.p2
+        )
       }
     }
-
   }
-
 }
 
 #' @noRd
@@ -161,19 +187,25 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 #' @param grid.true.distance Logical value
 #' @param dist.simpson: distance (in km) greater than this will apply Simpson's
 #' Rule when calculating true (geodesic) distances
-.bng.distance <- function(p1, p2, grid.true.distance = TRUE,
-                          dist.simpson = 20) {
-
-  E1 <- p1[, 1]; E2 <- p2[, 1]
-  N1 <- p1[, 2]; N2 <- p2[, 2]
+.bng.distance <- function(
+  p1,
+  p2,
+  grid.true.distance = TRUE,
+  dist.simpson = 20
+) {
+  E1 <- p1[, 1]
+  E2 <- p2[, 1]
+  N1 <- p1[, 2]
+  N2 <- p2[, 2]
 
   dE <- E2 - E1
   dN <- N2 - N1
   s <- sqrt(dE * dE + dN * dN)
 
-  if (!grid.true.distance)
+  if (!grid.true.distance) {
     #return(round(s, 3)) # round to mm
     return(s)
+  }
 
   Em <- E1 + (E2 - E1) / 2 # E at midpoint
   Nm <- N1 + (N2 - N1) / 2 # N at midpoint
@@ -182,7 +214,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     len.E1 <- length(E1) # E1, E2, Em have the same length
     F1 <- Ft[(1:len.E1)]
     Fm <- Ft[((len.E1 + 1):(len.E1 * 2))]
-    F2 <- Ft[length(Ft) - ((len.E1-1):0)]
+    F2 <- Ft[length(Ft) - ((len.E1 - 1):0)]
     F <- (F1 + 4 * Fm + F2) / 6
   } else {
     #F for mid point only
@@ -191,30 +223,31 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 
   #round(s / F, 3) # S (true distance)
   s / F
-
 }
 
 #' @noRd
 #' @param E Vector of Easting coordinates
 #' @param N Vector of Northing coordinates
 .local.scale.factor <- function(E, N) {
-
   # ellipsoid parameters
-  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid=="Airy1830",
-                             c("a","b","e2")]
+  params <- lonlat.ellipsoid[
+    lonlat.ellipsoid$ellipsoid == "Airy1830",
+    c("a", "b", "e2")
+  ]
   a <- params$a
   b <- params$b
   e2 <- params$e2
   F0 <- 0.9996012717 #Central meridian scale factor
   aF0 <- a * F0
   bF0 <- b * F0
-  n <- (a-b) / (a+b)
-  N0 <- -100000; E0 <- 400000 # True origin
+  n <- (a - b) / (a + b)
+  N0 <- -100000
+  E0 <- 400000 # True origin
   phi0 <- 49 / RAD.TO.DEG
 
   # Initial latitude φ'
   dN <- N - N0
-  phi <- phi0 + dN/aF0
+  phi <- phi0 + dN / aF0
 
   M <- NA
   phi.plus <- NA
@@ -223,14 +256,16 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     phi.minus <- phi - phi0
     phi.plus <- phi + phi0
 
-    M <- bF0 * (
-      (1 + n * (1 + 5/4 * n * (1 + n))) * phi.minus
-      - 3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus)
-      + (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus)
-      - 35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)
-    ) # meridional arc
+    M <- bF0 *
+      ((1 + n * (1 + 5 / 4 * n * (1 + n))) *
+        phi.minus -
+        3 * n * (1 + n * (1 + 7 / 8 * n)) * sin(phi.minus) * cos(phi.plus) +
+        (15 / 8 * n * (n * (1 + n))) * sin(2 * phi.minus) * cos(2 * phi.plus) -
+        35 / 24 * n^3 * sin(3 * phi.minus) * cos(3 * phi.plus)) # meridional arc
 
-    if ( max(abs(dN - M)) < 0.00001 ) { break } # ie until < 0.01mm
+    if (max(abs(dN - M)) < 0.00001) {
+      break
+    } # ie until < 0.01mm
     phi <- phi + (dN - M) / aF0
   }
 
@@ -253,7 +288,6 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
   dE <- E - E0
   dE2 <- dE * dE
   F0 * (1 + dE2 * XXI + dE2 * dE2 * XXII) # return F
-
 }
 
 
@@ -261,8 +295,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 #' @param p1 A matrix of coordinates in radians
 #' @param p2 A matrix of coordinates in radians
 #' @param R Default defined by the International Union of Geodesy and Geophysics
-.great.circle.harvesine <- function(p1, p2, R=6371008) {
-
+.great.circle.harvesine <- function(p1, p2, R = 6371008) {
   hav.dlat <- sin((p2[, 2] - p1[, 2]) / 2)
   hav.dlon <- sin((p2[, 1] - p1[, 1]) / 2)
   h <- hav.dlat * hav.dlat + cos(p1[, 2]) * cos(p2[, 2]) * hav.dlon * hav.dlon
@@ -278,7 +311,6 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 
   #round(d, 3) #round to mm (problaby shouldn't expect accuracy greater than m)
   d
-
 }
 
 
@@ -290,18 +322,19 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 #' @param iterations Scalar value. Number of iterations to reach convergence
 .inverse.vicenty.ellipsoid <- function(p1, p2, datum, iterations = 100L) {
-
   # ellipsoid parameters
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
-  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
-                             c("a","b","f")]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[
+    lonlat.ellipsoid$ellipsoid == ellipsoid,
+    c("a", "b", "f")
+  ]
   a2 <- params$a * params$a
   b <- params$b
   b2 <- b * b
   f <- 1 / params$f
 
   one.f <- 1 - f
-  dlon <- (p2[, 1] - p1[, 1])    # difference of longitudes
+  dlon <- (p2[, 1] - p1[, 1]) # difference of longitudes
   tan.U1 <- one.f * tan(p1[, 2]) # tan(reduced latitude)
   tan.U2 <- one.f * tan(p2[, 2])
 
@@ -330,17 +363,22 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     sin.alpha[coincident.points] <- 0
     cos2.alpha <- 1 - sin.alpha * sin.alpha
     cos.2sigma.m <- cos.sigma - 2 * sin.U1.U2 / cos2.alpha
-    cos.2sigma.m[is.nan(cos.2sigma.m)] <- 0  # cos2.alpha = 0 (equatorial line)
+    cos.2sigma.m[is.nan(cos.2sigma.m)] <- 0 # cos2.alpha = 0 (equatorial line)
     cos2.2sigma.m <- cos.2sigma.m * cos.2sigma.m
 
     C <- f / 16 * cos2.alpha * (4 + f * (4 - 3 * cos2.alpha))
     lambda.tmp <- lambda
-    lambda <- dlon + (1 - C) * f * sin.alpha *
-      (sigma + C * sin.sigma * (cos.2sigma.m + C * cos.sigma *
-                                  (-1 + 2 * cos2.2sigma.m)))
+    lambda <- dlon +
+      (1 - C) *
+        f *
+        sin.alpha *
+        (sigma +
+          C *
+            sin.sigma *
+            (cos.2sigma.m + C * cos.sigma * (-1 + 2 * cos2.2sigma.m)))
 
     iterations <- iterations - 1L
-    if ( max(abs(lambda - lambda.tmp)) <= 1e-12 || iterations == 0L) {
+    if (max(abs(lambda - lambda.tmp)) <= 1e-12 || iterations == 0L) {
       break # ie until <= 0.06mm
     }
   }
@@ -350,18 +388,30 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 
   u2 <- cos2.alpha * (a2 - b2) / b2
   A <- 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
-  B <- u2 / 1024 * (256 + u2 * (-128 + u2 *(74 - 47 * u2)))
-  delta.sigma <- B * sin.sigma * (cos.2sigma.m +
-                    B/4 * (cos.sigma * (-1 + 2 * cos2.2sigma.m) -
-                    B/6 * cos.2sigma.m * (-3 + 4 * sin.sigma * sin.sigma) *
-                      (-3 + 4 * cos2.2sigma.m)))
+  B <- u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)))
+  delta.sigma <- B *
+    sin.sigma *
+    (cos.2sigma.m +
+      B /
+        4 *
+        (cos.sigma *
+          (-1 + 2 * cos2.2sigma.m) -
+          B /
+            6 *
+            cos.2sigma.m *
+            (-3 + 4 * sin.sigma * sin.sigma) *
+            (-3 + 4 * cos2.2sigma.m)))
 
   # alpha1, alpha2: azimuths of the geodesic, clockwise from north
   # alpha2 in the direction p1 p2 produced
-  alpha1 <- atan2(cos.U2 * sin.lambda,
-                  cos.U1 * sin.U2 - sin.U1 * cos.U2 * cos.lambda)
-  alpha2 <- atan2(cos.U1 * sin.lambda,
-                  -sin.U1 * cos.U2 + cos.U1 * sin.U2 * cos.lambda)
+  alpha1 <- atan2(
+    cos.U2 * sin.lambda,
+    cos.U1 * sin.U2 - sin.U1 * cos.U2 * cos.lambda
+  )
+  alpha2 <- atan2(
+    cos.U1 * sin.lambda,
+    -sin.U1 * cos.U2 + cos.U1 * sin.U2 * cos.lambda
+  )
 
   # From Chris Veness (https://www.movable-type.co.uk):
   # Special handling of exactly antipodal points where sin2.sigma = 0
@@ -380,8 +430,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     warning("Vicenty formula failed to converge. Try to increase iterations.")
   }
 
-  list(distance=s, initial.bearing=alpha1, final.bearing=alpha2)
-
+  list(distance = s, initial.bearing = alpha1, final.bearing = alpha2)
 }
 
 
@@ -394,11 +443,12 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 #' @param datum A string containing "OSGB36", "WGS84" or "ETRS89"
 #' @param iterations Scalar value. Number of iterations to reach convergence
 .direct.vicenty.ellipsoid <- function(p1, s, alpha1, datum, iterations = 100L) {
-
   # ellipsoid parameters
-  ellipsoid <- lonlat.datum[lonlat.datum$datum==datum, "ellipsoid"]
-  params <- lonlat.ellipsoid[lonlat.ellipsoid$ellipsoid==ellipsoid,
-                             c("a","b","f")]
+  ellipsoid <- lonlat.datum[lonlat.datum$datum == datum, "ellipsoid"]
+  params <- lonlat.ellipsoid[
+    lonlat.ellipsoid$ellipsoid == ellipsoid,
+    c("a", "b", "f")
+  ]
 
   a2 <- params$a * params$a
   b <- params$b
@@ -418,7 +468,7 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
 
   u2 <- cos2.alpha * (a2 - b2) / b2
   A <- 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)))
-  B <- u2 / 1024 * (256 + u2 * (-128 + u2 *(74 - 47 * u2)))
+  B <- u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)))
 
   sigma <- s / (b * A)
   no.convergence <- FALSE
@@ -428,15 +478,23 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     sin.sigma <- sin(sigma)
     cos.sigma <- cos(sigma)
 
-    delta.sigma <- B * sin.sigma * (cos.2sigma.m + B/4 *
-                     (cos.sigma * (-1 + 2 * cos2.2sigma.m) -
-                        B/6 * cos.2sigma.m * (-3 + 4 * sin.sigma * sin.sigma) *
-                        (-3 + 4 * cos2.2sigma.m)))
+    delta.sigma <- B *
+      sin.sigma *
+      (cos.2sigma.m +
+        B /
+          4 *
+          (cos.sigma *
+            (-1 + 2 * cos2.2sigma.m) -
+            B /
+              6 *
+              cos.2sigma.m *
+              (-3 + 4 * sin.sigma * sin.sigma) *
+              (-3 + 4 * cos2.2sigma.m)))
     sigma.tmp <- sigma
     sigma <- s / (b * A) + delta.sigma
 
     iterations <- iterations - 1L
-    if ( max(abs(sigma - sigma.tmp)) <= 1e-12 || iterations == 0L) {
+    if (max(abs(sigma - sigma.tmp)) <= 1e-12 || iterations == 0L) {
       break
     }
   }
@@ -445,22 +503,31 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
   }
 
   x <- sin.U1 * sin.sigma - cos.U1 * cos.sigma * cos.alpha1
-  phi2 <- atan2(sin.U1 * cos.sigma + cos.U1 * sin.sigma * cos.alpha1,
-                one.f * sqrt(sin.alpha * sin.alpha + x * x))
-  lambda <- atan2(sin.sigma * sin.alpha1,
-                  cos.U1 * cos.sigma - sin.U1 * sin.sigma * cos.alpha1)
+  phi2 <- atan2(
+    sin.U1 * cos.sigma + cos.U1 * sin.sigma * cos.alpha1,
+    one.f * sqrt(sin.alpha * sin.alpha + x * x)
+  )
+  lambda <- atan2(
+    sin.sigma * sin.alpha1,
+    cos.U1 * cos.sigma - sin.U1 * sin.sigma * cos.alpha1
+  )
   C <- f / 16 * cos2.alpha * (4 + f * (4 - 3 * cos2.alpha))
-  L <- lambda - (1 - C) * f * sin.alpha *
-    (sigma + C * sin.sigma * (cos.2sigma.m + C * cos.sigma *
-                                (-1 + 2 * cos2.2sigma.m)))
+  L <- lambda -
+    (1 - C) *
+      f *
+      sin.alpha *
+      (sigma +
+        C *
+          sin.sigma *
+          (cos.2sigma.m + C * cos.sigma * (-1 + 2 * cos2.2sigma.m)))
   lambda2 <- p1[, 1] + L
   alpha2 <- atan2(sin.alpha, -x)
   #p2 <- cbind(x=lambda2, y=phi2)
 
   if (any(no.convergence)) {
     #p2[no.convergence, ]<- NA_real_
-    lambda2[no.convergence]<- NA_real_
-    phi2[no.convergence]<- NA_real_
+    lambda2[no.convergence] <- NA_real_
+    phi2[no.convergence] <- NA_real_
     alpha2[no.convergence] <- NA_real_
     warning("Vicenty formula failed to converge. Try to increase iterations.")
   }
@@ -474,6 +541,5 @@ sgo_distance.sgo_points <- function(x, y, by.element=FALSE,
     alpha2[p2.is.p1] <- alpha1[p2.is.p1]
   }
 
-  list(lon=lambda2, lat=phi2, final.bearing=alpha2)
-
+  list(lon = lambda2, lat = phi2, final.bearing = alpha2)
 }
